@@ -156,12 +156,30 @@ export function Toolbar({ left, right }: { left?: ReactNode; right?: ReactNode }
   )
 }
 
+/*
+ * Skip link. Toggl 2.0 has none, which costs keyboard users 26 tab stops
+ * before reaching content on every page — see docs/accessibility-audit.md §2.
+ */
+export function SkipLink() {
+  return (
+    <a
+      href="#main-content"
+      className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-100 focus:rounded-lg focus:bg-bg-accent focus:px-4 focus:py-2 focus:text-[14px] focus:font-semibold focus:text-fg-inverted"
+    >
+      Skip to main content
+    </a>
+  )
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-full bg-bg-secondary">
+      <SkipLink />
       <Rail />
       <Sidebar />
-      <main className="flex min-w-0 flex-1 flex-col overflow-hidden">{children}</main>
+      <main id="main-content" tabIndex={-1} className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        {children}
+      </main>
     </div>
   )
 }

@@ -264,6 +264,12 @@ export function Tooltip({ label, children }: { label: string; children: ReactNod
   )
 }
 
+/*
+ * Toggl's toasts carry no live region, so screen readers never hear them —
+ * including the delete-undo toast, which is the only recovery affordance for a
+ * destructive action that has no confirm dialog. docs/accessibility-audit.md §2.
+ * role="status" + aria-live announces without stealing focus; errors use alert.
+ */
 export function Toast({
   title,
   tone = 'neutral',
@@ -280,7 +286,8 @@ export function Toast({
   } as const
   return (
     <div
-      role="status"
+      role={tone === 'error' ? 'alert' : 'status'}
+      aria-live={tone === 'error' ? 'assertive' : 'polite'}
       className={[
         'flex items-center gap-3 rounded-lg border px-4 py-3 text-[14px] font-medium',
         tones[tone],

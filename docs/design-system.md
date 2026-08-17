@@ -253,9 +253,11 @@ Dead code in their bundle, recorded so nobody re-derives it: `GT Haptik` @font-f
 | 12 / 500 | 16.08px | normal | Secondary label, card body |
 | 12 / 500 | 16.08px | 0.3px | Badge — "Suggested" |
 | 12 / 500 | 12px | normal | Compact inline label |
-| 11 / 600 | 16.06px | 0.275px | **Sidebar section header** — "Track", "Plan" |
+| 11 / 600 | 16.06px | 0.275px | **Sidebar section header** — "Track", "Plan" ¹ |
 | 11 / 500 | 16.06px | 0.32px | Calendar time gutter — "1:00 AM" |
 | 11 / 600 | 16.06px | 0.32px | Avatar initials |
+
+¹ **Corrected 2026-08-17.** An earlier draft assigned these uppercase labels to `foreground-tertiary`. Measured contrast is **9.77:1**, which `foreground-tertiary` cannot produce (it would give 2.31:1) — so the token assignment was wrong. Also note the source text is **title-case ("Track") with CSS `text-transform: uppercase`**, not literal capitals. That is the screen-reader-correct choice and worth reproducing exactly. See `accessibility-audit.md`.
 
 Observations worth copying:
 

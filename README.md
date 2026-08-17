@@ -1,32 +1,41 @@
-# React + TypeScript + Vite
+# Toggl — home assignment prototype
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Vite + React + TypeScript + Tailwind v4. Deployed on Vercel.
 
-Currently, two official plugins are available:
+- **Live:** https://toggl-kit.vercel.app
+- **Component kit:** https://toggl-kit.vercel.app/kit
+- **Repo:** https://github.com/Tyriel393/toggle (private)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Redeploy
 
-## React Compiler
+Pushing to `master` auto-deploys — the GitHub repo is connected to the Vercel project.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+git add -A && git commit -m "message" && git push
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+To deploy the working tree immediately without a commit:
+
+```bash
+vercel --prod --yes
+```
+
+## Develop
+
+```bash
+npm run dev
+```
+
+## Typecheck
+
+Run continuously while building.
+
+```bash
+npm run typecheck
+```
+
+## Notes
+
+- Design tokens in `src/index.css` are **placeholders**. They must be replaced with values extracted from the live Toggl 2.0 app before any fidelity work. See `docs/design-system.md`.
+- `vercel.json` rewrites all paths to `index.html` so client-side routes survive a hard refresh.
+- Path alias `@/` maps to `src/`.

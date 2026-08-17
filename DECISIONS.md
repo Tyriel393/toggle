@@ -34,18 +34,20 @@ Toggl 2.0 uses **GT Haptik** (Grilli Type, commercial licence), self-hosted at `
 
 Leaning **Inter**: it is what Toggl themselves fall back to, it removes a licensing question and an external dependency, and at 11–14px the difference is nearly invisible. Not decided.
 
-### B. Icons — Lucide will not match
+### ~~B. Icons~~ — DECIDED 2026-08-17
 
-The brief assumed Lucide. The real set is **bespoke: 16×16 viewBox, filled paths, `fill="currentColor"`**. Lucide is 24×24 **stroked** at stroke-width 2 — a visibly lighter, different construction.
+**Extract Toggl's own SVGs from the public bundle.** Josip's call.
 
-| Option | Fidelity | Cost |
-| --- | --- | --- |
-| Extract Toggl's own icons from the public bundle | Exact | Some effort; same licensing question as the font, though these are plain SVG paths |
-| Use a filled 16px set (e.g. Phosphor Fill, Material Symbols Filled) | Close | Free, quick |
-| Use Lucide as specified | Noticeably off | Free, already installed |
+Claude proposed a free filled 16px substitute (Phosphor Fill / Material Symbols Filled) as the lower-effort option. Josip chose exact extraction instead — fidelity is the graded criterion, and a substitute set still reads as foreign at 16px.
 
-Leaning **a filled 16px set** over Lucide. Not decided.
+Rejected: Lucide (24×24 stroked, visibly wrong weight) despite being named in the original brief and already installed.
 
-### C. Theme — dark or light?
+### ~~C. Theme~~ — RESOLVED BY EVIDENCE 2026-08-17
 
-The app ships both. The account was in dark. The assignment prototype should pick one deliberately; tokens for both are documented.
+Not a preference question. **Toggl 2.0 follows the OS setting.**
+
+Evidence: no theme key in `localStorage`; the OS reports `prefers-color-scheme: dark`; the root element carries `class="fixed dark"`. No stored override exists, so the class is system-driven.
+
+**Implication: the reviewer sees whatever their own machine is set to.** A prototype hard-coded to one theme has a coin-flip chance of clashing with the app they open it next to. The kit therefore supports **both themes, driven by `prefers-color-scheme`** — which the extracted tokens already make cheap, since every role has a light and dark value.
+
+**UNVERIFIED:** whether a manual theme override also exists in Admin settings.

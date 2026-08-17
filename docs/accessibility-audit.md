@@ -4,7 +4,7 @@
 
 **Standard:** WCAG 2.2 Level AA.
 
-**Scope limit, stated up front:** dark theme only, desktop only, one viewport (1718×1276), Timer/Projects/Tasks views, single-user workspace. No mobile, no light-theme render check, no screen-reader listening session, no automated axe-core sweep. This is a targeted audit, not a certification.
+**Scope limit, stated up front:** **both themes rendered and measured**, desktop only, one viewport (1718×1276), Timer/Projects/Tasks views, single-user workspace. No mobile, no screen-reader listening session, no automated axe-core sweep. This is a targeted audit, not a certification.
 
 ---
 
@@ -34,9 +34,35 @@ Recording these because both were wrong in ways that would have misled you.
 
 This is a genuinely good result and worth saying plainly: **contrast is the thing most products fail, and Toggl passes it comfortably in dark theme.**
 
-Two caveats I can't resolve without more testing:
-- **Light theme unverified by render.** Token math suggests `foreground-tertiary` on white would be **2.15:1** if used for text — but the dark-theme measurement proved my token assignment for those elements was wrong, so I won't repeat that error. Needs a light-theme render pass.
-- **Placeholder text** (`Project name`, `What are you working on?`) wasn't in the measured set — placeholders are a common failure point and should be checked separately.
+### Light theme — rendered and measured
+
+**Done 2026-08-17.** Switched via **Settings → Appearance → Theme → Light** (a personal setting, not Admin — which is why the earlier sweep missed it; this also resolves the "manual override" UNVERIFIED item in `DECISIONS.md` §C). Account restored to **System** afterwards.
+
+Two views measured, 50 text nodes each. **3 failures, identical in both** — one root cause:
+
+| Measured | Required | Element |
+| --- | --- | --- |
+| **4.16:1** | 4.5 | **Active nav item** — "Timer" / "Projects", 14px/600 |
+| **4.16:1** | 4.5 | `2.0` product badge, 11px/600 |
+| **4.16:1** | 4.5 | `31 DAYS` trial badge, 11px/600 |
+
+All three are the same token pairing:
+
+```
+--foreground-accent  168 76 157   on
+--background-muted   246 229 243   =  4.16:1   (needs 4.5:1)
+```
+
+This is a **token-level failure, not an instance-level one** — it fails everywhere that pairing is used, and it lands on the **selected navigation state**, which is persistent, on every page, for every user in light theme. Dark theme's equivalent (`194 130 185` on `55 31 52`) passes comfortably, so this is specifically a light-theme regression.
+
+It is also a *near* miss — 4.16 vs 4.5. Darkening `foreground-accent` slightly when used on `background-muted` would clear it without a visible design change.
+
+Everything else in light theme passes:
+
+- Sidebar nav items: **6.86:1** (AA, below AAA)
+- Table headers, body text, buttons, badges: pass
+- **Placeholders pass** — the timer duration placeholder measures **7.48:1**. This was flagged as a risk in the first pass; it is not one.
+- `foreground-tertiary` on white computes to **2.15:1**, but measurement confirms **it is not used for rendered text** in either theme — so the theoretical failure is not a real one. (This is the exact error I made in the first draft; measuring rather than inferring is what caught it.)
 
 ### Non-text contrast is the weaker half
 
@@ -161,10 +187,11 @@ That last one is the check most implementations fail, and Toggl passes it. `aria
 | 3 | No skip link (26 tab stops) | Every keyboard user, every page | Trivial |
 | 4 | 8 unnamed icon controls incl. view switcher | Feature unusable by SR | Low |
 | 5 | 2 unlabelled inputs incl. the timer's primary field | Core action unlabelled | Trivial |
-| 6 | Border contrast 1.52:1 on input boundaries | Low-vision users | Medium (token change) |
-| 7 | Checklist mis-roled as `dialog` | Confusing announcement | Trivial |
-| 8 | Looping animations unguarded | Vestibular | Low |
-| 9 | Sub-24px touch targets | Motor impairment | Low |
+| 6 | **Light-theme accent-on-muted 4.16:1** — hits the active nav item on every page | Low-vision users, light theme only | Trivial (one token) |
+| 7 | Border contrast 1.52:1 on input boundaries | Low-vision users | Medium (token change) |
+| 8 | Checklist mis-roled as `dialog` | Confusing announcement | Trivial |
+| 9 | Looping animations unguarded | Vestibular | Low |
+| 10 | Sub-24px touch targets | Motor impairment | Low |
 
 ---
 

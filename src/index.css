@@ -106,6 +106,14 @@
   --background-muted: 246 229 243;
   --background-muted-hover: 236 204 230;
   --background-muted-active: 220 167 211;
+  /*
+   * Toggl's own pairing (168 76 157 on 246 229 243) measures 4.16:1 and misses
+   * AA by 0.34 — and it lands on the active nav item, on every page, in light
+   * theme. 5% darker clears it at 4.52:1 and is visually imperceptible.
+   * Scoped to this pairing only; --foreground-accent stays pixel-exact.
+   * See docs/accessibility-audit.md §1.
+   */
+  --foreground-accent-on-muted: 160 72 149;
   --stroke-accent: 236 204 230;
   --stroke-accent-hover: 220 167 211;
   --stroke-accent-active: 194 130 185;
@@ -193,6 +201,7 @@
     --background-muted: 55 31 52;
     --background-muted-hover: 66 36 62;
     --background-muted-active: 99 46 92;
+    --foreground-accent-on-muted: 194 130 185;
     --stroke-accent: 66 36 62;
     --stroke-accent-hover: 99 46 92;
     --stroke-accent-active: 168 76 157;
@@ -273,6 +282,7 @@
   --background-muted: 55 31 52;
   --background-muted-hover: 66 36 62;
   --background-muted-active: 99 46 92;
+  --foreground-accent-on-muted: 194 130 185;
   --stroke-accent: 66 36 62;
   --stroke-accent-hover: 99 46 92;
   --stroke-accent-active: 168 76 157;
@@ -305,6 +315,7 @@
   --color-fg-inverted: rgb(var(--foreground-inverted));
   --color-fg-accent: rgb(var(--foreground-accent));
   --color-fg-accent-hover: rgb(var(--foreground-accent-hover));
+  --color-fg-accent-on-muted: rgb(var(--foreground-accent-on-muted));
   --color-fg-success: rgb(var(--foreground-success));
   --color-fg-warning: rgb(var(--foreground-warning));
   --color-fg-error: rgb(var(--foreground-error));

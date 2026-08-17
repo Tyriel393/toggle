@@ -68,7 +68,7 @@ export function Sidebar() {
                   [
                     'flex h-8 items-center gap-2.5 rounded-lg px-2 text-[14px] font-medium transition-colors',
                     isActive
-                      ? 'bg-bg-muted text-fg-accent'
+                      ? 'bg-bg-muted text-fg-accent-on-muted'
                       : 'text-fg-secondary hover:bg-bg-hover hover:text-fg',
                   ].join(' ')
                 }

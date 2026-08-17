@@ -23,16 +23,24 @@
 
 ## Open — need Josip's call
 
-### A. Typeface — GT Haptik vs Inter
+### ~~A. Typeface~~ — DECIDED 2026-08-17: **Inter, self-hosted**
 
-Toggl 2.0 uses **GT Haptik** (Grilli Type, commercial licence), self-hosted at `assets.focus.toggl.com`, weights 400/500/700, with a `GT Haptik Rotalic` companion for italics. Their own declared fallback is **Inter**.
+Claude initially reported GT Haptik as Toggl's typeface, read from the `@font-face` declarations in their stylesheet. **That was wrong**, and the error would have shipped a prototype in the wrong font.
 
-| Option | Fidelity | Risk |
-| --- | --- | --- |
-| Hotlink Toggl's woff2 files | Exact | Uses a paid font we have no licence for. Reviewers are Toggl themselves, so it is unlikely to read as theft — but it is still someone else's licensed asset, and a broken asset host would break the prototype. |
-| Use Inter | Very close — it is their own fallback, near-identical metrics | Slightly different letterforms in headings |
+Josip pushed back ("if we are trying to match it exactly shouldn't we go with GT Haptik") — which forced a proper check of what the browser actually resolves rather than what the CSS declares. It resolves to **Inter**:
 
-Leaning **Inter**: it is what Toggl themselves fall back to, it removes a licensing question and an external dependency, and at 11–14px the difference is nearly invisible. Not decided.
+- computed `font-family` on body contains no GT Haptik
+- canvas probe: `"GT Haptik"` measures identically to a nonexistent font
+- all GT Haptik faces report `unloaded`; only Inter is `loaded`
+- a `font-family: Inter, sans-serif !important` rule overrides the declared stack everywhere
+
+**Decision: self-host Inter Variable (100–900, normal + italic) from `public/fonts/`.** SIL OFL, no licensing question, no external CDN, no hash-rotation risk, and true 500/600 weights rather than synthesised ones.
+
+Lesson recorded: *read computed values, not declarations.* The same failure mode — trusting the stylesheet over the render — is exactly what the assignment guidance warns about when it says to verify claims about the product in the app itself.
+
+### D. Themes — BOTH, decided 2026-08-17
+
+Josip: build light and dark. Reinforces the evidence in C — the app follows the OS, so the reviewer's machine decides. Kit ships both, driven by `prefers-color-scheme`.
 
 ### ~~B. Icons~~ — DECIDED 2026-08-17
 

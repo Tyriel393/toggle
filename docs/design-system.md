@@ -208,17 +208,34 @@ Measured on the calendar view, live elements carried **no active box-shadow** �
 
 ## 3. Typography
 
-### Family
+### Family — the app renders in Inter, not GT Haptik
+
+**Computed** `font-family` on `body` and on every sampled text node:
 
 ```
-GT Haptik, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, …
+Inter, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
 ```
 
-**GT Haptik** (Grilli Type, commercial licence) is the primary face, self-hosted from `assets.focus.toggl.com`. `@font-face` declares weights **400 / 500 / 700**. A companion face **GT Haptik Rotalic** is loaded for italics — a rotated-italic rather than a true italic.
+The bundle *declares* a GT Haptik stack, but a later `font-family: Inter, sans-serif !important` rule overrides it everywhere. **GT Haptik never renders.**
 
-Mono stack: `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, …`
+Evidence:
 
-> ⚠️ **Licensing decision needed.** The woff2 files are publicly reachable and could be hotlinked for pixel-exact fidelity, but GT Haptik is a paid font. Inter is Toggl's own declared fallback and renders the layout at near-identical metrics. See `DECISIONS.md`.
+| Check | Result |
+| --- | --- |
+| Computed `font-family` | GT Haptik absent from the resolved stack |
+| Canvas width probe, 40px "Handgloves 123" | `"GT Haptik"` → 261px · nonexistent font → **261px** · `Inter` → 277px |
+| `document.fonts` status | all 5 GT Haptik faces `unloaded`; Inter `loaded` |
+| Network | `GT-Haptik-Regular-*.woff2` is fetched, then never applied |
+
+Inter is served as a **variable font, weight range 100–900**, normal + italic, with `unicode-range` subsetting (Latin, Latin-ext, Cyrillic, Greek, Vietnamese) — the Google Fonts delivery pattern.
+
+Consequences:
+
+- Weights 500 and 600 are **real**, not synthesised. A variable Inter reproduces them exactly.
+- Inter is **SIL Open Font License** — free to self-host, no licensing question.
+- Mono stack: `ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, …`
+
+Dead code in their bundle, recorded so nobody re-derives it: `GT Haptik` @font-face at weights 400/500/700 plus `GT Haptik Rotalic` at 400/500. The **500 and Rotalic-500 sources point at an unresolved bundler alias** (`@toggl/fonts/gt-haptik/gt-haptik-medium.woff2`) rather than a URL, so they could never have loaded even without the `!important` override.
 
 ### Scale — measured from rendered DOM
 
@@ -399,21 +416,63 @@ Four metrics in a row separated by vertical rules — Logged time, Billable time
 - Value **20/600**, line-height 32px
 - Secondary qualifier inline in parentheses and dimmed — e.g. `0h (0%)`
 
-### Empty state
+### Drawer / slide-over
 
-Strikingly restrained. **No illustration, no icon, no button.**
+Used for the task editor. Verified.
 
-- Title **20/600 / 32px**, `foreground-primary` — e.g. "No logged time"
+| | |
+| --- | --- |
+| Width | **500px**, full height, right-anchored |
+| Background | `background-primary` |
+| Border | 1px left, `60 57 59` |
+| Header | status checkbox · `New task ▾` · lock icon · close ✕ |
+| Body | title field, description placeholder, then a label/value field list |
+| Collapsible sections | `› Subtasks`, `› Allocation` — chevron rotates on expand |
+| Footer | `Cancel` (ghost) + `Create task` (primary), right-aligned |
+
+Field rows are a two-column list — icon + label on the left, value or `Empty` placeholder on the right. `Empty` is the literal placeholder string.
+
+### Empty states — two distinct patterns
+
+An earlier draft of this document generalised from Reports and claimed empty states never use illustrations. **That is wrong.** There are two patterns, and which one is used depends on scope:
+
+**A. Inline / in-container** — used when a *section* has no data (chart body, card body):
+
+- No illustration, no icon, no button
+- Title **20/600 / 32px**, `foreground-primary` — "No logged time"
 - Body 14/500, `foreground-secondary`, with **underlined inline links** rather than buttons — "Schedule or log time", "Log time to see where your time goes"
-- Centred within the container it belongs to (chart body, card body), not the page
+- Centred in its container, not the page
+
+**B. Full-view** — used when an entire *view* has no data:
+
+- **Illustration** — flat geometric shapes in accent magenta + gold + neutral, or a cluster of avatars
+- Title 20/600 — "What do you plan to work on today?", "Plan capacity across your team"
+- Body, two lines, `foreground-secondary`, centred
+- **Primary button** — `＋ Create a new task`, `Invite members`
+- Optionally a secondary route below: `OR` then `✨ IMPORT TASKS` (uppercase, accent)
+
+The distinction is worth copying exactly: a feature that shows an illustrated empty state inside a card, or a bare text one for a whole view, will read as subtly wrong.
 
 ### Banner / promo
 
 Full-width inside content area, `background-muted` (dark `55 31 52`), icon left, accent-coloured heading + secondary body, action button right, `✕` dismiss far right.
 
+### Menus / popovers
+
+Radix-based (`[data-radix-popper-content-wrapper]`). Pattern:
+
+- Uppercase group heading — `DEFAULTS`, `STATUSES`
+- Item rows: icon or emoji + label, current item marked with a **✓** on the right
+- Premium items carry a trailing **★**
+- A divider, then a create action — `＋ Save as new view`
+
+Verified menus: Timeline group-by (`People / Projects / Tags`), report type (`Summary / Utilization ★ / Workload ★ / Profitability ★ / Time logs / Time off ★`), task status (`🗒️ Todo / 🚧 In Progress / 🚫 Blocked / ✅ Done`), capacity window (`Auto / This·Next·Last week / This·Next·Last month / Off`).
+
+Emoji are used as status icons — not the custom SVG set.
+
 ### Still unverified
 
-Tooltip, Toast, Drawer/slide-over, Tabs, Skeleton vs spinner, DatePicker, ProgressBar / capacity bar, destructive-confirm dialog, and hover/focus/disabled states for inputs and selects.
+Tooltip, Toast, Tabs, Skeleton vs spinner, DatePicker, ProgressBar / capacity bar, destructive-confirm dialog, and hover/focus/disabled states for inputs and selects.
 
 ## 8. Voice and copy — observed so far
 

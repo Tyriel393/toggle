@@ -248,7 +248,9 @@ The brief asked what the Jira sync maps. **No Jira integration is present** in t
 
 Jira is not among the named sources, and there is no integrations/marketplace section in workspace settings. Tasks also offers an `✨ IMPORT TASKS` action — **UNVERIFIED** whether that is the same CSV importer.
 
-**Caveat before treating this as settled:** integrations may live at organization level rather than workspace level, or be gated behind a plan this trial does not include. What is verified is that **CSV import is the only connection surfaced in workspace settings, and it is one-way import, not sync.**
+**Update after market research — the discrepancy is now sharper, not resolved.** Toggl's marketing site *does* advertise a **Jira integration (one-way sync)**, and their pricing page lists "Jira and Asana integrations" as a **Premium** feature. This workspace is on a **Premium trial** and still shows no integrations surface anywhere.
+
+So one of these is true, and it is untested which: the integration is excluded from trials; it lives at organization rather than workspace level; or it is configured from the Jira side. What is verified: **CSV import is the only connection surfaced in workspace settings, and it is one-way import, not sync.**
 
 ## 10. Plan gating
 

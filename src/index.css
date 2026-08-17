@@ -1,34 +1,397 @@
 @import 'tailwindcss';
 
 /*
- * PLACEHOLDER TOKENS — not yet extracted from the real app.
- * Every value below is a stand-in and must be replaced with computed styles
- * pulled from Toggl 2.0 in the browser. Do not build fidelity work on these.
- * See docs/design-system.md.
+ * Toggl 2.0 design tokens.
+ * Extracted from the live app 2026-08-17 — see docs/design-system.md.
+ * Values are space-separated RGB triples, matching Toggl's own convention.
+ * Token names mirror theirs exactly: --{property}-{role}[-{state}].
  */
-@theme {
-  --color-brand-500: oklch(0.55 0.22 15);
 
-  --color-surface-page: oklch(0.98 0 0);
-  --color-surface-card: oklch(1 0 0);
-  --color-surface-hover: oklch(0.96 0 0);
-
-  --color-line-subtle: oklch(0.92 0 0);
-  --color-line-strong: oklch(0.85 0 0);
-
-  --color-ink-primary: oklch(0.22 0 0);
-  --color-ink-secondary: oklch(0.45 0 0);
-  --color-ink-muted: oklch(0.62 0 0);
-  --color-ink-disabled: oklch(0.78 0 0);
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-italic.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-html,
-body,
-#root {
-  height: 100%;
+/* ---------- Light (default) ---------- */
+:root {
+  --foreground-primary: 19 18 19;
+  --foreground-primary-hover: 28 26 28;
+  --foreground-primary-active: 60 57 59;
+  --foreground-primary-disabled: 130 127 129;
+  --foreground-secondary: 87 84 86;
+  --foreground-secondary-hover: 60 57 59;
+  --foreground-secondary-active: 28 26 28;
+  --foreground-secondary-disabled: 207 205 207;
+  --foreground-tertiary: 179 176 178;
+  --foreground-tertiary-hover: 130 127 129;
+  --foreground-tertiary-active: 87 84 86;
+  --foreground-tertiary-disabled: 245 245 245;
+  --foreground-inverted: 255 255 255;
+  --foreground-light: 255 255 255;
+  --foreground-success: 30 112 42;
+  --foreground-warning: 105 69 0;
+  --foreground-error: 138 7 1;
+
+  --background-primary: 255 255 255;
+  --background-primary-hover: 245 245 245;
+  --background-primary-active: 233 232 232;
+  --background-secondary: 245 245 245;
+  --background-secondary-hover: 233 232 232;
+  --background-secondary-active: 207 205 207;
+  --background-tertiary: 233 232 232;
+  --background-tertiary-hover: 207 205 207;
+  --background-tertiary-active: 179 176 178;
+  --background-inverted: 28 26 28;
+  --background-inverted-secondary: 87 84 86;
+  --background-dark: 28 26 28;
+  --background-dark-hover: 60 57 59;
+  --background-dark-active: 87 84 86;
+  --background-success: 216 240 216;
+  --background-warning: 253 232 198;
+  --background-error: 248 213 207;
+  --background-destructive: 161 40 28;
+  --background-destructive-hover: 138 7 1;
+  --background-destructive-active: 108 0 0;
+  --background-affirmative: 47 134 58;
+  --background-affirmative-hover: 30 112 42;
+  --background-affirmative-active: 28 85 35;
+  --background-stop-timer: 198 91 76;
+  --background-stop-timer-hover: 175 62 48;
+  --background-stop-timer-active: 161 40 28;
+
+  --stroke-primary: 233 232 232;
+  --stroke-primary-hover: 207 205 207;
+  --stroke-primary-active: 179 176 178;
+  --stroke-secondary: 207 205 207;
+  --stroke-secondary-hover: 179 176 178;
+  --stroke-tertiary: 179 176 178;
+  --stroke-muted: 245 245 245;
+  --stroke-success: 157 204 159;
+  --stroke-warning: 243 194 106;
+  --stroke-error: 232 144 129;
+
+  /* brand scope .focus */
+  --foreground-accent: 168 76 157;
+  --foreground-accent-hover: 99 46 92;
+  --foreground-accent-active: 66 36 62;
+  --foreground-accent-disabled: 220 167 211;
+  --background-accent: 168 76 157;
+  --background-accent-hover: 99 46 92;
+  --background-accent-active: 66 36 62;
+  --background-accent-disabled: 220 167 211;
+  --background-muted: 246 229 243;
+  --background-muted-hover: 236 204 230;
+  --background-muted-active: 220 167 211;
+  --stroke-accent: 236 204 230;
+  --stroke-accent-hover: 220 167 211;
+  --stroke-accent-active: 194 130 185;
+  --color-accent-ring: #a84c9d;
+
+  /* overlays — hex with alpha, not triples */
+  --background-on-surface-hover: #00000014;
+  --background-on-surface-active: #00000029;
+
+  --elevation-raised-10: #00000014;
+  --elevation-raised-20: #00000029;
+  --elevation-raised-50: #0000003d;
 }
 
-body {
-  background-color: var(--color-surface-page);
-  color: var(--color-ink-primary);
+/* ---------- Dark ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --foreground-primary: 255 255 255;
+    --foreground-primary-hover: 245 245 245;
+    --foreground-primary-active: 233 232 232;
+    --foreground-primary-disabled: 87 84 86;
+    --foreground-secondary: 179 176 178;
+    --foreground-secondary-hover: 207 205 207;
+    --foreground-secondary-active: 233 232 232;
+    --foreground-secondary-disabled: 87 84 86;
+    --foreground-tertiary: 87 84 86;
+    --foreground-tertiary-hover: 130 127 129;
+    --foreground-tertiary-active: 179 176 178;
+    --foreground-tertiary-disabled: 19 18 19;
+    --foreground-inverted: 19 18 19;
+    --foreground-light: 255 255 255;
+    --foreground-success: 157 204 159;
+    --foreground-warning: 243 194 106;
+    --foreground-error: 250 184 172;
+
+    --background-primary: 28 26 28;
+    --background-primary-hover: 60 57 59;
+    --background-primary-active: 87 84 86;
+    --background-secondary: 19 18 19;
+    --background-secondary-hover: 28 26 28;
+    --background-secondary-active: 60 57 59;
+    --background-tertiary: 0 0 0;
+    --background-tertiary-hover: 19 18 19;
+    --background-tertiary-active: 28 26 28;
+    --background-inverted: 255 255 255;
+    --background-inverted-secondary: 179 176 178;
+    --background-dark: 60 57 59;
+    --background-dark-hover: 87 84 86;
+    --background-dark-active: 130 127 129;
+    --background-success: 18 61 23;
+    --background-warning: 88 61 0;
+    --background-error: 73 0 0;
+    --background-destructive: 175 62 48;
+    --background-destructive-hover: 198 91 76;
+    --background-destructive-active: 232 144 129;
+    --background-affirmative: 70 148 77;
+    --background-affirmative-hover: 106 170 110;
+    --background-affirmative-active: 157 204 159;
+    /* derived: mirrors light, one step lighter than destructive */
+    --background-stop-timer: 198 91 76;
+    --background-stop-timer-hover: 175 62 48;
+    --background-stop-timer-active: 161 40 28;
+
+    /* derived from the inversion pattern; corroborated by measured borders:
+       modal + sidebar = rgb(60,57,59), secondary button = rgb(87,84,86) */
+    --stroke-primary: 60 57 59;
+    --stroke-primary-hover: 87 84 86;
+    --stroke-primary-active: 130 127 129;
+    --stroke-secondary: 87 84 86;
+    --stroke-secondary-hover: 130 127 129;
+    --stroke-tertiary: 130 127 129;
+    --stroke-muted: 19 18 19;
+    --stroke-success: 70 148 77;
+    --stroke-warning: 194 133 0;
+    --stroke-error: 175 62 48;
+
+    --foreground-accent: 194 130 185;
+    --foreground-accent-hover: 220 167 211;
+    --foreground-accent-active: 236 204 230;
+    --foreground-accent-disabled: 168 76 157;
+    --background-accent: 194 130 185;
+    --background-accent-hover: 220 167 211;
+    --background-accent-active: 236 204 230;
+    --background-accent-disabled: 99 46 92;
+    --background-muted: 55 31 52;
+    --background-muted-hover: 66 36 62;
+    --background-muted-active: 99 46 92;
+    --stroke-accent: 66 36 62;
+    --stroke-accent-hover: 99 46 92;
+    --stroke-accent-active: 168 76 157;
+    --color-accent-ring: #c282b9;
+
+    --background-on-surface-hover: #ffffff1f;
+    --background-on-surface-active: #ffffff33;
+
+    --elevation-raised-10: #00000052;
+    --elevation-raised-20: #00000063;
+    --elevation-raised-50: #00000080;
+  }
+}
+
+/* Manual override wins over the OS preference in both directions. */
+.dark {
+  color-scheme: dark;
+  --foreground-primary: 255 255 255;
+  --foreground-primary-hover: 245 245 245;
+  --foreground-primary-active: 233 232 232;
+  --foreground-primary-disabled: 87 84 86;
+  --foreground-secondary: 179 176 178;
+  --foreground-secondary-hover: 207 205 207;
+  --foreground-secondary-active: 233 232 232;
+  --foreground-secondary-disabled: 87 84 86;
+  --foreground-tertiary: 87 84 86;
+  --foreground-tertiary-hover: 130 127 129;
+  --foreground-tertiary-active: 179 176 178;
+  --foreground-tertiary-disabled: 19 18 19;
+  --foreground-inverted: 19 18 19;
+  --foreground-success: 157 204 159;
+  --foreground-warning: 243 194 106;
+  --foreground-error: 250 184 172;
+  --background-primary: 28 26 28;
+  --background-primary-hover: 60 57 59;
+  --background-primary-active: 87 84 86;
+  --background-secondary: 19 18 19;
+  --background-secondary-hover: 28 26 28;
+  --background-secondary-active: 60 57 59;
+  --background-tertiary: 0 0 0;
+  --background-tertiary-hover: 19 18 19;
+  --background-tertiary-active: 28 26 28;
+  --background-inverted: 255 255 255;
+  --background-inverted-secondary: 179 176 178;
+  --background-dark: 60 57 59;
+  --background-dark-hover: 87 84 86;
+  --background-dark-active: 130 127 129;
+  --background-success: 18 61 23;
+  --background-warning: 88 61 0;
+  --background-error: 73 0 0;
+  --background-destructive: 175 62 48;
+  --background-destructive-hover: 198 91 76;
+  --background-destructive-active: 232 144 129;
+  --background-affirmative: 70 148 77;
+  --background-affirmative-hover: 106 170 110;
+  --background-affirmative-active: 157 204 159;
+  --background-stop-timer: 198 91 76;
+  --background-stop-timer-hover: 175 62 48;
+  --background-stop-timer-active: 161 40 28;
+  --stroke-primary: 60 57 59;
+  --stroke-primary-hover: 87 84 86;
+  --stroke-primary-active: 130 127 129;
+  --stroke-secondary: 87 84 86;
+  --stroke-secondary-hover: 130 127 129;
+  --stroke-tertiary: 130 127 129;
+  --stroke-muted: 19 18 19;
+  --stroke-success: 70 148 77;
+  --stroke-warning: 194 133 0;
+  --stroke-error: 175 62 48;
+  --foreground-accent: 194 130 185;
+  --foreground-accent-hover: 220 167 211;
+  --foreground-accent-active: 236 204 230;
+  --foreground-accent-disabled: 168 76 157;
+  --background-accent: 194 130 185;
+  --background-accent-hover: 220 167 211;
+  --background-accent-active: 236 204 230;
+  --background-accent-disabled: 99 46 92;
+  --background-muted: 55 31 52;
+  --background-muted-hover: 66 36 62;
+  --background-muted-active: 99 46 92;
+  --stroke-accent: 66 36 62;
+  --stroke-accent-hover: 99 46 92;
+  --stroke-accent-active: 168 76 157;
+  --color-accent-ring: #c282b9;
+  --background-on-surface-hover: #ffffff1f;
+  --background-on-surface-active: #ffffff33;
+  --elevation-raised-10: #00000052;
+  --elevation-raised-20: #00000063;
+  --elevation-raised-50: #00000080;
+}
+
+.light {
+  color-scheme: light;
+}
+
+/*
+ * Map Tailwind utilities onto the runtime tokens.
+ * `inline` keeps the var reference at use-site so theme switching works.
+ */
+@theme inline {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
+
+  --color-fg: rgb(var(--foreground-primary));
+  --color-fg-hover: rgb(var(--foreground-primary-hover));
+  --color-fg-disabled: rgb(var(--foreground-primary-disabled));
+  --color-fg-secondary: rgb(var(--foreground-secondary));
+  --color-fg-secondary-hover: rgb(var(--foreground-secondary-hover));
+  --color-fg-tertiary: rgb(var(--foreground-tertiary));
+  --color-fg-inverted: rgb(var(--foreground-inverted));
+  --color-fg-accent: rgb(var(--foreground-accent));
+  --color-fg-accent-hover: rgb(var(--foreground-accent-hover));
+  --color-fg-success: rgb(var(--foreground-success));
+  --color-fg-warning: rgb(var(--foreground-warning));
+  --color-fg-error: rgb(var(--foreground-error));
+
+  --color-bg: rgb(var(--background-primary));
+  --color-bg-hover: rgb(var(--background-primary-hover));
+  --color-bg-secondary: rgb(var(--background-secondary));
+  --color-bg-secondary-hover: rgb(var(--background-secondary-hover));
+  --color-bg-tertiary: rgb(var(--background-tertiary));
+  --color-bg-inverted: rgb(var(--background-inverted));
+  --color-bg-dark: rgb(var(--background-dark));
+  --color-bg-accent: rgb(var(--background-accent));
+  --color-bg-accent-hover: rgb(var(--background-accent-hover));
+  --color-bg-accent-active: rgb(var(--background-accent-active));
+  --color-bg-muted: rgb(var(--background-muted));
+  --color-bg-muted-hover: rgb(var(--background-muted-hover));
+  --color-bg-success: rgb(var(--background-success));
+  --color-bg-warning: rgb(var(--background-warning));
+  --color-bg-error: rgb(var(--background-error));
+  --color-bg-destructive: rgb(var(--background-destructive));
+  --color-bg-destructive-hover: rgb(var(--background-destructive-hover));
+  --color-bg-affirmative: rgb(var(--background-affirmative));
+  --color-bg-stop: rgb(var(--background-stop-timer));
+  --color-bg-stop-hover: rgb(var(--background-stop-timer-hover));
+
+  --color-line: rgb(var(--stroke-primary));
+  --color-line-hover: rgb(var(--stroke-primary-hover));
+  --color-line-secondary: rgb(var(--stroke-secondary));
+  --color-line-tertiary: rgb(var(--stroke-tertiary));
+  --color-line-muted: rgb(var(--stroke-muted));
+  --color-line-accent: rgb(var(--stroke-accent));
+  --color-line-success: rgb(var(--stroke-success));
+  --color-line-warning: rgb(var(--stroke-warning));
+  --color-line-error: rgb(var(--stroke-error));
+
+  /* project / data-viz palette — 12 swatches, read from the colour picker */
+  --color-data-1: #dd3919;
+  --color-data-2: #e54c87;
+  --color-data-3: #9447e1;
+  --color-data-4: #5252d6;
+  --color-data-5: #5aa4d8;
+  --color-data-6: #79a02c;
+  --color-data-7: #1da58c;
+  --color-data-8: #c7a600;
+  --color-data-9: #fa9200;
+  --color-data-10: #1ab233;
+  --color-data-11: #e024e0;
+  --color-data-12: #6c6c7a;
+
+  --radius-sm: 4px;
+  --radius-DEFAULT: 8px;
+  --radius-lg: 8px;
+
+  --tracking-tight: -0.025em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+
+  --default-transition-duration: 150ms;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    background-color: rgb(var(--background-secondary));
+    color: rgb(var(--foreground-primary));
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.43;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--color-accent-ring);
+    outline-offset: 1px;
+  }
+}
+
+@utility uppercase-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.275px;
+  text-transform: uppercase;
+  color: rgb(var(--foreground-tertiary));
 }

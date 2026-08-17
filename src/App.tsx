@@ -1,24 +1,26 @@
-import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { AppShell } from '@/components/toggl/Shell'
 import { KitPage } from '@/routes/KitPage'
-import { HomePage } from '@/routes/HomePage'
+import { StubPage } from '@/routes/StubPage'
 
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-full">
-        <nav className="flex gap-4 border-b border-line-subtle px-6 py-3 text-sm">
-          <Link to="/" className="text-ink-secondary hover:text-ink-primary">
-            Home
-          </Link>
-          <Link to="/kit" className="text-ink-secondary hover:text-ink-primary">
-            Kit
-          </Link>
-        </nav>
+      <AppShell>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Navigate to="/kit" replace />} />
           <Route path="/kit" element={<KitPage />} />
+          <Route path="/calendar" element={<StubPage title="Timer" />} />
+          <Route path="/reports" element={<StubPage title="Reports" />} />
+          <Route path="/projects" element={<StubPage title="Projects" />} />
+          <Route path="/tasks" element={<StubPage title="Tasks" />} />
+          <Route path="/timeline" element={<StubPage title="Timeline" />} />
+          <Route path="/members" element={<StubPage title="Members" />} />
+          <Route path="/approvals" element={<StubPage title="Approvals" />} />
+          <Route path="/time-off" element={<StubPage title="Time off" />} />
+          <Route path="*" element={<StubPage title="Not found" />} />
         </Routes>
-      </div>
+      </AppShell>
     </BrowserRouter>
   )
 }

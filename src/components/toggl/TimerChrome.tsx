@@ -10,11 +10,13 @@ export function CaptureBar({
   clock,
   description,
   onToggle,
+  onScope,
 }: {
   running: boolean
   clock: string
   description: string | null
   onToggle: () => void
+  onScope: (what: string) => void
 }) {
   return (
     <div className="flex items-center gap-3 px-6 py-3">
@@ -28,12 +30,13 @@ export function CaptureBar({
       </p>
 
       <div className="flex shrink-0 items-center gap-2">
-        <Chip glyph="@" label="Task" />
-        <Chip glyph="+" label="Project" />
-        <Chip glyph="#" label="Tags" />
+        <Chip glyph="@" label="Task" onClick={() => onScope('Assigning a task here')} />
+        <Chip glyph="+" label="Project" onClick={() => onScope('Picking a project here')} />
+        <Chip glyph="#" label="Tags" onClick={() => onScope('Tagging entries')} />
         <button
           type="button"
           aria-label="Billable"
+          onClick={() => onScope('Marking time billable')}
           className="grid size-8 cursor-pointer place-items-center rounded-lg text-[13px] font-semibold text-fg-secondary hover:bg-bg-hover hover:text-fg"
         >
           $
@@ -45,10 +48,11 @@ export function CaptureBar({
   )
 }
 
-function Chip({ glyph, label }: { glyph: string; label: string }) {
+function Chip({ glyph, label, onClick }: { glyph: string; label: string; onClick: () => void }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-lg border border-line px-2.5 text-[13px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
     >
       <span className="text-fg-tertiary">{glyph}</span>
@@ -57,13 +61,14 @@ function Chip({ glyph, label }: { glyph: string; label: string }) {
   )
 }
 
-export function WeekToolbar({ label }: { label: string }) {
+export function WeekToolbar({ label, onScope }: { label: string; onScope: (what: string) => void }) {
   return (
     <div className="flex items-center justify-between gap-3 px-6 pb-2.5">
       <div className="inline-flex h-8 items-center rounded-lg border border-line">
         <button
           type="button"
           aria-label="Previous week"
+          onClick={() => onScope('Changing week')}
           className="grid h-full w-7 cursor-pointer place-items-center text-fg-secondary hover:text-fg"
         >
           <Icon name="chevronLeft" size={12} />
@@ -75,6 +80,7 @@ export function WeekToolbar({ label }: { label: string }) {
         <button
           type="button"
           aria-label="Next week"
+          onClick={() => onScope('Changing week')}
           className="grid h-full w-7 cursor-pointer place-items-center text-fg-secondary hover:text-fg"
         >
           <Icon name="chevronRight" size={12} />
@@ -88,6 +94,7 @@ export function WeekToolbar({ label }: { label: string }) {
             type="button"
             aria-label={`View ${i + 1}`}
             aria-pressed={icon === 'list'}
+            onClick={() => onScope('Other Timer views')}
             className={[
               'grid size-7 cursor-pointer place-items-center rounded-md',
               icon === 'list' ? 'bg-bg-muted text-fg-accent-on-muted' : 'text-fg-secondary hover:bg-bg-hover hover:text-fg',
@@ -100,6 +107,7 @@ export function WeekToolbar({ label }: { label: string }) {
         <button
           type="button"
           aria-label="Settings"
+          onClick={() => onScope('Timer settings')}
           className="grid size-7 cursor-pointer place-items-center rounded-md text-fg-secondary hover:bg-bg-hover hover:text-fg"
         >
           <Icon name="settings" size={14} />
@@ -116,11 +124,13 @@ export function DayMeters({
   loggedTotal,
   plannedMins,
   capacityMins,
+  onViewReports,
 }: {
   logged: readonly MeterSegment[]
   loggedTotal: string
   plannedMins: number
   capacityMins: number
+  onViewReports: () => void
 }) {
   const sum = logged.reduce((s, x) => s + x.mins, 0)
   return (
@@ -151,6 +161,7 @@ export function DayMeters({
 
       <button
         type="button"
+        onClick={onViewReports}
         className="inline-flex cursor-pointer items-center gap-0.5 text-[12px] font-medium text-fg-secondary hover:text-fg"
       >
         View reports

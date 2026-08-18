@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { StartScreen } from '@/components/toggl/StartScreen'
+import { ScopeToast, useScopeToast } from '@/components/toggl/ScopeToast'
 import {
   currentEvaluation,
   demoReducer,
@@ -290,6 +292,28 @@ export function TimerPage() {
   const homepage = state.plan.tasks.find((t) => t.id === 'homepage')
   const remainingMins = homepage?.confirmedRemainingMins ?? 0
   const [capacityNoteOpen, setCapacityNoteOpen] = useState(false)
+  const navigate = useNavigate()
+  const scope = useScopeToast()
+
+  /* Shown once per session; reopenable from the “?” in the demo bar. */
+  const [startOpen, setStartOpen] = useState(() => {
+    try {
+      return sessionStorage.getItem('make-room-started') === null
+    } catch {
+      return true
+    }
+  })
+  const [guided, setGuided] = useState(true)
+  const closeStart = (wantGuided: boolean) => {
+    setGuided(wantGuided)
+    setStartOpen(false)
+    track('prototype_started', { mode: wantGuided ? 'guided' : 'explore' })
+    try {
+      sessionStorage.setItem('make-room-started', '1')
+    } catch {
+      /* private mode — start screen simply reappears */
+    }
+  }
 
   const [runningSeconds, setRunningSeconds] = useState(RUNNING_BASE_SECONDS)
   useEffect(() => {
@@ -337,22 +361,25 @@ export function TimerPage() {
         onToggle={() =>
           dispatch({ type: state.phase === 'running' ? 'stop' : 'restart' })
         }
+        onScope={scope.notInScope}
       />
       <WeekToolbar
         label={`Week one · ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri'][state.weekDay - 1]} 1${state.weekDay + 6} Aug`}
+        onScope={scope.notInScope}
       />
       <DayMeters
         logged={DAY_METERS[state.weekDay - 1]}
         loggedTotal={DAY_TOTALS[state.weekDay - 1]}
         plannedMins={state.weekDay >= 3 ? 135 : 60}
         capacityMins={state.plan.capacityMinsPerDay}
+        onViewReports={() => navigate('/reports')}
       />
       <PageContainer>
         <div className="mx-auto flex max-w-6xl gap-5 pt-1">
         <div className="min-w-0 flex-1 space-y-4">
           <PremiseNote />
 
-          <FeatureCoach content={coachFor(state, state.previewMove !== null)} />
+          {guided ? <FeatureCoach content={coachFor(state, state.previewMove !== null)} /> : null}
 
 
           {homepage &&
@@ -501,6 +528,12 @@ export function TimerPage() {
 
       <UndoToast state={state} onUndo={() => dispatch({ type: 'undo' })} />
 
+      <ScopeToast message={scope.message} onDismiss={scope.dismiss} />
+
+      {startOpen ? (
+        <StartScreen onGuided={() => closeStart(true)} onExplore={() => closeStart(false)} />
+      ) : null}
+
       <SmallScreenNotice />
 
       <DemoChrome
@@ -509,6 +542,9 @@ export function TimerPage() {
         onRestart={() => dispatch({ type: 'restart' })}
         onScenario={(scenario) => dispatch({ type: 'set-scenario', scenario })}
         onDay={(day) => dispatch({ type: 'set-day', day })}
+        onHelp={() => setStartOpen(true)}
+        guided={guided}
+        onToggleGuided={() => setGuided((g) => !g)}
       />
     </>
   )
@@ -696,12 +732,18 @@ function DemoChrome({
   onRestart,
   onScenario,
   onDay,
+  onHelp,
+  guided,
+  onToggleGuided,
 }: {
   scenario: Scenario
   weekDay: 1 | 2 | 3 | 4 | 5
   onRestart: () => void
   onScenario: (scenario: Scenario) => void
   onDay: (day: 1 | 2 | 3 | 4 | 5) => void
+  onHelp: () => void
+  guided: boolean
+  onToggleGuided: () => void
 }) {
   const [theme, setTheme] = useState<ThemeChoice>('system')
   const [showEvents, setShowEvents] = useState(false)
@@ -763,6 +805,26 @@ function DemoChrome({
           {SCENARIO_LABEL[s]}
         </button>
       ))}
+      <span className="h-4 w-px bg-(--color-line)" />
+      <button
+        type="button"
+        onClick={onHelp}
+        aria-label="What am I looking at?"
+        className="grid size-6 cursor-pointer place-items-center rounded-full text-[12px] font-semibold text-fg-secondary hover:bg-bg-hover hover:text-fg"
+      >
+        ?
+      </button>
+      <button
+        type="button"
+        onClick={onToggleGuided}
+        aria-pressed={guided}
+        className={[
+          'cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-medium',
+          guided ? 'bg-bg-muted text-fg-accent-on-muted' : 'text-fg-secondary hover:bg-bg-hover hover:text-fg',
+        ].join(' ')}
+      >
+        Guide
+      </button>
       <span className="h-4 w-px bg-(--color-line)" />
       <span className="px-1 text-[11px] font-semibold tracking-[0.275px] text-fg-tertiary uppercase">
         Day

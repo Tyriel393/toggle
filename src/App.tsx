@@ -6,6 +6,7 @@ import { StubPage } from '@/routes/StubPage'
 import { TimerPage } from '@/routes/TimerPage'
 import { SetupPage } from '@/routes/SetupPage'
 import { OnboardingPage } from '@/routes/OnboardingPage'
+import { ReportsPage } from '@/routes/ReportsPage'
 
 /* Onboarding runs full-screen, outside the shell — as it does in the real app. */
 function Shell({ children }: { children: ReactNode }) {
@@ -21,7 +22,7 @@ export default function App() {
         <Route path="/kit" element={<Shell><KitPage /></Shell>} />
         <Route path="/calendar" element={<Shell><TimerPage /></Shell>} />
         <Route path="/setup" element={<Shell><SetupPage /></Shell>} />
-        <Route path="/reports" element={<Shell><StubPage title="Reports" /></Shell>} />
+        <Route path="/reports" element={<Shell><ReportsPage /></Shell>} />
         <Route path="/projects" element={<Shell><StubPage title="Projects" /></Shell>} />
         <Route path="/tasks" element={<Shell><StubPage title="Tasks" /></Shell>} />
         <Route path="/timeline" element={<Shell><StubPage title="Timeline" /></Shell>} />

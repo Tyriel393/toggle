@@ -30,6 +30,35 @@ const DAY_OPTIONS: readonly { value: Weekday | 'none'; label: string }[] = [
   { value: 'fri', label: 'Friday' },
 ]
 
+function MetricRow({
+  label,
+  value,
+  why,
+  ok,
+}: {
+  label: string
+  value: string
+  why: string
+  ok?: boolean
+}) {
+  return (
+    <li className="flex gap-3 rounded-md border border-line bg-bg-secondary px-3 py-2">
+      <span className="min-w-0 flex-1">
+        <span className="block text-[12px] font-semibold text-fg">{label}</span>
+        <span className="block text-[11px] leading-4 font-medium text-fg-secondary">{why}</span>
+      </span>
+      <span
+        className={[
+          'shrink-0 self-start rounded-sm px-1.5 py-0.5 font-mono text-[11px] tabular-nums',
+          ok === true ? 'bg-bg-success text-fg-success' : 'bg-bg-tertiary text-fg-secondary',
+        ].join(' ')}
+      >
+        {value}
+      </span>
+    </li>
+  )
+}
+
 const clientColor = (client: DraftTask['client']) =>
   client === 'Northstar' ? CLIENT_COLOR.northstar : client === 'Atlas' ? CLIENT_COLOR.atlas : CLIENT_COLOR.internal
 
@@ -198,6 +227,36 @@ export function SetupPage() {
               </div>
             </section>
           </div>
+
+          <section className="rounded-lg border border-line bg-bg px-4 py-3.5">
+            <p className="uppercase-label mb-1">What this screen decides</p>
+            <p className="text-[13px] leading-5 font-medium text-fg-secondary">
+              Eligibility for Make room is settled here, not later. A task needs{' '}
+              <strong className="text-fg">a deadline</strong> and{' '}
+              <strong className="text-fg">an estimate</strong> before an overrun can mean anything —
+              so the share of week-one users who fill both in is the concept&apos;s single biggest
+              unknown, and the first thing I would measure.
+            </p>
+            <ul className="mt-2.5 space-y-1.5">
+              <MetricRow
+                label="Setup completion"
+                value={`${datedCount}/${tasks.length} dated · ${readyCount}/${tasks.length} estimated`}
+                why="The eligible denominator. Everything downstream is measured against this, not against all signups."
+                ok={datedCount >= 2}
+              />
+              <MetricRow
+                label="Time to first dated task"
+                value="—"
+                why="If this takes more than a minute, the step is friction and belongs behind import instead."
+              />
+              <MetricRow
+                label="Estimates left at 0h"
+                value={`${tasks.length - readyCount}`}
+                why="A task with no estimate can never trigger the feature. High values mean the ask is mistimed."
+                ok={tasks.length - readyCount === 0}
+              />
+            </ul>
+          </section>
 
           <div className="flex flex-wrap items-center gap-3">
             <Button

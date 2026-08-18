@@ -807,7 +807,8 @@ function DemoChrome({
 
   return (
     <div
-      className="fixed bottom-4 left-1/2 z-30 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-1 rounded-full border border-line bg-bg px-2 py-1.5"
+      /* Centred within the content area, not the viewport — 249px of rail + sidebar sits to the left. */
+      className="fixed bottom-4 left-1/2 z-30 ml-[124px] flex max-w-[calc(100vw-249px-2rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-1 rounded-full border border-line bg-bg px-2 py-1.5"
       role="group"
       aria-label="Demo controls"
     >

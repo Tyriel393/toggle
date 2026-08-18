@@ -20,6 +20,7 @@ import { RemainingPrompt } from '@/components/toggl/RemainingPrompt'
 import { MakeRoomDrawer } from '@/components/toggl/MakeRoomDrawer'
 import { WeekStrip } from '@/components/toggl/WeekStrip'
 import { Tour, type TourStep } from '@/components/toggl/Tour'
+import { WeekOnePanel } from '@/components/toggl/WeekOnePanel'
 
 const TOUR_STEPS: readonly TourStep[] = [
   {
@@ -208,10 +209,15 @@ export function TimerPage() {
     <>
       <TopBar
         title="Timer"
-        actions={<span className="text-[14px] font-medium text-fg-secondary">Wednesday · this week</span>}
+        actions={
+          <span className="text-[14px] font-medium text-fg-secondary">
+            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'][state.weekDay - 1]} · week one
+          </span>
+        }
       />
       <PageContainer>
-        <div className="mx-auto max-w-3xl space-y-4 pt-1">
+        <div className="mx-auto flex max-w-6xl gap-5 pt-1">
+        <div className="min-w-0 flex-1 space-y-4">
           <div data-tour="timer">
             <TimerBar state={state} onStop={() => dispatch({ type: 'stop' })} onRestart={() => dispatch({ type: 'restart' })} />
           </div>
@@ -322,6 +328,27 @@ export function TimerPage() {
             </Card>
           </div>
         </div>
+
+        <aside className="hidden w-[300px] shrink-0 lg:block">
+          <WeekOnePanel
+            state={{
+              day: state.weekDay,
+              weekPlanned: true,
+              trackedAgainstPlan: true,
+              collisionCaught:
+                state.phase === 'conflict' ||
+                state.phase === 'approved' ||
+                state.phase === 'kept',
+              planRepaired: state.phase === 'approved',
+              originalEstimateMins: homepage?.originalEstimateMins ?? 180,
+              expectedTotalMins: homepage
+                ? homepage.loggedMins + (homepage.confirmedRemainingMins ?? 0)
+                : 192,
+              savedTask: evaluation.atRisk ? taskLabel(evaluation.atRisk.task) : 'Atlas — Final handoff',
+            }}
+          />
+        </aside>
+        </div>
       </PageContainer>
 
       <MakeRoomDrawer
@@ -356,8 +383,10 @@ export function TimerPage() {
 
       <DemoChrome
         scenario={state.scenario}
+        weekDay={state.weekDay}
         onRestart={() => dispatch({ type: 'restart' })}
         onScenario={(scenario) => dispatch({ type: 'set-scenario', scenario })}
+        onDay={(day) => dispatch({ type: 'set-day', day })}
         onTour={() => setTourOpen(true)}
       />
     </>
@@ -536,13 +565,17 @@ function SmallScreenNotice() {
 
 function DemoChrome({
   scenario,
+  weekDay,
   onRestart,
   onScenario,
+  onDay,
   onTour,
 }: {
   scenario: Scenario
+  weekDay: 1 | 2 | 3 | 4 | 5
   onRestart: () => void
   onScenario: (scenario: Scenario) => void
+  onDay: (day: 1 | 2 | 3 | 4 | 5) => void
   onTour: () => void
 }) {
   const [theme, setTheme] = useState<ThemeChoice>('system')
@@ -610,6 +643,27 @@ function DemoChrome({
           ].join(' ')}
         >
           {SCENARIO_LABEL[s]}
+        </button>
+      ))}
+      <span className="h-4 w-px bg-(--color-line)" />
+      <span className="px-1 text-[11px] font-semibold tracking-[0.275px] text-fg-tertiary uppercase">
+        Day
+      </span>
+      {([1, 2, 3, 4, 5] as const).map((d) => (
+        <button
+          key={d}
+          type="button"
+          onClick={() => onDay(d)}
+          aria-pressed={weekDay === d}
+          aria-label={`Week day ${d}`}
+          className={[
+            'size-6 cursor-pointer rounded-full text-[12px] font-medium',
+            weekDay === d
+              ? 'bg-bg-muted text-fg-accent-on-muted'
+              : 'text-fg-secondary hover:bg-bg-hover hover:text-fg',
+          ].join(' ')}
+        >
+          {d}
         </button>
       ))}
       <span className="h-4 w-px bg-(--color-line)" />

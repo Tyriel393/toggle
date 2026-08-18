@@ -138,6 +138,7 @@ export type DemoState = {
   keptReason: 'overtime' | 'acknowledged' | null
   reassignedTo: string | null
   drawerOpen: boolean
+  weekDay: 1 | 2 | 3 | 4 | 5
 }
 
 export type DemoAction =
@@ -158,6 +159,7 @@ export type DemoAction =
   | { type: 'close-drawer' }
   | { type: 'restart' }
   | { type: 'set-scenario'; scenario: Scenario }
+  | { type: 'set-day'; day: 1 | 2 | 3 | 4 | 5 }
 
 export function initialState(scenario: Scenario, phase: Phase = 'asking'): DemoState {
   return {
@@ -170,6 +172,7 @@ export function initialState(scenario: Scenario, phase: Phase = 'asking'): DemoS
     keptReason: null,
     reassignedTo: null,
     drawerOpen: false,
+    weekDay: 3,
   }
 }
 
@@ -254,6 +257,8 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
       return state.phase === 'conflict'
         ? { ...state, drawerOpen: false, phase: 'kept', keptReason: 'acknowledged', previewMove: null }
         : { ...state, drawerOpen: false, previewMove: null }
+    case 'set-day':
+      return { ...state, weekDay: action.day }
     case 'restart':
       return initialState(state.scenario, 'running')
     case 'set-scenario':

@@ -31,24 +31,34 @@ export function Tour({
     if (open) setIndex(0)
   }, [open])
 
+  /*
+   * The product reflows underneath the tour (the prompt collapses, the drawer
+   * opens), so a rect measured once goes stale and the ring lands on empty
+   * space. Track it per frame while the tour is open instead.
+   */
   useLayoutEffect(() => {
     if (!open || !step) return
-    const measure = () => {
+    let frame = 0
+    const tick = () => {
       const el = document.querySelector(step.target)
       if (!el) {
-        setRect(null)
-        return
+        setRect((prev) => (prev === null ? prev : null))
+      } else {
+        const r = el.getBoundingClientRect()
+        setRect((prev) =>
+          prev &&
+          Math.abs(prev.top - r.top) < 0.5 &&
+          Math.abs(prev.left - r.left) < 0.5 &&
+          Math.abs(prev.width - r.width) < 0.5 &&
+          Math.abs(prev.height - r.height) < 0.5
+            ? prev
+            : { top: r.top, left: r.left, width: r.width, height: r.height },
+        )
       }
-      const r = el.getBoundingClientRect()
-      setRect({ top: r.top, left: r.left, width: r.width, height: r.height })
+      frame = requestAnimationFrame(tick)
     }
-    measure()
-    window.addEventListener('resize', measure)
-    window.addEventListener('scroll', measure, true)
-    return () => {
-      window.removeEventListener('resize', measure)
-      window.removeEventListener('scroll', measure, true)
-    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
   }, [open, step])
 
   useEffect(() => {

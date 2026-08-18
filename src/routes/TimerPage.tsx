@@ -162,6 +162,22 @@ export function TimerPage() {
   })
   const [capacityNoteOpen, setCapacityNoteOpen] = useState(false)
 
+  /*
+   * The tour is orientation for a state the user has not acted on yet. The
+   * moment they answer the prompt it is stale — and its Escape/Enter handlers
+   * would fight the drawer's. Close it as soon as the demo moves on.
+   */
+  const orienting = state.phase === 'running' || state.phase === 'asking'
+  useEffect(() => {
+    if (orienting || !tourOpen) return
+    setTourOpen(false)
+    try {
+      sessionStorage.setItem('make-room-tour-seen', '1')
+    } catch {
+      /* private mode — tour simply reopens next load */
+    }
+  }, [orienting, tourOpen])
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const t = e.target

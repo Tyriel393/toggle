@@ -82,14 +82,14 @@ When the intelligence layer does come up empty, its self-diagnosis is wrong: the
 
 **Why it was downgraded:** the verifier caught real overreach. "Every intelligence surface joins on the task" is false — Projects-table columns plausibly join at *project* grain, and Utilization/Profitability join on working hours and rates. The 28s entry did reach Reports. Frictionless capture is also Toggl Track's actual moat, so entry-first/categorise-later is a defensible philosophy. What survives: the *misdiagnosing remedy copy*, and the absence of any surface reconciling unattached time.
 
-### 1.6 First-run reporting reads as zero
+### 1.6 Sub-minute first-run reporting reads as zero
 `obs 13, 14, 16, 50, 51` · **downgraded from major** · *found independently by four lenses*
 
-Stopping your first timer fires a spotlight — "See where your time goes" — that dims the UI and routes you to Reports. Reports answers **"Logged time 0h / Avg daily 0h."** The Timer list header reads **"Today — 0h"** directly above a **"28s"** row. The new Logged week-strip renders as a **100%-filled bar labelled "0h."**
+Stopping a sub-minute first timer can produce **"Logged time 0h / Avg daily 0h."** The Timer list header reads **"Today — 0h"** directly above a seconds-level row, while the Logged week-strip can render as a **100%-filled bar labelled "0h."**
 
-**Why it was downgraded to minor:** the same page shows the 28s datum twice — a visible chart bar and a breakdown row — so "reads as zero on every surface" was overstated, and "user concludes their data was lost" requires missing three adjacent truthful displays. Everything ≥1h renders fine, so this is a sub-one-hour state users exit permanently within a day.
+**Fresh-account correction:** the original analysis still overstated the range. At **1m 5s**, Reports correctly rendered `1m`, Average daily hours `1m`, and the breakdown `1m 5s`. The defect is therefore limited to the **first minute**, not the first hour. It should be treated as polish rather than a meaningful W0-retention problem.
 
-**What survives and still matters:** the full-at-zero bar is wrong under *any* formatting policy, and the seconds-scaled axis on the same page proves hour-flooring is an intra-page inconsistency rather than a considered policy. It happens at the guaranteed-exposure moment, on a product whose pitch is *"real data vs spreadsheet guesses."*
+**What survives:** the full-at-zero bar is wrong under *any* formatting policy, and zero expressed as `0h` beside seconds-level data is inconsistent. The business impact is narrow because realistic first sessions normally exceed one minute.
 
 ---
 
@@ -143,7 +143,7 @@ Real, verified, lower stakes. Full text in the workflow output.
 
 Stated plainly, because a designer reviewing it should know the boundaries:
 
-- **Single user, single day, 28 seconds of data, one project, one task.** Every "reads as zero" finding is a low-data claim — ≥1h renders fine. Variance, Time status, forecasts, and the Workload / Utilization / Profitability reports **never rendered populated.**
+- **Single user, single day, one project, one task.** Fresh-account validation later proved duration rendering is correct from roughly one minute onward. Variance, Time status, forecasts, and the Workload / Utilization / Profitability reports **never rendered populated.**
 - **Premium trial**, so the Free boundary — where "focus mode" is actually sold — was never observed. **Time off is paywalled even on trial; Approvals never exercised.**
 - **No second member**: assignee≠self, the "No assignee" lane, roles and permissions, and the fix for the Dashboard empty state (setting a member cost rate) are all untested.
 - **Dark theme only, desktop only, one viewport.** No mobile — despite "tap to use" and a mobile-app banner.
@@ -159,7 +159,7 @@ Stated plainly, because a designer reviewing it should know the boundaries:
 For the tie-breaker's benefit, the three claims I hold most loosely:
 
 1. **The entry↔task join.** I initially called it a blocker; the verifier downgraded it and was right to. Frictionless capture is Toggl Track's moat, and "categorise later" is a legitimate philosophy, not laziness. What I still believe: the *misdiagnosing* Dashboard copy is indefensible.
-2. **The 0h/28s reporting.** Strong first-run smell, weak steady-state impact. A designer might reasonably call this polish, not minor.
+2. **The 0h/seconds reporting.** Fresh-account measurement confirms this is only a sub-minute edge case. It is polish, not a meaningful retention finding.
 3. **Focus mode's absence.** If it's a soft-launch held out of nav deliberately, the discoverability half of the criticism evaporates — the "tap to use" copy slip supports an in-flight-rollout reading. **The silent-failure half has no defence** regardless of intent.
 
 ---

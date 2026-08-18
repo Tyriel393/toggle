@@ -121,3 +121,55 @@ For a first-time user, the moment immediately after their first-ever action is a
 - Mobile signup and first-run
 - The free-plan boundary (this account is on a 31-day Premium trial from signup)
 - Multi-client / multi-project freelancer context-switching
+
+---
+
+## 6. Capture-flow verification (2026-08-18, second account)
+
+Run to settle two claims that the direction depended on. Both had been asserted without evidence.
+
+### `+ Create a project` from the timer — **opens the full New Project modal**
+
+Sequence: type description → click `Project` chip → picker lists existing projects under `NO CLIENT` with `+ Create a project` → **the full 480px New Project modal opens**, containing:
+
+`NAME` · `Draft` toggle · `CLIENT` · `PRIVACY` (Private / Shared) ★ · `INVITE MEMBERS` · `More options` · `Create project`
+
+**Two of those fields — Privacy and Invite Members — are collaboration controls with no meaning for a solo freelancer**, presented at the moment they are trying to start tracking.
+
+### …but the flow chains correctly — this is the part earlier claims got wrong
+
+After `Create project`:
+
+- the project is **created and attached to the pending entry** (chip turns the project's colour)
+- the typed description **survives intact**
+- the picker **auto-advances to the Task picker** (`Find or create a task` / `No tasks in {project}` / `+ Create task`)
+
+So the honest claim is **not** "you have to leave the timer" — context is preserved and the flow guides onward. The cost is a six-field modal, two fields of which are irrelevant to the persona.
+
+**This weakens the friction argument and strengthens the precision of any claim built on it.** Corrected accordingly.
+
+### No default-project setting exists — confirmed
+
+Full `Settings → Preferences` inventory:
+
+| Group | Settings |
+| --- | --- |
+| Default page | **Open on startup** → `My time` |
+| Time preferences | Account timezone |
+| Calendar | `Project color as planned time background` (on) |
+| Language | Display language — "Toggl 2.0 is multi-lingual" |
+| Time format | Time display (12-hour) · Date display (MM/DD/YYYY) · **Duration display format** · Start week on (Monday) |
+| Keyboard shortcuts | `Enable keyboard shortcuts` (on) |
+| Email notifications | **Email me when a timer runs over 8 hours** (on) · **Email me a daily brief every weekday morning** (on) |
+
+**There is no default-project option.** Nothing carries the onboarding project onto the first entry, and nothing lets a user set one.
+
+### Three incidental findings that matter more than the thing I was testing
+
+1. **`Duration display format` is user-configurable:** `Classic (47m 6s)` — default · `Improved (0:47:06)` · `Decimal (0.79 h)`. So the duration-format inconsistency documented elsewhere is partly a setting, not purely a bug. Note Toggl labels one option **"Improved"** — a self-judging name for a format choice.
+2. **`Email me a daily brief every weekday morning` is ON by default.** Toggl already ships a W0 re-engagement mechanism. Any proposal about "bringing the user back" must account for the fact that a daily email already exists and is enabled without asking.
+3. **`Email me when a timer runs over 8 hours` is ON by default** — forgotten-timer protection already exists, which is directly adjacent to the freelancer pain of "forgetting to track".
+
+### Also observed
+
+- Both projects — including the mandatory onboarding one — sit under **`NO CLIENT`**. The onboarding step that forces project creation does not capture a client, which is the object a multi-client freelancer actually organises by.

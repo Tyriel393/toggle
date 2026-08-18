@@ -73,7 +73,7 @@ Each item is an observation with the state that produced it. Severity and interp
 ## Reports (with 28s of data)
 
 50. Chart y-axis auto-scales to seconds (30s…2m 30s) — handles micro-data gracefully.
-51. **Same-page rounding conflict:** KPI row "Logged time 0h / Avg daily 0h" while the breakdown row shows "28s". Day header in Timer list: "0h" over a "28s" row. Everything ≥1h is fine; the first hour of a user's life on the product reads as zero.
+51. **Same-page rounding conflict, corrected by fresh-account measurement:** KPI row "Logged time 0h / Avg daily 0h" while the breakdown row shows "28s". Day header in Timer list: "0h" over a "28s" row. A virgin-account test showed that at **1m 5s**, Reports correctly renders `1m` and the row `1m 5s`; this is a sub-minute formatting edge case, not a first-hour problem.
 52. Breakdown table: MEMBER|TASK / PROJECT / CLIENT / LOGGED TIME / ESTIMATED TIME ⓘ / BILLABLE / AMOUNT / COST / BILLABLE % / `+` (add column). Estimate-vs-actual is a first-class report column.
 53. Notifications popover: Unread filter, gear, illustrated "You're all caught up", `MARK ALL AS READ`.
 

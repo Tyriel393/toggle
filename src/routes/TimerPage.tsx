@@ -197,7 +197,7 @@ function emitEvents(prev: DemoState, next: DemoState, action: DemoAction): void 
       break
     case 'restart':
     case 'set-scenario':
-      track('demo_reset', { scenario: next.scenario })
+      /* Demo chrome, not a product event — deliberately not instrumented. */
       break
     default:
       break
@@ -705,7 +705,7 @@ function DemoChrome({
             : 'text-fg-secondary hover:bg-bg-hover hover:text-fg',
         ].join(' ')}
       >
-        Events
+        Funnel
       </button>
       <button
         type="button"
@@ -720,34 +720,100 @@ function DemoChrome({
   )
 }
 
+const FUNNEL: readonly { event: string; label: string }[] = [
+  { event: 'estimate_prompt_shown', label: 'Prompt shown' },
+  { event: 'remaining_confirmed', label: 'Remaining confirmed' },
+  { event: 'conflict_detected', label: 'Conflict detected' },
+  { event: 'make_room_opened', label: 'Make room opened' },
+  { event: 'move_previewed', label: 'Move previewed' },
+  { event: 'move_approved', label: 'Move approved' },
+]
+
+const GUARDRAILS: readonly { event: string; label: string; note: string }[] = [
+  { event: 'move_undone', label: 'Move undone', note: 'regret — plan churn' },
+  { event: 'plan_kept', label: 'Plan kept', note: 'conflict accepted, not hidden' },
+  { event: 'week_fits', label: 'No conflict', note: 'correctly stayed quiet' },
+]
+
 /*
- * The funnel, live. Every interaction in the demo emits the event schema from
- * the measurement plan — this panel makes that visible without the console.
+ * What a PM would actually open: the funnel, not the event stream. Every step
+ * the user takes lands in it live — the same events a production build would
+ * send to Mixpanel or equivalent.
  */
 function EventsPanel() {
   const log = useSyncExternalStore(subscribeTrack, getTrackLog, getTrackLog)
+  const count = (name: string) => log.filter((e) => e.name === name).length
+  const top = count(FUNNEL[0].event)
+
   return (
     <div
-      className="fixed bottom-14 left-4 max-h-72 w-[380px] overflow-y-auto rounded-lg border border-line bg-bg p-2"
-      role="log"
-      aria-label="Analytics events"
+      className="fixed bottom-14 left-4 max-h-[420px] w-[360px] overflow-y-auto rounded-lg border border-line bg-bg p-3"
+      role="region"
+      aria-label="Analytics funnel"
     >
-      <p className="uppercase-label px-1 pb-1">Instrumentation — what production would send</p>
-      <ul className="space-y-0.5">
-        {[...log].reverse().map((event) => (
-          <li key={event.id} className="rounded-sm px-1 py-0.5 font-mono text-[11px] leading-4">
-            <span className="font-semibold text-fg">{event.name}</span>{' '}
-            <span className="text-fg-secondary">
-              {Object.entries(event.payload)
-                .map(([k, v]) => `${k}=${v === null ? '∅' : v}`)
-                .join(' ')}
-            </span>
-          </li>
-        ))}
-        {log.length === 0 ? (
-          <li className="px-1 py-0.5 text-[11px] text-fg-tertiary">No events yet.</li>
-        ) : null}
+      <p className="uppercase-label pb-0.5">Make room · activation funnel</p>
+      <p className="mb-2.5 text-[11px] leading-4 font-medium text-fg-secondary">
+        Emitted live as you use the prototype. In production this is Mixpanel or equivalent.
+      </p>
+
+      <ol className="space-y-1.5">
+        {FUNNEL.map((step, i) => {
+          const n = count(step.event)
+          const prev = i === 0 ? n : count(FUNNEL[i - 1].event)
+          const pct = top === 0 ? 0 : Math.round((n / top) * 100)
+          const dropped = i > 0 && prev > 0 && n < prev
+          return (
+            <li key={step.event}>
+              <div className="flex items-baseline justify-between gap-2">
+                <span
+                  className={[
+                    'truncate text-[12px] font-medium',
+                    n > 0 ? 'text-fg' : 'text-fg-tertiary',
+                  ].join(' ')}
+                >
+                  {step.label}
+                </span>
+                <span
+                  className={[
+                    'shrink-0 font-mono text-[11px] tabular-nums',
+                    dropped ? 'text-fg-error' : n > 0 ? 'text-fg-secondary' : 'text-fg-tertiary',
+                  ].join(' ')}
+                >
+                  {n}
+                  {i > 0 && top > 0 ? ` · ${pct}%` : ''}
+                </span>
+              </div>
+              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-bg-tertiary">
+                <div
+                  className={['h-full rounded-full transition-all', n > 0 ? 'bg-bg-accent' : ''].join(' ')}
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+
+      <p className="uppercase-label mt-3 pb-1">Guardrails</p>
+      <ul className="space-y-1">
+        {GUARDRAILS.map((g) => {
+          const n = count(g.event)
+          return (
+            <li key={g.event} className="flex items-baseline justify-between gap-2 text-[11px]">
+              <span className={n > 0 ? 'font-medium text-fg' : 'text-fg-tertiary'}>
+                {g.label}
+                <span className="ml-1 text-fg-tertiary">— {g.note}</span>
+              </span>
+              <span className="shrink-0 font-mono tabular-nums text-fg-secondary">{n}</span>
+            </li>
+          )
+        })}
       </ul>
+
+      <p className="mt-2.5 border-t border-line pt-2 text-[11px] leading-4 font-medium text-fg-secondary">
+        The measure that matters is not this funnel — it is whether eligible freelancers return on
+        three separate days in week one. This is the mechanism underneath it.
+      </p>
     </div>
   )
 }

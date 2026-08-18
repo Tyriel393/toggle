@@ -49,7 +49,6 @@ export function Sidebar() {
         type="button"
         className="flex h-16 w-full cursor-pointer items-center gap-2.5 py-2.5 pr-2 pl-4 hover:bg-bg-hover"
       >
-        <TogglMark />
         <span className="truncate text-[14px] font-semibold text-fg">
           Josip Gajsak393&apos;s o…
         </span>
@@ -116,13 +115,15 @@ export function Sidebar() {
   )
 }
 
+/* Rail order matches the live app: mark top, collapse mid, actions bottom. */
 export function Rail() {
   return (
-    <div className="flex w-12 shrink-0 flex-col items-center gap-4 border-r border-line bg-bg-secondary py-4">
+    <div className="flex w-12 shrink-0 flex-col items-center justify-between border-r border-line bg-bg-secondary py-5">
+      <TogglMark />
       <button type="button" aria-label="Toggle Sidebar" className="cursor-pointer text-fg-tertiary hover:text-fg">
         <Icon name="sidebarToggle" />
       </button>
-      <div className="mt-auto flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-4">
         <Avatar name="Josip Gajsak393" size={24} />
         <button type="button" aria-label="Notifications" className="cursor-pointer text-fg-tertiary hover:text-fg">
           <Icon name="bell" />

@@ -12,8 +12,9 @@
 > 1. Do you plan your week anywhere? (Calendar, notebook, tool, head?)
 > 2. What was the request, and roughly how long did it take?
 > 3. How did you decide whether to say yes?
-> 4. Did anything else you'd planned slip because of it?
-> 5. If it did — did you realise **at the time**, or only later?
+> 4. **At the moment you replied to the client — what did you actually check?** (Calendar? A tool? Nothing?)
+> 5. Did anything else you had planned slip because of it?
+> 6. If it did — did you realise **at the time**, or only later?
 > 6. Have you ever agreed to something and then found out you couldn't fit it?
 >
 > No right answers, just what actually happened.
@@ -42,6 +43,8 @@
 > - Would that have helped in the situation you described?
 > - Or would you have ignored it and worked late anyway?
 > - What would make it annoying?
+> - **What would you need to trust that warning?** (Deadlines? Priorities? Confidence in your own estimates?)
+> - Would knowing *which* client commitment was being displaced change what you told the client asking?
 
 ---
 
@@ -61,9 +64,9 @@ Do not count "yeah that's useful." Count these.
 
 - **"I don't plan, I just work off a list"** ← the most likely killer. The whole concept needs a plan to exist.
 - **"I just say yes and figure it out"** — no decision moment to support
-- **"I keep it in my head, I know what's on"** — they don't feel the problem
-- **"I'd ignore the warning"** — the intervention doesn't change behaviour
-- Fixed-price work only, so hours don't map to commitments
+- **"I keep it in my head"** — softer than it looks. Follow up: how often is the plan in your head wrong?
+- **"I would ignore it and work late anyway"** — note: this proves the *warning* is weak, not that the problem is absent. Follow up with: would knowing which commitment was displaced change what you told the client?
+- **"I don't estimate my work and wouldn't trust an hours-based warning"** ← the real killer. (Fixed-price work alone does NOT invalidate the idea — 4h of urgent work still displaces 4h of something, and unpaid overrun makes the cost worse.)
 
 ### The question that matters most
 

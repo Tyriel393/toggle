@@ -34,6 +34,21 @@ function steps(current: number): CoachStep[] {
 /* Always answers "what do I do next?" — for a new user and a cold evaluator alike. */
 function coachFor(state: DemoState, previewing: boolean): CoachContent {
   const base = { headline: 'Make room', tone: 'accent' as const }
+
+  /* Days 1–2 are before the moment: the week is planned and simply fits. */
+  if (state.weekDay < 3) {
+    return {
+      ...base,
+      headline: state.weekDay === 1 ? 'Monday — your week is set' : 'Tuesday — still on plan',
+      why:
+        state.weekDay === 1
+          ? 'Three client jobs, two with deadlines, each with an estimate. Every day fits inside your 8h. Nothing to do yet — Toggl is just tracking.'
+          : 'A second day tracked against the plan. Wednesday is full but still fits, so Toggl stays quiet.',
+      action: 'Press Day 3 in the demo bar — that is when a job runs long',
+      steps: steps(0),
+    }
+  }
+
   switch (state.phase) {
     case 'running':
       return {
@@ -266,13 +281,19 @@ export function TimerPage() {
       <PageContainer>
         <div className="mx-auto flex max-w-6xl gap-5 pt-1">
         <div className="min-w-0 flex-1 space-y-4">
+          <PremiseNote />
+
           <FeatureCoach content={coachFor(state, state.previewMove !== null)} />
 
-          <div data-tour="timer">
-            <TimerBar state={state} onStop={() => dispatch({ type: 'stop' })} onRestart={() => dispatch({ type: 'restart' })} />
-          </div>
+          {state.weekDay >= 3 ? (
+            <div data-tour="timer">
+              <TimerBar state={state} onStop={() => dispatch({ type: 'stop' })} onRestart={() => dispatch({ type: 'restart' })} />
+            </div>
+          ) : null}
 
-          {homepage && (state.phase === 'asking' || state.phase === 'custom' || state.phase === 'wrong-task') ? (
+          {homepage &&
+          state.weekDay >= 3 &&
+          (state.phase === 'asking' || state.phase === 'custom' || state.phase === 'wrong-task') ? (
             <div data-tour="prompt">
             <RemainingPrompt
               task={homepage}
@@ -346,7 +367,7 @@ export function TimerPage() {
             </div>
           ) : null}
 
-          <TodayList state={state} />
+          {state.weekDay >= 3 ? <TodayList state={state} /> : <EarlyWeekList day={state.weekDay === 1 ? 1 : 2} />}
 
           <div data-tour="week">
             <Card title="This week">
@@ -384,7 +405,7 @@ export function TimerPage() {
             state={{
               day: state.weekDay,
               weekPlanned: true,
-              trackedAgainstPlan: true,
+              trackedAgainstPlan: state.weekDay >= 2,
               collisionCaught:
                 state.phase === 'conflict' ||
                 state.phase === 'approved' ||
@@ -426,6 +447,36 @@ export function TimerPage() {
         onDay={(day) => dispatch({ type: 'set-day', day })}
       />
     </>
+  )
+}
+
+/*
+ * States the demo's premise, so nobody wonders why the account already has
+ * data: signup and setup are done, and week one starts here.
+ */
+function PremiseNote() {
+  const [open, setOpen] = useState(true)
+  if (!open) return null
+  return (
+    <div className="flex items-start gap-2.5 rounded-lg border border-line bg-bg-secondary px-3.5 py-2.5">
+      <span className="mt-px shrink-0 text-[12px]" aria-hidden="true">
+        📋
+      </span>
+      <p className="min-w-0 flex-1 text-[12.5px] leading-4 font-medium text-fg-secondary">
+        <strong className="text-fg">Where we are:</strong> you signed up on Monday, created your
+        clients and projects, and planned the week — all of it Toggl as it works today. This is your
+        first week using it. Use <strong className="text-fg">Day 1–5</strong> in the demo bar to walk
+        through it.
+      </p>
+      <button
+        type="button"
+        onClick={() => setOpen(false)}
+        aria-label="Dismiss"
+        className="shrink-0 cursor-pointer text-fg-tertiary hover:text-fg"
+      >
+        <Icon name="close" size={12} />
+      </button>
+    </div>
   )
 }
 
@@ -496,6 +547,25 @@ function TodayList({ state }: { state: DemoState }) {
         {calls ? (
           <EntryRow label={calls.label} client="Northstar" color={calls.color} duration={`${fmtClock(calls.mins * 60)}`} />
         ) : null}
+      </ul>
+    </Card>
+  )
+}
+
+/* Days 1–2: an ordinary tracked day. No prompt, because nothing has gone over. */
+function EarlyWeekList({ day }: { day: 1 | 2 }) {
+  const rows =
+    day === 1
+      ? [{ label: 'Northstar — Homepage revisions', client: 'Northstar', color: '#fa9200', duration: '4:10:00' },
+         { label: 'Northstar — calls & email', client: 'Northstar', color: '#fa9200', duration: '2:20:00' }]
+      : [{ label: 'Atlas — Final handoff', client: 'Atlas', color: '#5252d6', duration: '5:05:00' },
+         { label: 'Portfolio polish', client: 'Internal', color: '#6c6c7a', duration: '2:10:00' }]
+  return (
+    <Card title={`Today · ${day === 1 ? 'Monday' : 'Tuesday'}`}>
+      <ul className="divide-y divide-(--color-line-muted) pb-1">
+        {rows.map((r) => (
+          <EntryRow key={r.label} label={r.label} client={r.client} color={r.color} duration={r.duration} />
+        ))}
       </ul>
     </Card>
   )

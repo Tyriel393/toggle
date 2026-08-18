@@ -106,7 +106,7 @@ Lightweight. **Not** the six-field New Project modal.
 
 Demo input: **`Northstar Labs`**
 
-### Screen 5 — Stop, then Reports
+### Screen 5 — Stop, then Reports (Day 1 state)
 
 Entry completes already carrying valid context. Report shows:
 
@@ -114,7 +114,29 @@ Entry completes already carrying valid context. Report shows:
 Northstar Labs  ›  Website redesign  ›  Homepage concepts   1h 12m
 ```
 
-**The report is the hero.** The demo ends here, on a client name.
+### Screen 6 — Day 5 (the value beat)
+
+**Added after challenge: the brief defines W0 retention as "returns and gets value within their first week." A one-entry report is not value — the demo must show the week answered, not just the mechanism working.**
+
+A visible time-skip control (e.g. `Later that week ›` in demo chrome) advances to a populated Day-5 state:
+
+- Timer list shows entries across several days (seeded from mock data — some attributed to a second client, some `Not client work`)
+- Reports answers the selected intent for real:
+
+```
+This week · 18h 40m
+Northstar Labs      9h 15m
+Meridian Studio     5h 30m
+Not client work     3h 55m
+```
+
+**The causal line, for the Loom:** this report is only possible because entry one kept its context. The dash prevented on Monday is why Friday has an answer.
+
+**The demo ends here** — on the week explained, not on the first entry.
+
+On **"returns"**: a prototype cannot depict a user coming back. Toggl already ships the return vehicle — the weekday daily-brief email, on by default (verified in Preferences). Cite it in the rationale; build nothing.
+
+**Friction framing (for Loom + rationale):** the prompt adds one interaction; the friction removed is the six-field project modal at capture and the end-of-week reconstruction that costs memory the user no longer has.
 
 ---
 
@@ -221,7 +243,7 @@ Lead with the primary in the Loom. The other two belong in the written rationale
 1. **Prompt placement** — inline under the running entry (proposed), or right rail?
 2. **Dismiss rule** — silence per entry (proposed), or per session?
 3. **Client scope** — applies to the project (proposed, matches Toggl's model) or to the entry?
-4. **Does the demo include a second entry** to show compounding, or stay at one for focus?
+4. ~~Does the demo include a second entry?~~ **Resolved: yes — a Day-5 beat (Screen 6), because the brief's W0 definition requires showing value, not just mechanism.** Remaining sub-question: how the time-skip is presented (demo chrome button vs. date navigation).
 5. **Theme** — follow OS (proposed), or force dark to match your Loom recording?
 6. **Do we show the "before"** — a dash state — anywhere, or trust the sequence to carry it?
 

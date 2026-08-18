@@ -173,3 +173,33 @@ Full `Settings → Preferences` inventory:
 ### Also observed
 
 - Both projects — including the mandatory onboarding one — sit under **`NO CLIENT`**. The onboarding step that forces project creation does not capture a client, which is the object a multi-client freelancer actually organises by.
+
+---
+
+## 7. Goals capability check (2026-08-18) — decisive for direction
+
+`+ New goal` opens **Create a goal**:
+
+- Name (placeholder: "e.g. Billable hours, Deep work, Admin") + optional description
+- **LOGGED TO ⓘ: `+ Projects` · `+ Tasks` · `+ Tags` · `+ Clients` · `$ Billable`** — helper: "Anything logged on client or internal projects counts."
+- FOR: `At least ▾` · hours · **`every day / weekdays / every week / every month`**
+- UNTIL: optional end date
+- Constraint: **"Projects, tasks, tags, billable, and recurrence can't be changed after a goal is created."**
+
+**Conclusion: client-scoped time commitments already exist as a capability.** "At least 10h every week logged to Client X" is fully expressible today. No ★ premium marker observed on the modal or the Goals panel.
+
+**What does NOT exist (verified across this account's first run):**
+- Nothing in onboarding or first-run mentions Goals or client commitments
+- The Goals panel lives behind an unlabelled toggle (obs 19), with mobile copy ("tap to use")
+- The example goal steers to a **generic total** — "Work 5 hours every day" — not a per-client commitment
+- Goal scoping is **immutable after creation** — heavy for a correction path
+- And the capability is starved by the attribution gap: a client-scoped goal can count nothing while entries carry `PROJECT: —`
+
+## 8. Remaining verification answers
+
+- **Q4 retroactivity:** assigning a client to a project **regroups its historical entries** in Reports immediately (7m 23s entry, tracked pre-client, showed under "Acme Advisory" post-assignment). Client-on-project rewrites history — good for healing, a caveat for corrections.
+- **Q3 path:** Project page → `Choose client` → `+ Create client` → **inline name field + ↵** — lightweight, two clicks + typing. Toast: "Client created". This inline pattern is the exact template for the prototype's client ask.
+- **Q5 labels:** project picker groups by client with **`NO CLIENT`** headers; client-grouped Reports breakdown ("Client and task breakdown") labels clientless time **"Without client"**.
+- **Q7:** "View your reports" checklist item completes on **page visit** (`onboarding-v2-reports-viewed-seen` flips on navigation) — even when the report shown contains an unattributed entry. Checklist rewards navigation, not value.
+- **Timer list rows display the client** (`Passion Project · Acme Advisory`) once one exists.
+- **Dead-click after popover close: now observed 4×** — after closing any picker, the next click on another control does not register; the identical second click does. Reproducible enough to state as a product defect.

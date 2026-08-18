@@ -347,6 +347,7 @@
   --color-line-tertiary: rgb(var(--stroke-tertiary));
   --color-line-muted: rgb(var(--stroke-muted));
   --color-line-accent: rgb(var(--stroke-accent));
+  --color-line-accent-strong: rgb(var(--stroke-accent-hover));
   --color-line-success: rgb(var(--stroke-success));
   --color-line-warning: rgb(var(--stroke-warning));
   --color-line-error: rgb(var(--stroke-error));

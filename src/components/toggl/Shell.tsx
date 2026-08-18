@@ -28,23 +28,38 @@ const NAV: readonly { group: string; items: readonly NavItem[] }[] = [
   },
 ]
 
+/*
+ * Measured from the live app: 24px brand-magenta disc, dark power glyph, and a
+ * bordered "2.0" pill that overlaps the disc's lower edge and sits in front.
+ */
 function TogglMark() {
   return (
-    <span className="relative grid size-7 shrink-0 place-items-center rounded-full bg-bg-accent">
-      <svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true">
-        <path
-          fill="rgb(var(--foreground-inverted))"
-          d="M8 1a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0V2a1 1 0 0 1 1-1M4.2 3.3a1 1 0 0 1 .1 1.4A4.5 4.5 0 1 0 12.5 8a4.5 4.5 0 0 0-1.7-3.5 1 1 0 1 1 1.3-1.5A6.5 6.5 0 1 1 2.8 3.4a1 1 0 0 1 1.4-.1"
-        />
-      </svg>
-      <span className="absolute -bottom-1 text-[8px] font-bold text-fg-accent">2.0</span>
+    <span className="flex shrink-0 flex-col items-center">
+      <span className="-mb-2 p-1">
+        <svg
+          viewBox="0 0 24 24"
+          className="size-6 rounded-full"
+          style={{ backgroundColor: '#ec85fe', color: '#312537' }}
+          aria-label="Toggl"
+          role="img"
+        >
+          <path
+            fill="currentColor"
+            d="M5.5 12.3027C5.5 15.6957 8.60838 18.5 12 18.5C15.393 18.5 18.5007 15.695 18.5 12.302C18.5 9.47108 16.5 7 14 6.5V8.25C15.6532 8.89874 16.75 10.4191 16.75 12.3027C16.75 14.7594 14.5 16.75 12 16.75C9.5 16.75 7.25 14.7594 7.25 12.3027C7.25 10.4198 8.34478 8.89874 10 8.25V6.5C7.5 7 5.5 9.47108 5.5 12.3027Z"
+          />
+          <path fill="currentColor" d="M13 13V4H11V13H13Z" />
+        </svg>
+      </span>
+      <span className="relative z-10 inline-flex h-4 items-center rounded-lg border border-line-accent-strong bg-bg-muted px-[3px] text-[11px] leading-none font-semibold tracking-[-0.22px] text-fg-accent">
+        2.0
+      </span>
     </span>
   )
 }
 
 export function Sidebar() {
   return (
-    <aside className="flex w-[249px] shrink-0 flex-col border-r border-line bg-bg-secondary">
+    <aside className="flex w-[201px] shrink-0 flex-col bg-bg-tertiary">
       <button
         type="button"
         className="flex h-16 w-full cursor-pointer items-center gap-2.5 py-2.5 pr-2 pl-4 hover:bg-bg-hover"
@@ -118,7 +133,7 @@ export function Sidebar() {
 /* Rail order matches the live app: mark top, collapse mid, actions bottom. */
 export function Rail() {
   return (
-    <div className="flex w-12 shrink-0 flex-col items-center justify-between border-r border-line bg-bg-secondary py-5">
+    <div className="flex w-12 shrink-0 flex-col items-center justify-between bg-bg-tertiary py-4">
       <TogglMark />
       <button type="button" aria-label="Toggle Sidebar" className="cursor-pointer text-fg-tertiary hover:text-fg">
         <Icon name="sidebarToggle" />
@@ -174,11 +189,11 @@ export function SkipLink() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-full bg-bg-secondary">
+    <div className="flex h-full bg-bg-tertiary">
       <SkipLink />
       <Rail />
       <Sidebar />
-      <main id="main-content" tabIndex={-1} className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <main id="main-content" tabIndex={-1} className="flex min-w-0 flex-1 flex-col overflow-hidden bg-bg">
         {children}
       </main>
     </div>

@@ -30,7 +30,7 @@ export function ScopeToast({
   return (
     <div
       aria-live="polite"
-      className="pointer-events-none fixed inset-x-0 bottom-20 z-[75] flex justify-center px-4"
+      className="pointer-events-none fixed inset-x-0 bottom-24 z-[75] flex justify-center px-4"
     >
       {message ? (
         <div className="pointer-events-auto flex items-center gap-3 rounded-lg border border-line bg-bg px-4 py-2.5">

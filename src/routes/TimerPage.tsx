@@ -727,7 +727,7 @@ function StatusCard({
 function UndoToast({ state, onUndo }: { state: DemoState; onUndo: () => void }) {
   const task = state.plan.tasks.find((t) => t.id === state.appliedMove?.taskId)
   return (
-    <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-6 z-50 flex justify-center">
+    <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-24 z-50 flex justify-center">
       {state.phase === 'approved' && state.appliedMove && task ? (
         <div className="pointer-events-auto flex items-center gap-3 rounded-lg border border-line bg-bg px-4 py-3 shadow-none">
           <span className="text-[14px] font-medium text-fg">
@@ -807,7 +807,7 @@ function DemoChrome({
 
   return (
     <div
-      className="fixed bottom-4 left-4 z-30 flex items-center gap-1 rounded-full border border-line bg-bg px-2 py-1.5"
+      className="fixed bottom-4 left-1/2 z-30 flex max-w-[calc(100vw-2rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-1 rounded-full border border-line bg-bg px-2 py-1.5"
       role="group"
       aria-label="Demo controls"
     >
@@ -944,7 +944,7 @@ function EventsPanel() {
 
   return (
     <div
-      className="fixed bottom-14 left-4 max-h-[520px] w-[380px] overflow-y-auto rounded-lg border border-line bg-bg p-3.5"
+      className="fixed bottom-16 left-1/2 max-h-[520px] w-[380px] -translate-x-1/2 overflow-y-auto rounded-lg border border-line bg-bg p-3.5"
       role="region"
       aria-label="Measurement plan"
     >

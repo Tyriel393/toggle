@@ -379,7 +379,7 @@ export function TimerPage() {
           </div>
         </div>
 
-        <aside className="hidden w-[300px] shrink-0 lg:block">
+        <aside className="hidden w-[300px] shrink-0 xl:block">
           <WeekOnePanel
             state={{
               day: state.weekDay,

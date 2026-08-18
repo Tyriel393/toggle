@@ -106,7 +106,9 @@ export function WeekStrip({
 
   return (
     <div>
-      <div className="grid grid-cols-5 gap-2">
+      {/* Columns never crush below a readable width — the board scrolls instead. */}
+      <div className="overflow-x-auto pb-1">
+      <div className="grid grid-cols-5 gap-2 min-w-[560px]">
         {columns.map(({ day, cards, solid, over }) => {
           const isToday = day === plan.today
           const fill = Math.min(solid / plan.capacityMinsPerDay, 1) * 100
@@ -170,6 +172,7 @@ export function WeekStrip({
             </section>
           )
         })}
+      </div>
       </div>
 
       {!compact ? (

@@ -142,14 +142,24 @@ export function TimerPage() {
     setState(next)
   }, [])
 
+  const coldOpenSent = useRef(false)
   useEffect(() => {
+    if (coldOpenSent.current) return
+    coldOpenSent.current = true
     track('estimate_prompt_shown', { trigger: 'cold_open', estimate_mins: 180, logged_mins: 192 })
   }, [])
 
   const evaluation = useMemo(() => currentEvaluation(state), [state])
   const homepage = state.plan.tasks.find((t) => t.id === 'homepage')
   const remainingMins = homepage?.confirmedRemainingMins ?? 0
-  const [tourOpen, setTourOpen] = useState(true)
+  /* Auto-opens once per session; the demo pill replays it on demand. */
+  const [tourOpen, setTourOpen] = useState(() => {
+    try {
+      return sessionStorage.getItem('make-room-tour-seen') === null
+    } catch {
+      return true
+    }
+  })
   const [capacityNoteOpen, setCapacityNoteOpen] = useState(false)
 
   useEffect(() => {
@@ -313,7 +323,18 @@ export function TimerPage() {
 
       <UndoToast state={state} onUndo={() => dispatch({ type: 'undo' })} />
 
-      <Tour steps={TOUR_STEPS} open={tourOpen} onClose={() => setTourOpen(false)} />
+      <Tour
+        steps={TOUR_STEPS}
+        open={tourOpen}
+        onClose={() => {
+          setTourOpen(false)
+          try {
+            sessionStorage.setItem('make-room-tour-seen', '1')
+          } catch {
+            /* private mode — tour simply reopens next load */
+          }
+        }}
+      />
 
       <SmallScreenNotice />
 
@@ -540,10 +561,16 @@ function DemoChrome({
         Tour
       </button>
       <Link
+        to="/onboarding"
+        className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
+      >
+        Onboarding
+      </Link>
+      <Link
         to="/setup"
         className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
       >
-        Setup
+        Tasks
       </Link>
       <button
         type="button"

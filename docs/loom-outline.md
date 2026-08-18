@@ -115,9 +115,11 @@ Only if the recording is under time:
 
 Say roughly:
 
-> Week zero is product tenure, not career tenure. A Freelancer joining Toggl already has clients and deadlines. Toggl can import an existing task list from text or a screenshot.
+> I treated week zero as a hard filter, not a theme. That ruled out ideas that need weeks of history—profitability trends, learning from several comparable estimates, or scope-creep evidence accumulated over a long engagement.
 
-> So the first-week sequence is credible: bring in the week on day one, track on day two, discover an overrun on day three, and protect a commitment while there is still time to act.
+> The reframe that unlocked this was that week zero is product tenure, not career tenure. A Freelancer joining Toggl already has clients and deadlines, and Toggl can import the current task list from text or a screenshot. This solution needs the current week, not historical behavior: bring in the week on day one, track on day two, discover an overrun on day three, and protect a commitment while there is still time to act.
+
+> I went deep on where Toggl could create value that early. The strongest moment was not another report after data accumulates; it was the first time real tracked work proves that the current plan is no longer true.
 
 > The reason to return is not the warning itself. Continued tracking now keeps the remaining plan honest. One avoided near-miss demonstrates a value that grows every time the user tracks again.
 
@@ -133,9 +135,9 @@ Avoid claiming that every new Freelancer qualifies. Immediately acknowledge the 
 
 Say roughly:
 
-> I deliberately kept the scope to one handoff: actual work changes the plan, and the user decides what moves.
+> I deliberately kept the scope to one handoff: actual work changes the plan, and the user decides what moves. The W0 constraint is why I use current-week dates, estimates and actuals rather than a model that needs historical patterns.
 
-> I left out onboarding redesign, invoicing, mobile, team workflows, and autonomous AI scheduling. I also rejected the retrospective “review and categorize your day” direction. This acts before a second promise breaks.
+> I left out onboarding redesign, invoicing, mobile, team workflows, profitability trends and autonomous AI scheduling. I also rejected the retrospective “review and categorize your day” direction. Those either delay value, broaden the setup, or act after context is lost. This acts before a second promise breaks.
 
 > The key trade-off is friction. Asking a question after timer stop can become a nag. That is why it is non-blocking, appears only when an unfinished task reaches its estimate, supports Done, Not sure, and wrong-task paths, and does not repeat without meaningful new activity.
 
@@ -157,9 +159,17 @@ Say roughly:
 
 > The W0 outcome is whether eligible exposed users return for meaningful tracking or planning on a later day in their first week, compared with a matched eligible control.
 
+> Every new user experiences this during the Premium trial. If Make room prevents a real commitment failure, advanced planning has demonstrated why it is worth paying for before the trial ends. Trial-to-Premium conversion is a secondary business outcome—not a substitute for delivered W0 value.
+
 > Guardrails are dismissals, selecting Done simply to silence the prompt, immediate undo, work pushed past deadlines, and increased planned overtime. I would kill or reframe the concept if the eligible cohort is too small, remaining effort is rarely confirmed, or it resolves conflicts without improving first-week return.
 
 Do not list every supporting metric from `plan.md`.
+
+### The W0 argument in one answer
+
+Use this if the evaluator challenges the first-week fit directly:
+
+> I did not choose a problem and then attach W0 language to it. I used W0 to eliminate problems whose payoff needs history. Make room can create value from one imported week and one overrun: it helps the user prevent a current commitment from becoming impossible, then gives continued tracking a new job—keeping the rest of the week realistic.
 
 ---
 
@@ -222,4 +232,3 @@ Never cut:
 - prioritization and deliberate omissions;
 - one value metric, one W0 outcome, and kill criteria;
 - where you overrode AI.
-

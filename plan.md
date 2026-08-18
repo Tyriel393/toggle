@@ -282,4 +282,22 @@ Keeping `originalEstimateMins` untouched and `confirmedRemainingMins` separate *
 - [x] D2 Pushed 92e39e3; deploy verification in progress
 - [x] D3 All P0 + P1 states walked locally via scripted DOM checks (golden path, undo retains remainder, fits, no-safe-move, overtime, done, wrong-task, defer, custom, Escape)
 
-*plan.md revision 2 approved — executing.*
+*plan.md revision 2 approved — executed.*
+
+**Phase E — enhancement round (approved separately)**
+- [x] E1 Keyboard layer: prompt `D / 1 / 2 / 3 / C / W / N`, drawer `P / Enter / K / Esc`, timer `S`, toast `Ctrl+Z` — with Toggl-style kbd hints (aria-hidden; the button text is the accessible control)
+- [x] E2 Instrumentation stub: `src/lib/track.ts` + `emitEvents` — the full funnel (`estimate_prompt_shown → remaining_confirmed → conflict_detected/week_fits → make_room_opened → move_previewed → move_approved/undone → plan_kept`) emitted to console + a live Events panel in the demo pill
+- [x] E3 Premium ★ on the Make room header (ask = free, capacity intelligence = Premium, consistent with Toggl's existing ★ fence)
+- [x] E4 Light-theme + resize pass: pill dropped to z-30 (drawer wins at narrow widths), kbd bumped to fg-secondary, no horizontal scroll at 1024/800
+
+**Adversarial review (20-agent workflow): 16 findings, 10 confirmed, all fixed**
+- [x] Focus restore was dead code on every path → replaced with focus handoff (Review button autofocus on close; verified focus lands on `Review` after Escape)
+- [x] Unstable `onClose` re-ran the drawer effect every render → routed through ref, deps `[open]`
+- [x] Held Enter could preview *and* approve in one keystroke → key-repeat guards everywhere + single autoFocus (footer Preview; Keep/Accept when no recommendation)
+- [x] Two autoFocus buttons per commit / no focus in no-safe-move → single-autofocus policy
+- [x] IME composition Enter submitted the custom input → `isComposing` guard
+- [x] Approving a risky move hid a still-broken week behind a success toast → honesty banner: "Moved — but Wednesday is still 2h over."
+- [x] A commitment due *on* the overloaded day was never flagged at-risk → same-day check first in `findAtRisk`
+- [x] "Atlas — Final handoff" name embedded the client → task renamed `Final handoff`, `taskLabel()` prefixes client where context needs it
+- [x] White 10px labels on the orange project measured 2.29:1 → luminance-based label color (black on light blocks, 9.18:1)
+- [x] Running timer could tick past the hardcoded stopped value → tick capped at 3:12:04

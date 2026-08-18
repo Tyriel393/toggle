@@ -12,8 +12,27 @@ Vite + React + TypeScript + Tailwind v4. Deployed on Vercel.
 
 ## The demo
 
-The deployed root opens at `/calendar` with the estimate-reached prompt already visible. The pill
-bottom-left restarts the demo (to watch the timer-stop trigger) and switches scenarios:
+The deployed root opens at `/calendar` with a **3-step guided tour** explaining the scenario, and
+the estimate-reached prompt already visible behind it. The pill bottom-left has `Tour` (replay),
+`Setup` (the week-one setup step), `Restart`, scenario switching, `Events`, and a theme toggle.
+
+**Keyboard:** `D` done · `1`/`2`/`3` = 30m/1h/2h left · `C` custom · `W` wrong task · `N` not sure ·
+`P` preview · `Enter` approve · `K` keep plan · `Esc` acknowledge · `S` stop timer · `Ctrl+Z` undo.
+The whole flow is mouse-free.
+
+**Events panel** streams the analytics funnel the measurement plan specifies
+(`estimate_prompt_shown → remaining_confirmed → conflict_detected → make_room_opened →
+move_previewed → move_approved/undone → plan_kept`).
+
+**`/setup`** is the week-one setup step — it asks for dates and estimates *framed by what they buy
+you this week*, which is the product answer to the concept's biggest risk (does a new user have
+enough dated, estimated work to reach the trigger?).
+
+**Mobile:** below 768px the prototype shows a notice mirroring Toggl 2.0's own
+*"works better on bigger screens"* gate — verified live in the real product. See
+`docs/integration-map.md` §2 for the ask-on-phone / replan-on-desktop split.
+
+Scenarios:
 
 | Scenario | What it shows |
 | --- | --- |

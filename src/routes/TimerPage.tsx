@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { Link } from 'react-router-dom'
 import {
   currentEvaluation,
   demoReducer,
@@ -18,6 +19,25 @@ import { Icon } from '@/components/toggl/Icon'
 import { RemainingPrompt } from '@/components/toggl/RemainingPrompt'
 import { MakeRoomDrawer } from '@/components/toggl/MakeRoomDrawer'
 import { WeekStrip } from '@/components/toggl/WeekStrip'
+import { Tour, type TourStep } from '@/components/toggl/Tour'
+
+const TOUR_STEPS: readonly TourStep[] = [
+  {
+    target: '[data-tour="timer"]',
+    title: "You're a freelancer, mid-week.",
+    body: 'Three clients on the go. You estimated Homepage revisions at 3h — the timer just passed it, and the job still is not done.',
+  },
+  {
+    target: '[data-tour="prompt"]',
+    title: "Toggl asks what's left.",
+    body: 'An overrun is history — it cannot tell Toggl how much work remains. Maybe you are done and forgot to stop. So Toggl asks, and the answer takes one tap or one keystroke.',
+  },
+  {
+    target: '[data-tour="week"]',
+    title: 'Your week is the thing at risk.',
+    body: 'Those extra hours have to come from somewhere. Say how much is left and Toggl works out whether the week still fits — and which client deadline it would cost you.',
+  },
+]
 
 const RUNNING_BASE_SECONDS = 3 * 3600 + 11 * 60 + 42
 
@@ -129,6 +149,8 @@ export function TimerPage() {
   const evaluation = useMemo(() => currentEvaluation(state), [state])
   const homepage = state.plan.tasks.find((t) => t.id === 'homepage')
   const remainingMins = homepage?.confirmedRemainingMins ?? 0
+  const [tourOpen, setTourOpen] = useState(true)
+  const [capacityNoteOpen, setCapacityNoteOpen] = useState(false)
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -164,9 +186,12 @@ export function TimerPage() {
       />
       <PageContainer>
         <div className="mx-auto max-w-3xl space-y-4 pt-1">
-          <TimerBar state={state} onStop={() => dispatch({ type: 'stop' })} onRestart={() => dispatch({ type: 'restart' })} />
+          <div data-tour="timer">
+            <TimerBar state={state} onStop={() => dispatch({ type: 'stop' })} onRestart={() => dispatch({ type: 'restart' })} />
+          </div>
 
           {homepage && (state.phase === 'asking' || state.phase === 'custom' || state.phase === 'wrong-task') ? (
+            <div data-tour="prompt">
             <RemainingPrompt
               task={homepage}
               mode={state.phase}
@@ -179,6 +204,7 @@ export function TimerPage() {
               onOpenCustom={() => dispatch({ type: 'open-custom' })}
               onBackToAsk={() => dispatch({ type: 'back-to-ask' })}
             />
+            </div>
           ) : null}
 
           {state.phase === 'fits' && homepage ? (
@@ -240,16 +266,35 @@ export function TimerPage() {
 
           <TodayList state={state} />
 
-          <Card title="This week">
-            <div className="pb-2">
-              <WeekStrip
-                plan={state.plan}
-                evaluation={evaluation}
-                previewMove={state.previewMove}
-                atRiskTaskId={state.phase === 'conflict' ? (evaluation.atRisk?.task.id ?? null) : null}
-              />
-            </div>
-          </Card>
+          <div data-tour="week">
+            <Card title="This week">
+              <div className="pb-2">
+                <WeekStrip
+                  plan={state.plan}
+                  evaluation={evaluation}
+                  previewMove={state.previewMove}
+                  atRiskTaskId={state.phase === 'conflict' ? (evaluation.atRisk?.task.id ?? null) : null}
+                  onEditCapacity={() => setCapacityNoteOpen((v) => !v)}
+                />
+                {capacityNoteOpen ? (
+                  <div className="mt-2 rounded-lg border border-line bg-bg-secondary px-3.5 py-2.5">
+                    <p className="text-[13px] font-medium text-fg">
+                      8h/day is Toggl&apos;s default — your working hours are not set.
+                    </p>
+                    <p className="mt-0.5 text-[12px] leading-4 font-medium text-fg-secondary">
+                      Verified in the live product: the Members table shows Working hours as{' '}
+                      <code className="font-mono">-</code> while Workload still reports a 40h week.
+                      Time off and connected calendar events reduce it further. Make room states the
+                      source of every capacity number so the arithmetic can be argued with.
+                    </p>
+                    <Button variant="secondary" size="sm" className="mt-2" onClick={() => setCapacityNoteOpen(false)}>
+                      Got it
+                    </Button>
+                  </div>
+                ) : null}
+              </div>
+            </Card>
+          </div>
         </div>
       </PageContainer>
 
@@ -268,10 +313,15 @@ export function TimerPage() {
 
       <UndoToast state={state} onUndo={() => dispatch({ type: 'undo' })} />
 
+      <Tour steps={TOUR_STEPS} open={tourOpen} onClose={() => setTourOpen(false)} />
+
+      <SmallScreenNotice />
+
       <DemoChrome
         scenario={state.scenario}
         onRestart={() => dispatch({ type: 'restart' })}
         onScenario={(scenario) => dispatch({ type: 'set-scenario', scenario })}
+        onTour={() => setTourOpen(true)}
       />
     </>
   )
@@ -420,14 +470,43 @@ function UndoToast({ state, onUndo }: { state: DemoState; onUndo: () => void }) 
 
 type ThemeChoice = 'system' | 'light' | 'dark'
 
+/*
+ * Toggl 2.0 itself gates small screens ("Toggl 2.0 works better on bigger
+ * screens" — verified live). We mirror that rather than invent a mobile
+ * layout the real product does not have, and name the honest split.
+ */
+function SmallScreenNotice() {
+  return (
+    <div className="fixed inset-0 z-[70] hidden place-items-center bg-bg p-6 text-center max-md:grid">
+      <div className="max-w-sm">
+        <p className="text-[18px] leading-6 font-semibold text-fg">
+          Make room needs a bigger screen
+        </p>
+        <p className="mt-2 text-[14px] leading-5 font-medium text-fg-secondary">
+          Toggl 2.0 shows the same notice below this width — it is desktop-first by its own
+          admission, so this prototype matches it rather than inventing a layout the product does
+          not have.
+        </p>
+        <p className="mt-3 text-[13px] leading-5 font-medium text-fg-secondary">
+          The honest split: the <strong>question</strong> — done, or more time? — belongs on a phone,
+          where timers actually get stopped, as a notification with those answers as actions. The{' '}
+          <strong>replan</strong> is a week grid and a trade-off, and that is desktop work.
+        </p>
+      </div>
+    </div>
+  )
+}
+
 function DemoChrome({
   scenario,
   onRestart,
   onScenario,
+  onTour,
 }: {
   scenario: Scenario
   onRestart: () => void
   onScenario: (scenario: Scenario) => void
+  onTour: () => void
 }) {
   const [theme, setTheme] = useState<ThemeChoice>('system')
   const [showEvents, setShowEvents] = useState(false)
@@ -453,6 +532,19 @@ function DemoChrome({
       <span className="px-1.5 text-[11px] font-semibold tracking-[0.275px] text-fg-tertiary uppercase">
         Demo
       </span>
+      <button
+        type="button"
+        onClick={onTour}
+        className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
+      >
+        Tour
+      </button>
+      <Link
+        to="/setup"
+        className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
+      >
+        Setup
+      </Link>
       <button
         type="button"
         onClick={onRestart}

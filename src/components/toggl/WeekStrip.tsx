@@ -35,12 +35,14 @@ export function WeekStrip({
   previewMove,
   atRiskTaskId,
   compact = false,
+  onEditCapacity,
 }: {
   plan: WeekPlan
   evaluation: Evaluation
   previewMove?: MoveIntent | null
   atRiskTaskId?: string | null
   compact?: boolean
+  onEditCapacity?: () => void
 }) {
   const hourPx = compact ? 13 : 17
   const capacityPx = (plan.capacityMinsPerDay / 60) * hourPx
@@ -170,7 +172,14 @@ export function WeekStrip({
           <LegendDot color="#5252d6" label="Atlas" />
           <LegendDot color="#6c6c7a" label="Internal" />
           <span className="ml-auto text-fg-tertiary">
-            Dashed line = {fmtMins(plan.capacityMinsPerDay)} capacity
+            Dashed line = {fmtMins(plan.capacityMinsPerDay)}/day
+            <button
+              type="button"
+              onClick={onEditCapacity}
+              className="ml-1.5 cursor-pointer underline underline-offset-2 hover:text-fg"
+            >
+              from your working hours
+            </button>
           </span>
         </div>
       ) : null}

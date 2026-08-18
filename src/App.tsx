@@ -3,6 +3,7 @@ import { AppShell } from '@/components/toggl/Shell'
 import { KitPage } from '@/routes/KitPage'
 import { StubPage } from '@/routes/StubPage'
 import { TimerPage } from '@/routes/TimerPage'
+import { SetupPage } from '@/routes/SetupPage'
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/calendar" replace />} />
           <Route path="/kit" element={<KitPage />} />
           <Route path="/calendar" element={<TimerPage />} />
+          <Route path="/setup" element={<SetupPage />} />
           <Route path="/reports" element={<StubPage title="Reports" />} />
           <Route path="/projects" element={<StubPage title="Projects" />} />
           <Route path="/tasks" element={<StubPage title="Tasks" />} />

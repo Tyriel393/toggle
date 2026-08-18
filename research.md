@@ -482,12 +482,117 @@ For both personas, retention should remain an outcome metric rather than the onl
 9. Whether users who choose “See where time goes” actually represent the brief's Freelancer segment.
 10. Firsthand qualitative evidence from a real embedded Individual Contributor using Toggl 2.0.
 
-## 12. Research interpretation for review
+## 12. Attention fragmentation and app-usage intelligence
+
+This territory was added after a public comment claimed that an app-usage report exposed how repeated “quick checks” of email and Slack were consuming focus time. The exact comment is **not reliable validation**: it had one upvote, the account is suspended, and another commenter explicitly suspected AI-generated promotion. It is recorded only as the trigger for further research, not as evidence of demand.
+
+### 12.1 What Toggl already records
+
+Toggl Track already has the raw data required to observe attention changes:
+
+- Its desktop Timeline can record every website and program viewed for more than 10 seconds.
+- The web Timer can display the resulting activity in 15-minute increments for the last seven days.
+- The activity data is account-specific and not available to workspace administrators.
+- Recording is opt-in and requires the desktop app.
+- Toggl's documentation says Timeline is unavailable on signup day and becomes available on the second day.
+- Toggl currently frames Timeline primarily as a memory aid for filling gaps in time entries.
+
+This matters because the first usable activity data naturally appears inside Week 0. The current product has **observed computer activity**, while normal time entries represent the user's **declared work intent**.
+
+### 12.2 The verified product seam
+
+Toggl's own June 2026 article treats context switching as a serious productivity problem and recommends detecting it through proxies in normal time-entry reports:
+
+- average work-session length;
+- number of entries per day;
+- number of projects touched;
+- prevalence of short entries.
+
+The same article recommends automated activity capture, but the product documentation describes that activity mainly as a way to reconstruct missing logs. No inspected Toggl 2.0 or Toggl Track surface was found that compares a declared work block with the app and website switches occurring inside that block.
+
+The defensible gap is therefore not “Toggl cannot track applications.” It can. The narrower gap is:
+
+> Toggl captures both intended work and observed computer activity, but currently uses the latter mainly to repair the record rather than explain how attention behaved inside the work the user intentionally tracked.
+
+This remains **partly unverified in the signed-in product** because activity recording was not enabled and populated on the test account. Official Toggl documentation verifies the capture capability and intended use; the absence of a focus-fragmentation insight should be confirmed with two days of real desktop activity before planning.
+
+### 12.3 Signals from other products
+
+The competitor landscape demonstrates that users can receive more than a ranked list of applications:
+
+- **Monitask** reports applications and websites used, but its primary framing is employee monitoring, including manager visibility, activity levels, and optional screenshots. That framing is poorly matched to a private individual experience.
+- **RescueTime** separates Focus Work, Other Work, Neutral, Personal, and Distracting activity; reports both duration and shifts into distractions; and can turn the finding into a Focus Session or alert. It explicitly warns that productivity classification is contextual and user-editable.
+- **Rize** markets focus time, distraction frequency, rapid app-switch detection, and daily/weekly trends. It connects observed fragmentation to blocking or notification actions.
+- **ActivityWatch** discussions show demand for private/local activity data, but also requests for stronger context-switch insight and complaints that raw timelines or automatic classifications can become tedious, inaccurate, or guilt-inducing.
+
+The differentiator for Toggl is not richer surveillance. It is the potential to interpret private activity **inside an intentional task, project, or client timer**—context that passive trackers often cannot infer reliably.
+
+### 12.4 Repeated user-language patterns
+
+Public discussions are anecdotal and include significant self-promotion, but several recurring needs appear across unrelated threads:
+
+1. **The trigger is the hard part.** People forget to start, stop, or change manual timers exactly when their attention moves.
+2. **Small switches are underestimated.** Email, Slack, browser tabs, and “quick checks” feel negligible individually but fragment the remembered work block.
+3. **Raw activity is insufficient.** Users criticize long timelines, lists of windows, and generic productivity scores that do not tell them what to change.
+4. **Classification is contextual.** Slack, email, YouTube, and browsers may be necessary work in one task and distraction in another.
+5. **Judgment creates abandonment.** Productivity systems that present a score or backlog as personal failure can become “guilt trackers.” Neutral language and user control are essential.
+6. **Privacy is part of the value proposition.** Individual users prefer local or private data and react negatively to manager-facing screenshots, activity percentages, or opaque monitoring.
+
+### 12.5 Research evidence beyond product discussions
+
+- A Microsoft Research field study of 40 information workers over two workweeks found that more email time was associated with lower perceived productivity and higher stress, with difficulty focusing as a mediator.
+- A controlled interruption study found that people compensated for interruptions by working faster, but reported higher stress, frustration, time pressure, and effort. The result is more nuanced than the popular claim that every interruption always costs a fixed number of minutes.
+- Recent exploratory workplace research found a meaningful share of off-task activity was self-initiated, supporting the importance of observing behavior rather than attributing all fragmentation to notifications.
+
+The submission should **not** repeat the viral “23 minutes after every interruption” number as a universal constant. The underlying research is more conditional, and Toggl's own marketing simplifies it.
+
+### 12.6 Week-0 relevance and measurable behaviors
+
+This territory has a credible Week-0 sequence without requiring months of history:
+
+1. Day 1: the user tracks an intentional work block.
+2. Day 2: Toggl's activity Timeline becomes available.
+3. Days 2–5: the product can reveal whether that work block was continuous or fragmented.
+4. A later work block provides an immediate opportunity to change behavior and compare the result.
+
+Potential research metrics:
+
+| Layer | Observable behavior | Main caveat |
+| --- | --- | --- |
+| Data eligibility | Desktop activity recording enabled during Week 0 | Permission and installation friction |
+| First value | First private attention insight viewed after a qualifying work block | Viewing is not behavior change |
+| Action | User starts another work/focus block or changes communication timing after the insight | Must not assume causality from a click |
+| Behavioral change | Fewer short, out-of-context switches or longer uninterrupted runs in comparable blocks | Task type and necessary collaboration vary |
+| W0 outcome | Return and track meaningful work on multiple days in the first seven | Retention needs an experiment/control |
+
+### 12.7 Product and ethical constraints
+
+- Never equate keyboard/mouse activity with value or employee performance.
+- Do not expose individual app activity to managers or clients.
+- Avoid declaring specific tools “unproductive” by default.
+- Distinguish a necessary work switch from an attention leak.
+- Make the activity source and confidence understandable.
+- Preserve opt-in consent, private-by-default handling, correction, and deletion.
+- Prefer a small actionable observation over a productivity score or a dense app-usage dashboard.
+
+### 12.8 Cold-read and originality assessment
+
+The visual proof can be strong if it compares what a timer says with what happened inside it—for example, one 90-minute declared design block containing many brief communication switches—then shows a later, more continuous block after one user-controlled action.
+
+The originality ceiling is higher than a generic app-usage report because Toggl already owns both sides of the comparison:
+
+- **intent:** task, project, client, estimate, and timer;
+- **attention:** foreground application and website activity.
+
+The research question is whether connecting those two datasets can produce a private, neutral, immediately actionable insight without turning Toggl into employee surveillance or another retrospective cleanup flow.
+
+## 13. Research interpretation for review
 
 The evidence currently supports two distinct opportunity narratives:
 
 - **Freelancer:** the first-run experience creates structure but does not reliably connect it to the first data or first insight. The strongest evidence is firsthand and Week-0-native.
 - **Individual Contributor:** Toggl records planned and actual effort but does not visibly preserve why client demand changed or what commitment was displaced. The originality ceiling is higher, but the causal baseline and first-run evidence are weaker.
+- **Attention fragmentation:** Toggl already records intended work and optional private desktop activity, but appears to use the latter mainly for reconstruction. Comparing the two may expose a Week-0 focus pattern that neither a normal timesheet nor a generic app-usage dashboard can explain alone. The remaining blocker is a populated two-day activity test in the real product.
 
 The comparison should therefore not be “safe idea versus bold idea.” It is a trade-off between **evidence strength** and **novelty potential**, plus whether the IC's baseline can be made credible without adding setup or inventing a problem the product evidence did not reveal.
 
@@ -501,6 +606,19 @@ The comparison should therefore not be “safe idea versus bold idea.” It is a
 - [Toggl: How to track billable hours](https://toggl.com/blog/how-to-track-billable-hours)
 - [Reddit discussion: scope creep and consultant boundaries](https://www.reddit.com/r/consulting/comments/1qax8u0/anyone_else_struggling_with_scope_creep_lately_or/)
 - [Reddit discussion: independent consultants and project time](https://www.reddit.com/r/consulting/comments/1rew6ez/independent_consultants_how_are_you_tracking_your/)
+- [Toggl: The Timeline feature](https://support.toggl.com/the-timeline-feature)
+- [Toggl: Context switching — why it destroys productivity and how to fix it](https://toggl.com/blog/context-switching)
+- [Toggl: Timer page and activity Timeline](https://support.toggl.com/the-timer-page)
+- [Monitask: Available reports](https://www.monitask.com/article/3976618-what-kind-of-reports-are-available-in-monitask/)
+- [RescueTime: How tracking works](https://help.rescuetime.com/article/245-how-rescuetime-works)
+- [RescueTime: Productivity report](https://help.rescuetime.com/article/61-the-productivity-report)
+- [Rize: Productivity and focus analytics](https://rize.io/features/productivity)
+- [Microsoft Research: The cost of email use in the workplace](https://www.microsoft.com/en-us/research/publication/the-cost-of-email-use-in-the-workplace-lower-productivity-and-higher-stress/)
+- [Gloria Mark et al.: The cost of interrupted work](https://www.ics.uci.edu/~gmark/chi08-mark.pdf)
+- [Reddit: Toggl, Clockify, and Monitask discussion](https://www.reddit.com/r/ProductivityApps/comments/1nqvt6k/comparing_toggl_vs_clockify_vs_monitask_for_real/)
+- [Reddit: RescueTime critique](https://www.reddit.com/r/ProductivityApps/comments/1iw7xfc/rescuetime_rant_whats_the_point_of_this_app/)
+- [Reddit: ActivityWatch context-switch request](https://www.reddit.com/r/coolgithubprojects/comments/13i068v/activitywatch_free_and_opensource_automated_time/)
+- [Hacker News: the trigger at a context switch](https://news.ycombinator.com/item?id=19199719)
 
 External sources supply language and anecdotes, not representative prevalence estimates.
 

@@ -339,3 +339,30 @@ What is genuinely wrong is the **path to it**, all verified:
 - **Act 3 —** Toggl's existing goal card does the rest, unchanged
 
 The submission line becomes: **"I didn't build a feature. I built the path to one you already have."** That is a stronger claim than either "I fixed a dash" or "I invented client runways", and every step of it is screenshot-provable.
+
+---
+
+## 12. CORRECTION — Focus mode is NOT hidden (2026-08-18)
+
+**Every earlier claim that Focus mode has "no UI entry point" was wrong.** It has one.
+
+**Verified path:** start a timer → the running-timer toolbar gains a **`⋮`** overflow menu → it contains:
+
+- **`Enter Focus mode`** with the `F` shortcut shown alongside
+- `Discard logged time` (destructive, red)
+
+Clicking it opens a **full-screen focus surface**: giant duration (`1m 12s`), a single rounded input with a stop button, and two controls — **`TIME FOR TASK: 1h`** and **`TIME COUNT: ↑`** (count-up / count-down). Top-right: a **moon icon** (theme/dim) and **`✕`** to exit. Everything else is stripped away.
+
+Also verified: the idle toolbar has **no** Focus control, and the running toolbar shows an extra **`↑`** control (count direction) beside `$`.
+
+**So the earlier framing collapses:**
+
+| Claim made repeatedly today | Reality |
+| --- | --- |
+| "Focus mode has zero UI entry point" | It is one click into the running-timer `⋮` menu, clearly labelled |
+| "`F` silently does nothing" | `F` is **context-gated on a running timer** — correct behaviour, and the menu discloses it |
+| "A mouse-first user can never reach it" | False |
+
+**This kills the "surface Focus mode" direction outright.** It is discoverable, well-built, and the full-screen treatment is genuinely good craft.
+
+**Ninth correction of this research effort.** The pattern is now unmistakable and worth stating in the submission itself: *nearly every apparent gap in Toggl 2.0 dissolved on closer inspection.* Not one of them was a missing capability.

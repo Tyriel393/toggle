@@ -203,3 +203,45 @@ Full `Settings → Preferences` inventory:
 - **Q7:** "View your reports" checklist item completes on **page visit** (`onboarding-v2-reports-viewed-seen` flips on navigation) — even when the report shown contains an unattributed entry. Checklist rewards navigation, not value.
 - **Timer list rows display the client** (`Passion Project · Acme Advisory`) once one exists.
 - **Dead-click after popover close: now observed 4×** — after closing any picker, the next click on another control does not register; the identical second click does. Reproducible enough to state as a product defect.
+
+---
+
+## 9. Client-scoped goal — end-to-end mechanism test (2026-08-18)
+
+**Purpose:** ChatGPT correctly flagged that the whole "Act 2" payoff depends on tracked time actually advancing a client-scoped goal. That had never been observed. Tested end-to-end.
+
+### Setup
+
+- Client `Acme Advisory` assigned to project `Passion Project`
+- Goal created: **"Acme Advisory — weekly commitment" · at least 5h · every week · LOGGED TO: Acme Advisory**
+- Existing tracked time under that client at creation: **7m 23s**
+
+### Verified: a dedicated Goals page exists
+
+`/goals` — a full route with `REACHED 0/1` · `SUCCESS RATE` · `BEST STREAK 🔥` · `LOGGED · THIS WEEK` KPI row, and a table: NAME · DESCRIPTION · FOR · LOGGED TO · PROGRESS · STATE · STREAK · END DATE.
+
+**It is not in the sidebar navigation.** Reachable only via the Goals rail's `View all (1) →`. Another shipped surface with no front door — the same pattern as Focus mode.
+
+### The creation form previews progress live
+
+Before saving, the modal showed **"Already logged today · 0/5 hours · 0% · NOT STARTED"**, updating as the target changed, and switching cadence to `every week` revealed an extra **ON: Mon–Sun** day-selector row.
+
+### ⚠️ The finding: goal progress did not move
+
+| Moment | Acme Advisory tracked time | Goal progress |
+| --- | --- | --- |
+| At goal creation | 7m 23s | 0/5 hours · 0% · NOT STARTED |
+| After tracking a further 1m 10s | **8m 59s** (~9m) | **0/5 hours · 0% · NOT STARTED** |
+| Goals page after reload | ~10m total tracked this week | **0/5 hours · 0%**, STATE `NOT STARTED`, STREAK `—` |
+
+The Goals page's own `LOGGED · THIS WEEK` tile correctly reads **10m** — so the workspace total updates while the client-scoped goal stays at zero.
+
+**Candidate explanations, none yet confirmed:**
+
+1. **Rounding** — 9m of a 5h target is 3%, which may floor to `0%` and never leave `NOT STARTED`. Consistent with the sub-minute `0h` rounding defect already documented (§3).
+2. **Latency** — goal aggregation may run on a delayed job rather than live.
+3. **Scope semantics** — "logged to a client" may require the entry to reach the client by a path this data does not satisfy.
+
+**This must be resolved before Act 2 is locked.** The cheapest decisive test: track **~20 minutes** against Acme Advisory (≈7% of 5h) and re-check. If progress is still `0%`, the mechanism is not live-updating and the prototype must demonstrate the loop with mock data rather than claiming Toggl already does it.
+
+**Either way the direction survives** — arguably it strengthens: if a client goal cannot visibly count client work in week one, the "capability exists but is starved" argument gets sharper. But the claim must match what was observed.

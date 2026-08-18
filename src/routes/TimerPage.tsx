@@ -1,13 +1,15 @@
-import { useEffect, useMemo, useReducer, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import {
   currentEvaluation,
   demoReducer,
   initialState,
   SCENARIO_LABEL,
+  type DemoAction,
   type DemoState,
   type Scenario,
 } from '@/data/demo'
-import { DAY_LABEL, expectedTotalMins, fmtClock, fmtMins, type PlanTask } from '@/lib/planEval'
+import { DAY_LABEL, expectedTotalMins, fmtClock, fmtMins, taskLabel, type PlanTask } from '@/lib/planEval'
+import { getTrackLog, subscribeTrack, track } from '@/lib/track'
 import { PageContainer, TopBar } from '@/components/toggl/Shell'
 import { Button, PlayButton } from '@/components/toggl/Button'
 import { Card } from '@/components/toggl/Surface'
@@ -19,15 +21,140 @@ import { WeekStrip } from '@/components/toggl/WeekStrip'
 
 const RUNNING_BASE_SECONDS = 3 * 3600 + 11 * 60 + 42
 
+function choiceLabel(mins: number): string {
+  if (mins === 30) return '30m'
+  if (mins === 60) return '1h'
+  if (mins === 120) return '2h'
+  return 'custom'
+}
+
+/*
+ * The funnel from the metrics plan, emitted at the moment each step happens.
+ * In production these calls are the analytics client (Mixpanel or equivalent).
+ */
+function emitEvents(prev: DemoState, next: DemoState, action: DemoAction): void {
+  const homepage = next.plan.tasks.find((t) => t.id === 'homepage')
+  switch (action.type) {
+    case 'stop':
+      track('estimate_prompt_shown', {
+        trigger: 'timer_stop',
+        estimate_mins: homepage?.originalEstimateMins ?? null,
+        logged_mins: homepage?.loggedMins ?? null,
+      })
+      break
+    case 'confirm-remaining': {
+      track('remaining_confirmed', {
+        choice: choiceLabel(action.mins),
+        remaining_mins: action.mins,
+      })
+      const evaluation = currentEvaluation(next)
+      if (next.phase === 'conflict') {
+        track('conflict_detected', {
+          over_mins: evaluation.overloads[0]?.overMins ?? 0,
+          at_risk_task: evaluation.atRisk ? taskLabel(evaluation.atRisk.task) : null,
+          at_risk_due: evaluation.atRisk ? DAY_LABEL[evaluation.atRisk.day] : null,
+        })
+        track('make_room_opened', { via: 'conflict' })
+      } else {
+        track('week_fits', { remaining_mins: action.mins })
+      }
+      break
+    }
+    case 'mark-done':
+      track('remaining_confirmed', { choice: 'done', remaining_mins: 0 })
+      break
+    case 'reassign':
+      track('remaining_confirmed', {
+        choice: 'wrong_task',
+        to_task: next.plan.tasks.find((t) => t.id === action.taskId)?.name ?? action.taskId,
+      })
+      break
+    case 'defer':
+      track('remaining_confirmed', { choice: 'not_sure', remaining_mins: null })
+      break
+    case 'preview':
+      track('move_previewed', {
+        task: (() => { const t = next.plan.tasks.find((x) => x.id === action.move.taskId); return t ? taskLabel(t) : action.move.taskId })(),
+        to_day: DAY_LABEL[action.move.toDay],
+        kind: action.move.risky ? 'risky' : 'safe',
+      })
+      break
+    case 'approve':
+      if (prev.previewMove) {
+        track('move_approved', {
+          task: prev.plan.tasks.find((t) => t.id === prev.previewMove?.taskId)?.name ?? '',
+          to_day: DAY_LABEL[prev.previewMove.toDay],
+          kind: prev.previewMove.risky ? 'risky' : 'safe',
+        })
+      }
+      break
+    case 'undo':
+      track('move_undone', {
+        task: prev.plan.tasks.find((t) => t.id === prev.appliedMove?.taskId)?.name ?? '',
+      })
+      break
+    case 'keep':
+      track('plan_kept', { reason: action.reason })
+      break
+    case 'close-drawer':
+      if (prev.phase === 'conflict') track('plan_kept', { reason: 'acknowledged', via: 'dismiss' })
+      break
+    case 'reopen-drawer':
+      track('make_room_opened', { via: 'review' })
+      break
+    case 'restart':
+    case 'set-scenario':
+      track('demo_reset', { scenario: next.scenario })
+      break
+    default:
+      break
+  }
+}
+
 export function TimerPage() {
-  const [state, dispatch] = useReducer(
-    demoReducer,
-    undefined,
-    (): DemoState => initialState('conflict', 'asking'),
-  )
+  const [state, setState] = useState((): DemoState => initialState('conflict', 'asking'))
+  const stateRef = useRef(state)
+  const dispatch = useCallback((action: DemoAction) => {
+    const prev = stateRef.current
+    const next = demoReducer(prev, action)
+    stateRef.current = next
+    emitEvents(prev, next, action)
+    setState(next)
+  }, [])
+
+  useEffect(() => {
+    track('estimate_prompt_shown', { trigger: 'cold_open', estimate_mins: 180, logged_mins: 192 })
+  }, [])
+
   const evaluation = useMemo(() => currentEvaluation(state), [state])
   const homepage = state.plan.tasks.find((t) => t.id === 'homepage')
   const remainingMins = homepage?.confirmedRemainingMins ?? 0
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const t = e.target
+      const typing =
+        t instanceof HTMLInputElement ||
+        t instanceof HTMLTextAreaElement ||
+        (t instanceof HTMLElement && t.isContentEditable)
+      if (typing) return
+      const current = stateRef.current
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (current.phase === 'approved') {
+          e.preventDefault()
+          dispatch({ type: 'undo' })
+        }
+        return
+      }
+      if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return
+      if (e.key.toLowerCase() === 's' && current.phase === 'running') {
+        e.preventDefault()
+        dispatch({ type: 'stop' })
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [dispatch])
 
   return (
     <>
@@ -84,21 +211,26 @@ export function TimerPage() {
             </StatusCard>
           ) : null}
 
-          {state.phase === 'kept' ? (
+          {state.phase === 'kept' || (state.phase === 'approved' && !evaluation.fits) ? (
             <div className="flex items-center gap-3 rounded-lg border border-line-warning bg-bg-warning px-4 py-3">
               <span className="text-[14px] font-semibold text-fg-warning">
-                {state.keptReason === 'overtime'
-                  ? `Overtime accepted — ${DAY_LABEL[evaluation.overloads[0]?.day ?? 'wed']} runs ${fmtMins(
+                {state.phase === 'approved'
+                  ? `Moved — but ${DAY_LABEL[evaluation.overloads[0]?.day ?? 'wed']} is still ${fmtMins(
                       evaluation.overloads[0]?.overMins ?? 0,
                     )} over.`
-                  : `Conflict acknowledged — ${DAY_LABEL[evaluation.overloads[0]?.day ?? 'wed']} is ${fmtMins(
-                      evaluation.overloads[0]?.overMins ?? 0,
-                    )} over.`}
+                  : state.keptReason === 'overtime'
+                    ? `Overtime accepted — ${DAY_LABEL[evaluation.overloads[0]?.day ?? 'wed']} runs ${fmtMins(
+                        evaluation.overloads[0]?.overMins ?? 0,
+                      )} over.`
+                    : `Conflict acknowledged — ${DAY_LABEL[evaluation.overloads[0]?.day ?? 'wed']} is ${fmtMins(
+                        evaluation.overloads[0]?.overMins ?? 0,
+                      )} over.`}
               </span>
               <Button
                 variant="secondary"
                 size="sm"
                 className="ml-auto"
+                autoFocus={state.phase === 'kept'}
                 onClick={() => dispatch({ type: 'reopen-drawer' })}
               >
                 Review
@@ -162,7 +294,8 @@ function TimerBar({
       setSeconds(RUNNING_BASE_SECONDS)
       return
     }
-    const id = window.setInterval(() => setSeconds((s) => s + 1), 1000)
+    /* Ticks to the stop value and holds — the stopped display is always 3:12:04. */
+    const id = window.setInterval(() => setSeconds((s) => Math.min(s + 1, 11524)), 1000)
     return () => window.clearInterval(id)
   }, [running])
 
@@ -297,6 +430,7 @@ function DemoChrome({
   onScenario: (scenario: Scenario) => void
 }) {
   const [theme, setTheme] = useState<ThemeChoice>('system')
+  const [showEvents, setShowEvents] = useState(false)
 
   useEffect(() => {
     const root = document.documentElement
@@ -312,7 +446,7 @@ function DemoChrome({
 
   return (
     <div
-      className="fixed bottom-4 left-4 z-50 flex items-center gap-1 rounded-full border border-line bg-bg px-2 py-1.5"
+      className="fixed bottom-4 left-4 z-30 flex items-center gap-1 rounded-full border border-line bg-bg px-2 py-1.5"
       role="group"
       aria-label="Demo controls"
     >
@@ -346,12 +480,58 @@ function DemoChrome({
       <span className="h-4 w-px bg-(--color-line)" />
       <button
         type="button"
+        onClick={() => setShowEvents((v) => !v)}
+        aria-pressed={showEvents}
+        className={[
+          'cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-medium',
+          showEvents
+            ? 'bg-bg-muted text-fg-accent-on-muted'
+            : 'text-fg-secondary hover:bg-bg-hover hover:text-fg',
+        ].join(' ')}
+      >
+        Events
+      </button>
+      <button
+        type="button"
         onClick={cycleTheme}
         className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
         aria-label={`Theme: ${theme}. Click to change.`}
       >
         {theme === 'system' ? 'Auto' : theme === 'light' ? 'Light' : 'Dark'}
       </button>
+      {showEvents ? <EventsPanel /> : null}
+    </div>
+  )
+}
+
+/*
+ * The funnel, live. Every interaction in the demo emits the event schema from
+ * the measurement plan — this panel makes that visible without the console.
+ */
+function EventsPanel() {
+  const log = useSyncExternalStore(subscribeTrack, getTrackLog, getTrackLog)
+  return (
+    <div
+      className="fixed bottom-14 left-4 max-h-72 w-[380px] overflow-y-auto rounded-lg border border-line bg-bg p-2"
+      role="log"
+      aria-label="Analytics events"
+    >
+      <p className="uppercase-label px-1 pb-1">Instrumentation — what production would send</p>
+      <ul className="space-y-0.5">
+        {[...log].reverse().map((event) => (
+          <li key={event.id} className="rounded-sm px-1 py-0.5 font-mono text-[11px] leading-4">
+            <span className="font-semibold text-fg">{event.name}</span>{' '}
+            <span className="text-fg-secondary">
+              {Object.entries(event.payload)
+                .map(([k, v]) => `${k}=${v === null ? '∅' : v}`)
+                .join(' ')}
+            </span>
+          </li>
+        ))}
+        {log.length === 0 ? (
+          <li className="px-1 py-0.5 text-[11px] text-fg-tertiary">No events yet.</li>
+        ) : null}
+      </ul>
     </div>
   )
 }

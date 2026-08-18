@@ -1,7 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { fmtMins, parseDuration, type PlanTask } from '@/lib/planEval'
 import { Button } from './Button'
+import { Kbd } from './Data'
 import { Input } from './Field'
+
+function isTypingTarget(e: KeyboardEvent): boolean {
+  const t = e.target
+  return (
+    t instanceof HTMLInputElement ||
+    t instanceof HTMLTextAreaElement ||
+    t instanceof HTMLSelectElement ||
+    (t instanceof HTMLElement && t.isContentEditable)
+  )
+}
 
 /*
  * The core ask. Chips state time LEFT, not additions to the estimate —
@@ -45,6 +56,30 @@ export function RemainingPrompt({
     target?.focus()
   }, [mode])
 
+  useEffect(() => {
+    if (mode !== 'asking') return
+    const handler = (e: KeyboardEvent) => {
+      if (e.repeat || isTypingTarget(e) || e.ctrlKey || e.metaKey || e.altKey) return
+      const key = e.key.toLowerCase()
+      const actions: Record<string, () => void> = {
+        d: onDone,
+        '1': () => onConfirm(30),
+        '2': () => onConfirm(60),
+        '3': () => onConfirm(120),
+        c: onOpenCustom,
+        w: onWrongTask,
+        n: onDefer,
+      }
+      const action = actions[key]
+      if (action) {
+        e.preventDefault()
+        action()
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [mode, onDone, onConfirm, onOpenCustom, onWrongTask, onDefer])
+
   const submitCustom = () => {
     const mins = parseDuration(customValue)
     if (mins === null) {
@@ -79,19 +114,28 @@ export function RemainingPrompt({
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <Button variant="affirmative" size="md" onClick={onDone}>
                   ✓ Done
+                  <Kbd>D</Kbd>
                 </Button>
-                {[30, 60, 120].map((mins) => (
+                {[30, 60, 120].map((mins, index) => (
                   <Button key={mins} variant="secondary" size="md" onClick={() => onConfirm(mins)}>
                     {fmtMins(mins)} left
+                    <Kbd>{String(index + 1)}</Kbd>
                   </Button>
                 ))}
                 <Button variant="secondary" size="md" onClick={onOpenCustom}>
                   Custom…
+                  <Kbd>C</Kbd>
                 </Button>
               </div>
               <div className="mt-2.5 flex items-center gap-4">
-                <QuietAction onClick={onWrongTask}>Logged to wrong task</QuietAction>
-                <QuietAction onClick={onDefer}>Not sure yet</QuietAction>
+                <QuietAction onClick={onWrongTask}>
+                  Logged to wrong task
+                  <Kbd>W</Kbd>
+                </QuietAction>
+                <QuietAction onClick={onDefer}>
+                  Not sure yet
+                  <Kbd>N</Kbd>
+                </QuietAction>
               </div>
             </>
           ) : null}
@@ -106,7 +150,7 @@ export function RemainingPrompt({
                     setCustomError(false)
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') submitCustom()
+                    if (e.key === 'Enter' && !e.nativeEvent.isComposing) submitCustom()
                   }}
                   placeholder="e.g. 1h 30m"
                   aria-label="Time left"
@@ -152,12 +196,12 @@ export function RemainingPrompt({
   )
 }
 
-function QuietAction({ children, onClick }: { children: string; onClick: () => void }) {
+function QuietAction({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="cursor-pointer text-[13px] font-medium text-fg-secondary underline underline-offset-2 hover:text-fg"
+      className="inline-flex cursor-pointer items-center gap-1 text-[13px] font-medium text-fg-secondary underline underline-offset-2 hover:text-fg"
     >
       {children}
     </button>

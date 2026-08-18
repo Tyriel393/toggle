@@ -21,6 +21,14 @@ type Block = {
 
 const DAY_SHORT: Record<Weekday, string> = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri' }
 
+/* Light blocks (the orange project) need dark text; 0.179 is the WCAG crossover. */
+function labelClass(color: string): string {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16) / 255)
+  const lin = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+  const lum = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+  return lum > 0.179 ? 'text-black/85' : 'text-white'
+}
+
 export function WeekStrip({
   plan,
   evaluation,
@@ -132,7 +140,7 @@ export function WeekStrip({
                         <span
                           className={[
                             'truncate text-[10px] font-semibold',
-                            b.preview === 'ghost' ? 'text-fg-tertiary' : 'text-white',
+                            b.preview === 'ghost' ? 'text-fg-tertiary' : labelClass(b.color),
                           ].join(' ')}
                         >
                           {b.label}

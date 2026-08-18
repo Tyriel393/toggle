@@ -4,12 +4,14 @@ import {
   findRiskyMoves,
   findSafeMoves,
   fmtMins,
+  taskLabel,
   type Evaluation,
   type WeekPlan,
 } from '@/lib/planEval'
 import type { MoveIntent } from '@/data/demo'
 import { Button } from './Button'
 import { IconButton } from './Button'
+import { Kbd } from './Data'
 import { Icon } from './Icon'
 import { WeekStrip } from './WeekStrip'
 
@@ -42,7 +44,6 @@ export function MakeRoomDrawer({
   onClose: () => void
 }) {
   const panelRef = useRef<HTMLElement>(null)
-  const restoreRef = useRef<HTMLElement | null>(null)
   const [showOther, setShowOther] = useState(false)
 
   const safeMoves = useMemo(() => findSafeMoves(plan, evaluation), [plan, evaluation])
@@ -50,18 +51,62 @@ export function MakeRoomDrawer({
   const recommendation = safeMoves[0] ?? null
   const overload = evaluation.overloads[0] ?? null
 
+  /* Keyboard actions read through refs so the handler registers once per open. */
+  const onCloseRef = useRef<() => void>(() => {})
+  const onKeepRef = useRef<() => void>(() => {})
+  const onPreviewRecommendationRef = useRef<() => void>(() => {})
+  const onApproveIfPreviewingRef = useRef<() => void>(() => {})
+  onCloseRef.current = onClose
+  onKeepRef.current = () => onKeep(recommendation ? 'acknowledged' : 'overtime')
+  onPreviewRecommendationRef.current = () => {
+    if (recommendation && previewMove === null) {
+      onPreview({
+        taskId: recommendation.taskId,
+        fromDay: recommendation.fromDay,
+        toDay: recommendation.toDay,
+        mins: recommendation.mins,
+        risky: false,
+        consequence: null,
+      })
+    }
+  }
+  onApproveIfPreviewingRef.current = () => {
+    if (previewMove !== null) onApprove()
+  }
+
   useEffect(() => {
     if (!open) return
-    restoreRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') {
+        onCloseRef.current()
+        return
+      }
+      if (e.repeat) return
+      const t = e.target
+      const typing =
+        t instanceof HTMLInputElement ||
+        t instanceof HTMLTextAreaElement ||
+        (t instanceof HTMLElement && t.isContentEditable)
+      if (typing || e.ctrlKey || e.metaKey || e.altKey) return
+      const key = e.key.toLowerCase()
+      if (key === 'k') {
+        e.preventDefault()
+        onKeepRef.current()
+        return
+      }
+      if (key === 'p') {
+        e.preventDefault()
+        onPreviewRecommendationRef.current()
+        return
+      }
+      if (e.key === 'Enter' && !(t instanceof HTMLButtonElement)) {
+        e.preventDefault()
+        onApproveIfPreviewingRef.current()
+      }
     }
     window.addEventListener('keydown', handler)
-    return () => {
-      window.removeEventListener('keydown', handler)
-      restoreRef.current?.focus()
-    }
-  }, [open, onClose])
+    return () => window.removeEventListener('keydown', handler)
+  }, [open])
 
   if (!open || !overload) return null
 
@@ -79,7 +124,12 @@ export function MakeRoomDrawer({
         <span className="grid size-6 place-items-center rounded-full bg-bg-error text-[12px] font-bold text-fg-error">
           !
         </span>
-        <span className="text-[16px] font-semibold text-fg">Make room</span>
+        <span className="flex items-center gap-1 text-[16px] font-semibold text-fg">
+          Make room
+          <span className="text-[10px] text-fg-accent" title="Premium — priced with Toggl's existing capacity intelligence">
+            ★
+          </span>
+        </span>
         <IconButton icon="close" label="Close — keep current plan" onClick={onClose} className="ml-auto size-7" />
       </header>
 
@@ -91,8 +141,8 @@ export function MakeRoomDrawer({
           </p>
           {atRisk ? (
             <p className="mt-1 text-[13px] font-medium text-fg-error">
-              At risk: <strong>{atRisk.task.name}</strong> · due {DAY_LABEL[atRisk.day]} — it no
-              longer fits before its deadline.
+              At risk: <strong>{taskLabel(atRisk.task)}</strong> · due {DAY_LABEL[atRisk.day]} — it
+              no longer fits before its deadline.
             </p>
           ) : null}
         </div>
@@ -161,7 +211,7 @@ export function MakeRoomDrawer({
                     <div className="flex items-center gap-2">
                       <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: task.color }} />
                       <span className="text-[14px] font-medium text-fg">
-                        Move {task.name} → {DAY_LABEL[move.toDay]}
+                        Move {taskLabel(task)} → {DAY_LABEL[move.toDay]}
                       </span>
                     </div>
                     <p
@@ -213,9 +263,11 @@ export function MakeRoomDrawer({
         <Button
           variant="ghost"
           size="md"
+          autoFocus={!recommendation}
           onClick={() => onKeep(recommendation ? 'acknowledged' : 'overtime')}
         >
           {recommendation ? 'Keep current plan' : 'Accept overtime for now'}
+          <Kbd>K</Kbd>
         </Button>
         {recommendation && previewMove === null ? (
           <Button
@@ -234,6 +286,7 @@ export function MakeRoomDrawer({
             }
           >
             Preview move
+            <Kbd>P</Kbd>
           </Button>
         ) : null}
         {previewMove !== null ? (
@@ -241,8 +294,9 @@ export function MakeRoomDrawer({
             <Button variant="ghost" size="md" onClick={onCancelPreview}>
               Cancel
             </Button>
-            <Button variant="primary" size="md" autoFocus onClick={onApprove}>
+            <Button variant="primary" size="md" onClick={onApprove}>
               Approve move
+              <Kbd>↵</Kbd>
             </Button>
           </div>
         ) : null}
@@ -284,7 +338,7 @@ function RecommendationCard({
             </Button>
           </>
         ) : (
-          <Button variant="primary" size="md" autoFocus onClick={onPreview}>
+          <Button variant="primary" size="md" onClick={onPreview}>
             Preview move
           </Button>
         )}

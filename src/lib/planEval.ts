@@ -65,6 +65,10 @@ export type RiskyMove = {
   breaksDeadline: boolean
 }
 
+export function taskLabel(task: PlanTask): string {
+  return task.client ? `${task.client} — ${task.name}` : task.name
+}
+
 export function plannedMins(task: PlanTask): number {
   if (task.status === 'done') return 0
   if (task.confirmedRemainingMins !== null) return task.confirmedRemainingMins
@@ -103,6 +107,11 @@ function findAtRisk(
   overloads: Overload[],
 ): AtRisk | null {
   for (const overload of overloads) {
+    const sameDay = plan.tasks.find(
+      (t) =>
+        t.scheduledDay === overload.day && t.dueDate === overload.day && t.status !== 'done',
+    )
+    if (sameDay) return { task: sameDay, day: overload.day }
     let surplus = overload.overMins
     const start = WEEK.indexOf(overload.day)
     for (let i = start + 1; i < WEEK.length; i++) {
@@ -182,7 +191,7 @@ export function findRiskyMoves(plan: WeekPlan, evaluation: Evaluation): RiskyMov
       if (breaksDeadline) {
         consequence = `misses its ${DAY_LABEL[task.dueDate as Weekday]} deadline`
       } else if (overflows && displaced) {
-        consequence = `puts ${DAY_LABEL[day]} over — ${displaced.name} is due that day`
+        consequence = `puts ${DAY_LABEL[day]} over — ${taskLabel(displaced)} is due that day`
       } else if (overflows) {
         consequence = `puts ${DAY_LABEL[day]} ${fmtMins(mins - Math.max(free, 0))} over`
       } else {

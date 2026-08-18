@@ -51,7 +51,7 @@ function baseTasks(): PlanTask[] {
     },
     {
       id: 'atlas-handoff',
-      name: 'Atlas — Final handoff',
+      name: 'Final handoff',
       client: 'Atlas',
       color: CLIENT_COLOR.atlas,
       originalEstimateMins: 420,

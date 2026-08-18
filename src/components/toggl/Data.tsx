@@ -191,6 +191,18 @@ export function Tabs<T extends string>({
   )
 }
 
+/* Dim single-letter hint, matching Toggl's own "Enter Focus mode  F" pattern. */
+export function Kbd({ children }: { children: string }) {
+  return (
+    <kbd
+      aria-hidden="true"
+      className="ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-sm border border-line bg-bg-secondary px-1 font-sans text-[10px] font-semibold text-fg-secondary"
+    >
+      {children}
+    </kbd>
+  )
+}
+
 export function Skeleton({ className }: { className?: string }) {
   return (
     <div

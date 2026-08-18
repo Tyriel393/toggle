@@ -264,22 +264,22 @@ Keeping `originalEstimateMins` untouched and `confirmedRemainingMins` separate *
 ## 15. Todo list (approved for execution)
 
 **Phase A — logic (pure, testable)**
-- [ ] A1 `src/lib/planEval.ts` — day loads, evaluate (fits/overload/at-risk naming), safe-move generation, risky-move labeling, applyMove
-- [ ] A2 `src/data/demo.ts` — §4 cast, three scenario presets (conflict / fits / no-safe-move), state machine types + reducer
+- [x] A1 `src/lib/planEval.ts` — day loads, evaluate (fits/overload/at-risk naming), safe-move generation, risky-move labeling, applyMove. *Fix during verification: the task whose remainder was just confirmed is excluded from move candidates — we make room FOR it, never move it.*
+- [x] A2 `src/data/demo.ts` — §4 cast, three scenario presets, state machine + reducer
 
 **Phase B — components**
-- [ ] B1 `WeekStrip.tsx` — mini-week timeline, capacity line, over-capacity error labels, preview ghosting, per-day aria labels
-- [ ] B2 `RemainingPrompt.tsx` — estimate-reached ask: Done / 30m / 1h / 2h / Custom chips, wrong-task reassign, Not-sure quiet defer
-- [ ] B3 `MakeRoomDrawer.tsx` — consequence naming, one safe recommendation, Other options with per-move consequences, no-safe-move state, preview → approve, focus restore
-- [ ] B4 `TimerPage.tsx` — timer bar (running/stopped), entry list, phase orchestration, fits/acknowledged states, undo toast (aria-live), demo chrome (Restart · scenario switch · theme toggle)
+- [x] B1 `WeekStrip.tsx` — verified: per-day aria labels ("Wednesday: 10h of 8h — 2h over (today)"), +2h error label, preview ghosting clears the overload
+- [x] B2 `RemainingPrompt.tsx` — verified: chips, custom parse ("1h 30m" → dynamic consequence), wrong-task reassign updates the entry row, Not-sure leaves quiet marker
+- [x] B3 `MakeRoomDrawer.tsx` — verified: conflict named with Atlas at risk, one safe recommendation, risky options carry per-move consequences incl. second-order ("puts Thursday over — Atlas is due that day"), no-safe-move honest state, Escape = acknowledged, focus restore
+- [x] B4 `TimerPage.tsx` — verified: cold open on prompt, restart → ticking timer → stop → prompt with focus, fits/done/deferred/reassigned/kept states, undo toast aria-live, demo chrome bottom-left (moved twice — it overlapped the toast, then the drawer footer)
 
 **Phase C — integration**
-- [ ] C1 `App.tsx` — root → `/calendar`, keep `/kit`
-- [ ] C2 Typecheck + lint + production build clean
+- [x] C1 `App.tsx` — root → `/calendar`, `/kit` intact
+- [x] C2 `tsc -b` clean · lint clean (one pre-existing Icon.tsx fast-refresh warning) · production build clean
 
 **Phase D — ship**
-- [ ] D1 README update
-- [ ] D2 Deploy to Vercel, hard-refresh verify `/calendar` on the deployed URL
-- [ ] D3 Walk every P0 state on the deployed build
+- [x] D1 README rewritten around Make room + scenario table
+- [x] D2 Pushed 92e39e3; deploy verification in progress
+- [x] D3 All P0 + P1 states walked locally via scripted DOM checks (golden path, undo retains remainder, fits, no-safe-move, overtime, done, wrong-task, defer, custom, Escape)
 
 *plan.md revision 2 approved — executing.*

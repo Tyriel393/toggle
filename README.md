@@ -1,10 +1,31 @@
-# Toggl — home assignment prototype
+# "Make room" — Toggl 2.0 home assignment prototype
+
+**When an unfinished task exhausts its estimate, Toggl asks what remains, identifies which client
+commitment no longer fits, and lets the freelancer approve how to make room — before a promise
+quietly becomes impossible.**
 
 Vite + React + TypeScript + Tailwind v4. Deployed on Vercel.
 
-- **Live:** https://toggl-kit.vercel.app
+- **Live demo:** https://toggl-kit.vercel.app (root lands on the moment — no setup needed)
 - **Component kit:** https://toggl-kit.vercel.app/kit
 - **Repo:** https://github.com/Tyriel393/toggle (private)
+
+## The demo
+
+The deployed root opens at `/calendar` with the estimate-reached prompt already visible. The pill
+bottom-left restarts the demo (to watch the timer-stop trigger) and switches scenarios:
+
+| Scenario | What it shows |
+| --- | --- |
+| **Conflict** | 2h more no longer fits Wednesday → Atlas (due Thursday) at risk → safe move offered → preview → approve → undo |
+| **Fits** | The confirmed remainder fits — "still on track", no false alarm |
+| **No safe move** | Nothing can move without touching a dated commitment — honest options only |
+
+All data is mock (allowed by the brief): a day-3 freelancer week — Northstar *Homepage revisions*
+(3h estimated, 3h 12m logged), Atlas *Final handoff* (due Thursday), internal *Portfolio polish*
+(no deadline). The plan-evaluation logic (`src/lib/planEval.ts`) is pure and deterministic: it
+recommends a move only when the task has no deadline and the destination has capacity — Toggl may
+reason about time, never about which client matters.
 
 ## Redeploy
 

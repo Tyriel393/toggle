@@ -1,252 +1,285 @@
-# Plan — First useful record (Toggl 2.0 · Freelancer · W0)
+# Plan — "Make room" (Toggl 2.0 · Freelancer · W0)
 
-> **Phase 2 artifact.** Josip annotates inline; Claude addresses every note and reports what changed. **No implementation until the plan and its todo list are approved.**
+> **Phase 2 artifact.** Josip annotates inline; Claude addresses every note and reports what changed. **No implementation, and no todo list, until the plan is approved.**
 
-**Status:** ready for review
+**Status:** revision 2 — all annotation-round-0 notes addressed
 **Date:** 2026-08-18
+**Supersedes:** the client-attribution plan and the estimate-learning plan (abandoned; see `docs/verification-estimates.md`, `docs/plan-reality-check-deep-research.md`, `docs/pre-plan-verification.md`).
 
 ---
 
-## 1. Locked decisions
+## 1. The idea (locked)
 
-Carried from `research.md` and the conversation. Not up for re-litigation unless annotated.
+> **When an unfinished task exhausts its estimate, Toggl asks what remains, uses its existing capacity intelligence to identify which client commitment no longer fits, and lets the freelancer approve how to make room — before a promise quietly becomes impossible.**
+
+The freelancer's danger isn't the extra 2 hours on one job. It's that those hours are silently borrowed from time already promised to another client — discovered only after they're late. Toggl today shows the overrun, and separately shows the week is over capacity. It never connects them or helps decide what changes.
+
+**Why it survived a dozen eliminations:** it cannot die of "Toggl already has it." The product has the scattered ingredients — variance, capacity, remaining-hours, a burn-up chart, a scheduler beta — and performs **none** of the triggered, freelancer-facing, deadline-aware, cross-client decision built here. Verified in `docs/pre-plan-verification.md` (8 live checks) and `docs/plan-reality-check-deep-research.md`.
+
+**Retention logic:** the value compounds through use — every tracked session either confirms the plan still holds or catches a collision while it is still cheap to fix. Continued tracking is what keeps the plan honest; that is the reason to come back, and the thing we measure.
+
+---
+
+## 2. Persona & constraint
 
 | | |
 | --- | --- |
-| **Persona** | **Freelancer** (Toggl's own label) — juggles multiple clients, switches context, needs capture fast |
-| **Problem** | Onboarding forces a project, never asks who it's for, and doesn't reliably carry it into the first entry. On the fastest capture path the first entry can be unattributed — so when the checklist routes the user to Reports, Toggl shows a dash where the context should be. |
-| **Insight** | Toggl treats *creating a project* and *starting a timer* as activation. For a Freelancer, activation is when the record can explain **which client** consumed the time. |
-| **Retention mechanism** | Not day-one delight. **Avoid an early product-generated disconfirmation**, and **preserve context while it is still cheap**, so the Week-0 report is answerable at all. |
-| **Spine** | **Client-led.** Project carry-forward is the quiet setup; the client question is the intervention; the report naming a client is the payoff. |
-| **Onboarding** | **Shown faithfully, visually unchanged.** Deliberate trade-off, not a time saving. |
-
-### The claim, in the form that survives questioning
-
-> One attributed entry does not make a user return. It removes an avoidable signal that the product failed to keep what the user supplied, and it preserves context that becomes expensive to recover. Necessary for a useful Week-0 record; not sufficient alone.
-
-**Language discipline** — these overclaims were caught during research and must not reappear in the prototype copy, rationale, or Loom:
-
-- ❌ "guaranteed" disconfirmation → ✅ "on the path of least resistance"
-- ❌ "cannot reconstruct later" → ✅ "recovery costs memory and corrective admin"
-- ❌ "most first-week churn" → ✅ stated as a hypothesis
-- ❌ "the mandatory project does nothing" → ✅ "the handoff to capture is not guaranteed"
+| **Persona** | **Freelancer** — multiple clients, rates, deadlines; the record is a business instrument |
+| **Brief language served** | *"plan realistically"* · *"avoiding overcommitment"* · *"estimating future work without good historical data"* |
+| **W0** | Product tenure, not career tenure. The target user arrives with active clients, imports/creates their week on day 1 (AI importer verified live), tracks day 2, overruns and replans day 3. |
+| **Eligibility** | Behavioral: has dated, estimated work and tracks against it. Does **not** depend on onboarding personalization. Cohort size is unknown — named as the primary business risk in §10, instrumented not assumed. |
 
 ---
 
-## 2. Goal
+## 3. Honesty rules (non-negotiable in copy, rationale, Loom)
 
-A cold evaluator, in under 60 seconds and with no narration, sees:
+Earned by live testing. Breaking any hands an evaluator an easy kill.
 
-1. A project created during setup
-2. That project already present when work starts — visibly, removably
-3. A non-blocking ask: **who is this for?**
-4. A report that names **the client**
-
-And can answer: *what changed, why it helps, why it belongs in Toggl.*
+1. **Never say Toggl lacks "remaining hours" or "overtime."** The Workload report (Premium) has both — team-framed ("invite your team"), passive, never asks what remains, never names a deadline. Say it lacks the *freelancer's triggered, deadline-aware* version.
+2. **Never say we plug into Toggl's Scheduler.** It is a documented beta, not enabled in the test workspace, and **currently documented as not supporting tracked time or past entries**. Make room is the bridge between what happened and the replan. The prototype simulates the reshuffle with deterministic logic.
+3. **State the Dashboard finding as one tested scenario.** In the scenario we set up (dates + 40h estimate), the Dashboard showed an actual-vs-estimated burn-up with no completion-date forecast. That is what we observed; it is not proof a forecast never appears.
 
 ---
 
-## 3. Non-goals — the scope cut
+## 4. The demo cast (used consistently everywhere)
 
-Say once, confidently, in the Loom. Cutting is on-strategy: "no bloat" is Toggl's own stated positioning, twice.
+| Object | Role | Data |
+| --- | --- | --- |
+| **Northstar — Homepage revisions** | The source: task being tracked | Estimated **3h** · logged **3h 12m** · user confirms **2h left** |
+| **Atlas — Final handoff** | The protected commitment | Due **Thursday** |
+| **Internal — Portfolio polish** | The safe move | **No deadline** |
 
-- ❌ Onboarding redesign — considered and **rejected on principle** (below)
-- ❌ AI/automatic client inference
-- ❌ End-of-day review, categorisation, or cleanup queue *(the poisoned direction)*
-- ❌ Notifications or reminders — Toggl already ships two, both on by default
-- ❌ Profitability, rates, invoicing
-- ❌ New navigation section
-- ❌ Multiple report types
-- ❌ Mobile
-- ❌ Team, sharing, permissions
-
-**Why onboarding was not changed** — the line for the Loom:
-
-> I considered collecting the client during onboarding and rejected it. "See where time goes" doesn't necessarily mean client work, and another mandatory field increases cost before value. I moved the question into the first real work context and kept it non-blocking, so structure grows without slowing capture.
+Expected total for the source task: `3h 12m logged + 2h confirmed = 5h 12m` against an original 3h estimate — the estimation evidence the concept depends on, preserved intact.
 
 ---
 
-## 4. The flow
+## 5. The flow
 
-### Screen 1 — Onboarding step 2 (faithful reproduction)
+### Trigger
 
-Exact copy: **"Create your first project"** / *"Projects keep your work and time logs organized"*. Single field, placeholder `Project name`, colour swatch, `Continue →` disabled until filled.
+**Production definition:** the prompt fires when **any completed or edited time entry** causes an unfinished task to reach or exceed its estimate — timer stop, manual entry, corrected entry, auto-tracked entry alike.
 
-Demo input: **`Website redesign`**
+**Suppression:** shown **once per estimate-crossing state**. It does not reappear on every subsequent stop; it re-arms only after a meaningful change — new time logged against the task, the estimate edited, or previously confirmed remaining time exhausted again.
 
-*Purpose: the evaluator must watch this object be created, or the carry-forward means nothing.*
+**Prototype behavior:** demonstrates the trigger through timer stop (the most legible instance), and the deployed root opens with the prompt already visible (§8).
 
-### Screen 2 — Timer, project pre-selected
+### Step 1 — Ask what remains
 
-- Lands on Timer, list view, right rail with Goals + Tasks (as verified)
-- **`Website redesign` already in the project chip**, in project colour
-- No "From setup" label — pre-selection is ordinary; reversibility does the trust work
-- User types `Homepage concepts`, presses play. **Nothing blocks the start.**
+Toggl cannot know future work from a historical overrun — there is **no remaining-effort field** (verified). So it asks:
 
-### Screen 3 — The client ask (non-blocking)
+> **You've reached your 3h estimate on *Homepage revisions*.**
+> `✓ Done` · `30m left` · `1h left` · `2h left` · `Custom…`
+> `Logged to wrong task` · `Not sure yet`
 
-**Appears immediately on start**, persists through the run, still present at stop.
+Chips state **remaining time left**, not additions to the estimate — `2h left` is unambiguous where `+2h` is not. One tap. This confirmation is the entire reason this isn't a "you went over" alarm.
 
-> **Who is Website redesign for?**
-> Add a client so your reports can show where time went.
-> `Add client` · `Not client work` · `✕`
+### Step 2 — Evaluate and name the consequence
 
-**Placement — proposed:** an inline row directly beneath the running entry in the list, using the existing card border treatment. Not a toast (toasts auto-dismiss and are unannounced), not a modal (blocks), not the right rail (competes with Goals).
+The confirmed remainder becomes `confirmedRemainingMins` — the **original estimate is never modified**. The week is re-evaluated deterministically:
 
-**Dismiss rule — proposed:** `✕` silences it for this entry only. The project row keeps a quiet `+ client` affordance, so the path stays open without nagging.
+- **Fits:** → Step 5.
+- **Conflict:** name what no longer fits, factually:
 
-### Screen 4 — Adding the client
+> Fitting 2h more into this week puts **Wednesday 2h over**. **Atlas — Final handoff** (due Thursday) no longer fits before its deadline.
 
-Lightweight. **Not** the six-field New Project modal.
+Name the collision; never rank the clients.
 
-- Single combobox: search existing / create new
-- Enter commits. Escape cancels.
-- Applies to **the project**, so it persists for future entries — stated in one line of helper text
-- Toast confirms, with undo
+### Step 3 — Make room (safe moves only)
 
-Demo input: **`Northstar Labs`**
+**Rule:** a move is *recommended* only when the task to move has **no deadline** and the destination day has **capacity for it**. Anything else is shown as a collision for the user to resolve — the system never proposes risking a dated commitment.
 
-### Screen 5 — Stop, then Reports (Day 1 state)
+> **Make room** — suggested: move *Portfolio polish* to Friday.
+> *It has no deadline — moving it doesn't put a dated commitment at risk. Wednesday fits again.*
+> `Move it` · `Other options` · `Keep current plan`
 
-Entry completes already carrying valid context. Report shows:
+- **One** safe recommendation, with `Other options` expanding the remaining candidates (each labeled with its deadline consequence, including second-order knock-ons: *"Moving Atlas frees Wednesday but Atlas is due Thursday — you'd have 4h Thursday, which still fits"*).
+- **If no safe move exists, say so:** *"Nothing can move without touching a dated commitment"* → offer manual review or consciously accepted overtime. Honesty over false helpfulness.
+- `Keep current plan` saves the confirmed remaining time and leaves the conflict **acknowledged, not hidden**.
 
-```
-Northstar Labs  ›  Website redesign  ›  Homepage concepts   1h 12m
-```
+### Step 4 — Preview, approve, undo
 
-### Screen 6 — Day 5 (the value beat)
+Preview the resulting week on the mini-week timeline → `Approve` → toast with **Undo** (announced via ARIA live region).
 
-**Added after challenge: the brief defines W0 retention as "returns and gets value within their first week." A one-entry report is not value — the demo must show the week answered, not just the mechanism working.**
+- **Undo restores the schedule but retains the confirmed remaining effort** — the user's answer about reality is never thrown away with the layout.
+- **Stale preview:** any change to underlying task data while a preview is open invalidates it; re-evaluate before approving.
+- Toggl never silently moves a client commitment.
 
-A visible time-skip control (e.g. `Later that week ›` in demo chrome) advances to a populated Day-5 state:
+### Step 5 — "You're actually fine"
 
-- Timer list shows entries across several days (seeded from mock data — some attributed to a second client, some `Not client work`)
-- Reports answers the selected intent for real:
+If the confirmed remainder fits:
 
-```
-This week · 18h 40m
-Northstar Labs      9h 15m
-Meridian Studio     5h 30m
-Not client work     3h 55m
-```
+> Still on track — your week has room for the extra 2h. Nothing to move.
 
-**The causal line, for the Loom:** this report is only possible because entry one kept its context. The dash prevented on Monday is why Friday has an answer.
-
-**The demo ends here** — on the week explained, not on the first entry.
-
-On **"returns"**: a prototype cannot depict a user coming back. Toggl already ships the return vehicle — the weekday daily-brief email, on by default (verified in Preferences). Cite it in the rationale; build nothing.
-
-**Friction framing (for Loom + rationale):** the prompt adds one interaction; the friction removed is the six-field project modal at capture and the end-of-week reconstruction that costs memory the user no longer has.
+A tool that only warns is noise; showing "fine" is what makes the warnings trustworthy. If the user has **no dated commitments at all**, the remaining time is saved with no deadline claim made — never invent a threatened promise.
 
 ---
 
-## 5. The three paths
+## 6. Non-goals
 
-| Path | What it proves |
+- ❌ Autonomous planner / auto-moving work
+- ❌ Ranking clients by importance or profitability
+- ❌ General scheduling optimizer (safe-move rule only — anything cleverer is dishonest to what we verified)
+- ❌ Onboarding redesign; end-of-day review/categorize *(the poisoned direction)*; new notifications
+- ❌ Rebuilding variance, capacity, or Workload — they exist; we connect them
+- ❌ Invoicing, rates, mobile, team, permissions
+
+*(Rationale-only note: fixed-price freelancers are still served — 2h of overrun displaces 2h of something regardless of billing model. No unique behavior, so it lives in the rationale, not the edge-case matrix.)*
+
+---
+
+## 7. States to build
+
+**P0 — the demo spine (all manually verified before submission):**
+
+| State | Behaviour |
 | --- | --- |
-| **Golden** | Setup → track → ask → report names the client |
-| **Correction** | Change or remove the suggested project; change the client after the fact |
-| **Non-client** | `Not client work` → entry is explicitly, validly non-client — **not** a dash |
+| Estimate reached → prompt | The four-option ask, chips as "left" amounts |
+| Conflict named | Wednesday +2h · Atlas due Thursday no longer fits |
+| Safe move offered | Portfolio polish → Friday, reasoning shown |
+| Preview → approve → undo | Undo restores schedule, keeps confirmed remaining |
+| Fits — "still on track" | No false alarm |
+| No safe move | Say so; manual review or accepted overtime |
 
-The third is the one that shows the feature was thought through. Without it we force false attribution or recreate the dash we're fixing.
+**P1 — high-risk states (built, shown via scenario switch or `Other options`):**
+
+| State | Behaviour |
+| --- | --- |
+| `Not sure yet` | Quiet marker on the task; prompt suppressed until new relevant activity |
+| `Done` | No future capacity created; no alarm |
+| `Logged to wrong task` | Offer entry correction; never replan from bad data |
+| No dated commitments | Save remaining time; no deadline claim |
+| `Keep current plan` | Conflict acknowledged and visible, not hidden |
+| Stale preview | Invalidated on data change; re-evaluate |
+| Multiple safe candidates | `Other options` lists them with per-move deadline consequences |
+| Overtime chosen | Allowed, never recommended |
 
 ---
 
-## 6. Affected files
+## 8. Demo design — cold-open first
 
-Building on the existing kit (`toggl-kit.vercel.app`), which already carries real tokens, Toggl's extracted icons, Inter, and both themes.
+- **Deployed root redirects to `/calendar`** and lands with the **estimate-reached prompt already visible**. A cold evaluator sees the moment in second zero — they are never required to discover that stopping a timer starts the demo.
+- **Demo chrome** (outside product chrome, bottom corner): `Restart demo` — replays from the running timer so the Loom can show the stop → trigger transition — and a **scenario switch**: `Conflict` / `Fits` / `No safe move`. No day-navigation; the concept doesn't require simulating multiple days.
+- Theme follows OS; a manual theme toggle sits in the demo chrome, not the product chrome.
+- `/kit` remains available as the component reference.
+
+---
+
+## 9. Affected files
+
+Builds on the deployed kit (real tokens, Toggl's own icons, Inter, both themes). Confirmed present: `Shell.tsx`, `Icon.tsx`, `EmptyState.tsx`, `Button.tsx`, `Field.tsx`, `Surface.tsx`, `Data.tsx`, `mock.ts`.
 
 | Path | Change |
 | --- | --- |
-| `src/routes/OnboardingProject.tsx` | **new** — screen 1 |
-| `src/routes/TimerPage.tsx` | **new** — screens 2–3, running state, client prompt |
-| `src/routes/ReportsPage.tsx` | **new** — screen 5, breakdown grouped by client |
-| `src/components/toggl/ClientPrompt.tsx` | **new** — the non-blocking ask |
-| `src/components/toggl/ClientCombobox.tsx` | **new** — search / create |
-| `src/components/toggl/EntryRow.tsx` | **new** — list row, running + completed states |
-| `src/data/demo.ts` | **new** — demo state machine (separate from `mock.ts`) |
-| `src/App.tsx` | routes |
-| `src/components/toggl/Shell.tsx` | mark Timer active; keep other nav as dead links (explicitly permitted) |
+| `src/routes/TimerPage.tsx` | **new** — entry list, running/stopped states, prompt mount |
+| `src/components/toggl/RemainingPrompt.tsx` | **new** — Step 1 ask, chips, quiet-dismiss states |
+| `src/components/toggl/MakeRoomDrawer.tsx` | **new** — Steps 2–4 in Toggl's **500px right drawer** pattern (measured), not a centered modal |
+| `src/components/toggl/WeekStrip.tsx` | **new** — mini-week timeline: days, capacity, blocks; **work visibly moves** on preview/approve |
+| `src/lib/planEval.ts` | **new** — **deterministic plan evaluation and safe-move generation**: `evaluate(week) → fits \| conflict(named)`, `safeMoves(week) → Move[]` (no-deadline + destination-capacity only), pure and unit-testable |
+| `src/data/demo.ts` | **new** — demo state machine + the §4 cast; scenario presets |
+| `src/App.tsx` | root → `/calendar`; keep `/kit` |
+| `src/components/toggl/Shell.tsx` | Timer active; other nav dead links (permitted) |
 
-### Demo state — proposed shape
+### Data model
 
 ```ts
-type DemoState = {
-  project: { name: string; color: string; clientId: string | null }
-  clients: { id: string; name: string }[]
-  entry: {
-    description: string
-    projectId: string | null
-    startedAt: number | null
-    stoppedAt: number | null
-    clientDecision: 'pending' | 'assigned' | 'not-client-work' | 'dismissed'
-  } | null
+type DemoTask = {
+  id: string
+  name: string
+  client: string | null              // null = Internal
+  originalEstimateMins: number       // never modified by this flow
+  confirmedRemainingMins: number | null  // null until the user answers
+  loggedMins: number
+  dueDate: string | null             // null = no deadline = safe-move candidate
+  scheduledDay: Weekday
+  status: 'todo' | 'in-progress' | 'done'
 }
+// Derived, never stored:
+// expectedTotalMins = loggedMins + confirmedRemainingMins
+// varianceMins     = expectedTotalMins - originalEstimateMins
+
+type SafeMove = {
+  taskId: string
+  toDay: Weekday
+  reason: 'no-deadline'              // the only auto-recommendation basis
+  destinationFits: true
+}
+
+type Decision =
+  | 'idle' | 'asking' | 'fits' | 'conflict'
+  | 'previewing' | 'approved' | 'kept-with-conflict' | 'deferred'
 ```
 
-`clientDecision` is the field the whole prototype turns on, and the one the metric definition maps to.
+Keeping `originalEstimateMins` untouched and `confirmedRemainingMins` separate **is the concept**: the gap between them is the estimation evidence. (A community report describes estimate edits resetting task status; our flow never edits the estimate field, so the risk doesn't arise.)
 
 ---
 
-## 7. Edge cases to build
+## 10. Measurement (rationale, not build)
 
-Graded explicitly by the brief.
+- **Primary (W0):** among eligible new freelancers, do more return to track/plan on ≥3 distinct days in their first 7? Exposed vs. matched eligible control.
+- **Value:** % of detected conflicts returned to a feasible plan **before the affected deadline**.
+- **Supporting:** % confirming remaining work · % of confirmations creating real conflicts · % opening Make room · % approving · % of moves intact after 24h.
+- **Guardrails:** prompt latency added at stop · moves undone <24h · work pushed past deadlines without explicit approval · overtime trends · capacity math corrected/rejected · `Done` used merely to silence the prompt.
+- **Eligibility is the primary business risk:** the share of W0 freelancers with enough dated, estimated work to reach the trigger is unknown. Instrument first; no invented baseline.
+- **Kill criteria:** eligible cohort too rare · most overruns are already-done tasks · users won't confirm remaining effort · consequences distrusted/undone · no W0 return lift.
 
-| Case | Behaviour |
+---
+
+## 11. Acceptance & deployment criteria
+
+- [ ] Root redirects to `/calendar`; `/kit` remains reachable
+- [ ] Prompt and drawer fully keyboard-operable; focus returns to the invoking control on close
+- [ ] Undo toast announced through an ARIA live region
+- [ ] Light and dark theme visually checked on every P0 state
+- [ ] `tsc --noEmit`, lint, and production build all clean (no `any`/`unknown`)
+- [ ] Deployed `/calendar` verified with a hard refresh (SPA rewrite intact)
+- [ ] Every P0 state manually walked on the deployed URL
+- [ ] Scenario switch reaches Conflict / Fits / No-safe-move without code changes
+
+## 12. Submission package
+
+- **Insights doc (public):** problem → evidence (live-verified capability map, incl. what Toggl already has) → the seam → flow → measurement → eligibility risk → kill criteria. Sources: `pre-plan-verification.md`, `plan-reality-check-deep-research.md`.
+- **README update:** what this is, deployed URL, run/build steps, mock-data note, scope statement.
+- **Deployed verification pass** (§11) before recording.
+- **Loom outline (≤5 min, camera on):** the borrowed-hours problem (30s) → cold open on the prompt (60s) → confirm remaining → named consequence → safe move + preview + undo (90s) → "still fits" beat (30s) → restraint: what Toggl may know vs. may decide, what already exists and why this is the seam (60s) → metric + eligibility honesty (45s).
+- **Pre-record golden-path check** on the live trial: track a task past its estimate once more and confirm no hidden prompt fires.
+
+## 13. Locked decisions (this round)
+
+| Question | Decision |
 | --- | --- |
-| Client prompt dismissed | Silenced for this entry; `+ client` stays on the project row |
-| `Not client work` chosen | Entry shows an explicit non-client marker; report groups it under **Not client work**, never a dash |
-| Project removed from entry | Client prompt disappears — nothing to ask about |
-| Client added mid-run | Running entry updates live |
-| Client added after stop | Completed entry updates; report reflects it |
-| Duplicate client name | Combobox surfaces the existing match before offering create |
-| Long client/project names | Truncate with ellipsis; full value in `title` |
-| Empty report | Uses Toggl's **inline** empty-state pattern, not the illustrated one |
-| Sub-minute entry | Shows seconds, never `0h` — the bug we documented |
+| Consequence visual | **Mini-week timeline** (`WeekStrip`) — the value is *seeing work move* |
+| Suggestions | **One** safe recommendation + `Other options` |
+| `Not sure yet` | Quiet task marker; reconsidered only after new activity |
+| Demo chrome | `Restart demo` + scenario switch; **no day navigation** |
+| Theme | Follow OS; manual toggle in demo chrome only |
+| Placement | Toggl's existing **500px right drawer** pattern, not a centered modal |
+
+## 14. Remaining open questions
+
+1. Suppression re-arm threshold: does *any* new logged minute re-arm the prompt after `Not sure yet`, or a meaningful amount (e.g. ≥15m)? Proposed: ≥15m.
+2. `Other options`: flat list of candidate moves, or grouped safe-vs-risky? Proposed: safe first, risky collapsed behind a divider with per-move consequence labels.
 
 ---
 
-## 8. Trade-offs
+## 15. Todo list (approved for execution)
 
-| Decision | Alternative | Why this way |
-| --- | --- | --- |
-| Client asked at capture | Client field in onboarding | Intent ≠ client work; avoids another mandatory setup decision before value |
-| Non-blocking prompt | Ask before play | Play is the moment Toggl must never tax |
-| Project pre-selected silently | "From setup" badge | Explaining the mechanism is over-explaining; reversibility earns trust instead |
-| Client applies to project | Client on the entry | Matches Toggl's real model — entries relate to clients *through* projects |
-| Onboarding shown, unchanged | Skip it | Without watching the project get created, the carry-forward is invisible |
-| Report as final beat | End at the timer | Ending on a client name is what reads cold |
+**Phase A — logic (pure, testable)**
+- [ ] A1 `src/lib/planEval.ts` — day loads, evaluate (fits/overload/at-risk naming), safe-move generation, risky-move labeling, applyMove
+- [ ] A2 `src/data/demo.ts` — §4 cast, three scenario presets (conflict / fits / no-safe-move), state machine types + reducer
 
----
+**Phase B — components**
+- [ ] B1 `WeekStrip.tsx` — mini-week timeline, capacity line, over-capacity error labels, preview ghosting, per-day aria labels
+- [ ] B2 `RemainingPrompt.tsx` — estimate-reached ask: Done / 30m / 1h / 2h / Custom chips, wrong-task reassign, Not-sure quiet defer
+- [ ] B3 `MakeRoomDrawer.tsx` — consequence naming, one safe recommendation, Other options with per-move consequences, no-safe-move state, preview → approve, focus restore
+- [ ] B4 `TimerPage.tsx` — timer bar (running/stopped), entry list, phase orchestration, fits/acknowledged states, undo toast (aria-live), demo chrome (Restart · scenario switch · theme toggle)
 
-## 9. Measurement (for the rationale, not the build)
+**Phase C — integration**
+- [ ] C1 `App.tsx` — root → `/calendar`, keep `/kit`
+- [ ] C2 Typecheck + lint + production build clean
 
-**Primary — disconfirmation avoided:** % of first Reports visits where the most recent entry appears under its expected named context rather than a dash.
+**Phase D — ship**
+- [ ] D1 README update
+- [ ] D2 Deploy to Vercel, hard-refresh verify `/calendar` on the deployed URL
+- [ ] D3 Walk every P0 state on the deployed build
 
-**Supporting:**
-- *Mechanism* — % of first completed entries with valid context **by completion**, unchanged after 24h
-- *Outcome* — % recording validly attributed work on 3+ distinct days in the first 7
-
-**Valid context** = client work: project **and** client · non-client work: project **plus explicit** `Not client work`. Invalid: unintentionally unattributed, duplicated, or corrected shortly after.
-
-**Baseline:** unknown — state as an assumption, instrument in week one. Do not invent a number.
-**Attribution:** cohort, new signups exposed vs not.
-**Trade-off:** carried context can be wrong; any capture-time decision risks slowing the thing freelancers most want fast.
-**Kill criterion:** if median time-to-first-entry rises materially, or suggested context is frequently reassigned, the convenience isn't worth the attribution risk — roll back.
-
-Lead with the primary in the Loom. The other two belong in the written rationale.
-
----
-
-## 10. Open questions for annotation
-
-1. **Prompt placement** — inline under the running entry (proposed), or right rail?
-2. **Dismiss rule** — silence per entry (proposed), or per session?
-3. **Client scope** — applies to the project (proposed, matches Toggl's model) or to the entry?
-4. ~~Does the demo include a second entry?~~ **Resolved: yes — a Day-5 beat (Screen 6), because the brief's W0 definition requires showing value, not just mechanism.** Remaining sub-question: how the time-skip is presented (demo chrome button vs. date navigation).
-5. **Theme** — follow OS (proposed), or force dark to match your Loom recording?
-6. **Do we show the "before"** — a dash state — anywhere, or trust the sequence to carry it?
-
----
-
-*plan.md is ready for your review — add inline notes and send it back.*
+*plan.md revision 2 approved — executing.*

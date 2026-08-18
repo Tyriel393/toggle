@@ -2,33 +2,41 @@ import {
   DAY_LABEL,
   fmtMins,
   plannedMins,
+  taskLabel,
   WEEK,
   type Evaluation,
+  type PlanTask,
   type Weekday,
   type WeekPlan,
 } from '@/lib/planEval'
 import type { MoveIntent } from '@/data/demo'
 
-type Block = {
+const DAY_SHORT: Record<Weekday, string> = {
+  mon: 'Mon',
+  tue: 'Tue',
+  wed: 'Wed',
+  thu: 'Thu',
+  fri: 'Fri',
+}
+const DAY_DATE: Record<Weekday, string> = { mon: '17', tue: '18', wed: '19', thu: '20', fri: '21' }
+
+type Card = {
   key: string
-  label: string
+  title: string
+  meta: string
   mins: number
   color: string
-  kind: 'history' | 'task'
+  kind: 'logged' | 'planned'
   taskId: string | null
-  preview?: 'incoming' | 'ghost'
+  dueHere: boolean
+  state: 'normal' | 'ghost' | 'incoming'
 }
 
-const DAY_SHORT: Record<Weekday, string> = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri' }
-
-/* Light blocks (the orange project) need dark text; 0.179 is the WCAG crossover. */
-function labelClass(color: string): string {
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(color.slice(i, i + 2), 16) / 255)
-  const lin = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
-  const lum = 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
-  return lum > 0.179 ? 'text-black/85' : 'text-white'
-}
-
+/*
+ * The week as Toggl's Timeline renders it: days across, work as cards inside
+ * each day, capacity per column. Moving a task visibly relocates its card,
+ * which is the whole point of "make room" being previewable.
+ */
 export function WeekStrip({
   plan,
   evaluation,
@@ -44,151 +52,205 @@ export function WeekStrip({
   compact?: boolean
   onEditCapacity?: () => void
 }) {
-  const hourPx = compact ? 13 : 17
-  const capacityPx = (plan.capacityMinsPerDay / 60) * hourPx
-  const maxPx = capacityPx + 3.2 * hourPx
-
   const columns = WEEK.map((day) => {
-    const blocks: Block[] = []
+    const cards: Card[] = []
+
     for (const entry of plan.history) {
       if (entry.day !== day) continue
-      blocks.push({
+      cards.push({
         key: entry.id,
-        label: entry.label,
+        title: entry.label,
+        meta: 'tracked',
         mins: entry.mins,
         color: entry.color,
-        kind: 'history',
+        kind: 'logged',
         taskId: null,
+        dueHere: false,
+        state: 'normal',
       })
     }
+
     for (const task of plan.tasks) {
       const mins = plannedMins(task)
       if (mins === 0) continue
       const moving = previewMove?.taskId === task.id
+      const base = {
+        title: task.name,
+        meta: task.client ?? 'Internal',
+        mins,
+        color: task.color,
+        kind: 'planned' as const,
+        taskId: task.id,
+      }
       if (moving && previewMove) {
         if (task.scheduledDay === day) {
-          blocks.push({
-            key: `${task.id}-ghost`, label: task.name, mins, color: task.color,
-            kind: 'task', taskId: task.id, preview: 'ghost',
-          })
+          cards.push({ ...base, key: `${task.id}-ghost`, dueHere: false, state: 'ghost' })
         }
         if (previewMove.toDay === day) {
-          blocks.push({
-            key: `${task.id}-in`, label: task.name, mins, color: task.color,
-            kind: 'task', taskId: task.id, preview: 'incoming',
+          cards.push({
+            ...base,
+            key: `${task.id}-in`,
+            dueHere: task.dueDate === day,
+            state: 'incoming',
           })
         }
         continue
       }
       if (task.scheduledDay !== day) continue
-      blocks.push({
-        key: task.id, label: task.name, mins, color: task.color, kind: 'task', taskId: task.id,
-      })
+      cards.push({ ...base, key: task.id, dueHere: task.dueDate === day, state: 'normal' })
     }
 
-    const solidMins = blocks.filter((b) => b.preview !== 'ghost').reduce((sum, b) => sum + b.mins, 0)
-    const overMins = Math.max(solidMins - plan.capacityMinsPerDay, 0)
-    return { day, blocks, solidMins, overMins }
+    const solid = cards.filter((c) => c.state !== 'ghost').reduce((s, c) => s + c.mins, 0)
+    return { day, cards, solid, over: Math.max(solid - plan.capacityMinsPerDay, 0) }
   })
 
   return (
     <div>
-      <div className="flex gap-2">
-        {columns.map(({ day, blocks, solidMins, overMins }) => (
-          <div
-            key={day}
-            className="flex min-w-0 flex-1 flex-col"
-            role="img"
-            aria-label={`${DAY_LABEL[day]}: ${fmtMins(solidMins)} of ${fmtMins(plan.capacityMinsPerDay)}${
-              overMins > 0 ? ` — ${fmtMins(overMins)} over` : ''
-            }${day === plan.today ? ' (today)' : ''}`}
-          >
-            <p
+      <div className="grid grid-cols-5 gap-2">
+        {columns.map(({ day, cards, solid, over }) => {
+          const isToday = day === plan.today
+          const fill = Math.min(solid / plan.capacityMinsPerDay, 1) * 100
+          return (
+            <section
+              key={day}
+              aria-label={`${DAY_LABEL[day]}: ${fmtMins(solid)} of ${fmtMins(plan.capacityMinsPerDay)}${
+                over > 0 ? ` — ${fmtMins(over)} over` : ''
+              }${isToday ? ' (today)' : ''}`}
               className={[
-                'h-5 text-center text-[12px] font-semibold',
-                overMins > 0 ? 'text-fg-error' : 'text-transparent',
+                'flex min-w-0 flex-col rounded-lg border transition-colors',
+                over > 0
+                  ? 'border-line-error bg-bg-error/30'
+                  : isToday
+                    ? 'border-line-accent bg-bg'
+                    : 'border-line bg-bg',
               ].join(' ')}
-              aria-hidden="true"
             >
-              {overMins > 0 ? `+${fmtMins(overMins)}` : '·'}
-            </p>
-            <div className="relative rounded-sm bg-bg-secondary" style={{ height: maxPx }} aria-hidden="true">
-              <div
-                className="pointer-events-none absolute inset-x-0 z-10 border-t border-dashed border-line-tertiary"
-                style={{ bottom: capacityPx }}
-              />
-              <div className="absolute inset-x-0 bottom-0 flex flex-col-reverse gap-px overflow-hidden rounded-sm">
-                {blocks.map((b) => {
-                  const px = Math.max((b.mins / 60) * hourPx, 6)
-                  const overCapacity = overMins > 0 && b.kind === 'task'
-                  return (
-                    <div
-                      key={b.key}
-                      title={`${b.label} · ${fmtMins(b.mins)}`}
-                      className={[
-                        'flex items-center justify-center overflow-hidden rounded-[3px] px-1 transition-all',
-                        b.preview === 'ghost' ? 'border border-dashed border-line-tertiary bg-transparent' : '',
-                        b.preview === 'incoming' ? 'ring-2 ring-(--color-accent-ring)' : '',
-                        atRiskTaskId !== null && b.taskId === atRiskTaskId ? 'ring-2 ring-line-error' : '',
-                      ].join(' ')}
-                      style={{
-                        height: px,
-                        backgroundColor: b.preview === 'ghost' ? undefined : b.color,
-                        opacity: b.kind === 'history' ? 0.45 : 1,
-                        outline: overCapacity && !b.preview ? '1px solid rgb(var(--stroke-error))' : undefined,
-                      }}
-                    >
-                      {!compact && px >= 22 ? (
-                        <span
-                          className={[
-                            'truncate text-[10px] font-semibold',
-                            b.preview === 'ghost' ? 'text-fg-tertiary' : labelClass(b.color),
-                          ].join(' ')}
-                        >
-                          {b.label}
-                        </span>
-                      ) : null}
-                    </div>
-                  )
-                })}
+              <header className="border-b border-line px-2.5 py-2">
+                <div className="flex items-baseline justify-between gap-1">
+                  <span
+                    className={[
+                      'text-[11px] font-semibold tracking-[0.275px] uppercase',
+                      isToday ? 'text-fg-accent' : 'text-fg-tertiary',
+                    ].join(' ')}
+                  >
+                    {DAY_SHORT[day]} {DAY_DATE[day]}
+                  </span>
+                  {over > 0 ? (
+                    <span className="text-[11px] font-bold text-fg-error">+{fmtMins(over)}</span>
+                  ) : (
+                    <span className="text-[11px] font-medium text-fg-tertiary">
+                      {fmtMins(Math.max(plan.capacityMinsPerDay - solid, 0))} free
+                    </span>
+                  )}
+                </div>
+                <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-bg-tertiary">
+                  <div
+                    className={[
+                      'h-full rounded-full transition-all duration-300',
+                      over > 0 ? 'bg-bg-destructive' : 'bg-bg-accent',
+                    ].join(' ')}
+                    style={{ width: `${over > 0 ? 100 : fill}%` }}
+                  />
+                </div>
+              </header>
+
+              <div className={['flex flex-col gap-1.5 p-1.5', compact ? 'min-h-16' : 'min-h-28'].join(' ')}>
+                {cards.length === 0 ? (
+                  <p className="px-1 py-2 text-[11px] font-medium text-fg-tertiary">Nothing planned</p>
+                ) : null}
+                {cards.map((card) => (
+                  <TaskCard
+                    key={card.key}
+                    card={card}
+                    compact={compact}
+                    atRisk={card.taskId !== null && card.taskId === atRiskTaskId}
+                  />
+                ))}
               </div>
-            </div>
-            <p
-              className={[
-                'mt-1.5 text-center text-[11px] font-semibold tracking-[0.275px] uppercase',
-                day === plan.today ? 'text-fg-accent' : 'text-fg-tertiary',
-              ].join(' ')}
-              aria-hidden="true"
-            >
-              {DAY_SHORT[day]}
-              {day === plan.today ? ' ·' : ''}
-            </p>
-          </div>
-        ))}
+            </section>
+          )
+        })}
       </div>
+
       {!compact ? (
-        <div className="mt-2 flex items-center gap-4 text-[11px] font-medium text-fg-secondary">
+        <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-medium text-fg-secondary">
           <LegendDot color="#fa9200" label="Northstar" />
           <LegendDot color="#5252d6" label="Atlas" />
           <LegendDot color="#6c6c7a" label="Internal" />
+          <span className="inline-flex items-center gap-1.5 text-fg-tertiary">
+            <span className="h-1 w-4 rounded-full bg-bg-tertiary" />
+            faded = already tracked
+          </span>
           <span className="ml-auto text-fg-tertiary">
-            Dashed line = {fmtMins(plan.capacityMinsPerDay)}/day
-            <button
-              type="button"
-              onClick={onEditCapacity}
-              className="ml-1.5 cursor-pointer underline underline-offset-2 hover:text-fg"
-            >
-              from your working hours
-            </button>
+            {fmtMins(plan.capacityMinsPerDay)}/day
+            {onEditCapacity ? (
+              <button
+                type="button"
+                onClick={onEditCapacity}
+                className="ml-1.5 cursor-pointer underline underline-offset-2 hover:text-fg"
+              >
+                from your working hours
+              </button>
+            ) : null}
           </span>
         </div>
       ) : null}
+
       {evaluation.atRisk && !compact ? (
         <p className="sr-only">
-          At risk: {evaluation.atRisk.task.name}, due {DAY_LABEL[evaluation.atRisk.day]}.
+          At risk: {taskLabel(evaluation.atRisk.task)}, due {DAY_LABEL[evaluation.atRisk.day]}.
         </p>
       ) : null}
     </div>
+  )
+}
+
+function TaskCard({ card, compact, atRisk }: { card: Card; compact: boolean; atRisk: boolean }) {
+  const ghost = card.state === 'ghost'
+  return (
+    <article
+      title={`${card.title} · ${fmtMins(card.mins)}`}
+      className={[
+        'relative overflow-hidden rounded-md border pr-1.5 pl-2 transition-all duration-200',
+        compact ? 'py-1' : 'py-1.5',
+        ghost
+          ? 'border-dashed border-line-tertiary bg-transparent opacity-60'
+          : card.kind === 'logged'
+            ? 'border-line bg-bg-secondary'
+            : 'border-line bg-bg',
+        card.state === 'incoming' ? 'ring-2 ring-(--color-accent-ring)' : '',
+        atRisk ? 'ring-2 ring-line-error' : '',
+      ].join(' ')}
+    >
+      <span
+        aria-hidden="true"
+        className="absolute inset-y-0 left-0 w-1"
+        style={{ backgroundColor: card.color, opacity: ghost ? 0.4 : 1 }}
+      />
+      <p
+        className={[
+          'truncate pl-1 text-[11px] leading-4 font-semibold',
+          ghost ? 'text-fg-tertiary' : card.kind === 'logged' ? 'text-fg-secondary' : 'text-fg',
+        ].join(' ')}
+      >
+        {card.title}
+      </p>
+      {!compact ? (
+        <p className="truncate pl-1 text-[10px] leading-4 font-medium text-fg-tertiary">
+          {card.meta} · {fmtMins(card.mins)}
+          {card.dueHere ? ' · due' : ''}
+        </p>
+      ) : (
+        <p className="truncate pl-1 text-[10px] leading-4 font-medium text-fg-tertiary">
+          {fmtMins(card.mins)}
+        </p>
+      )}
+      {atRisk ? (
+        <span className="mt-0.5 ml-1 inline-flex rounded-sm bg-bg-error px-1 py-px text-[9px] font-bold tracking-[0.3px] text-fg-error uppercase">
+          At risk
+        </span>
+      ) : null}
+    </article>
   )
 }
 
@@ -200,3 +262,5 @@ function LegendDot({ color, label }: { color: string; label: string }) {
     </span>
   )
 }
+
+export type { PlanTask }

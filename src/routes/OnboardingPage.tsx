@@ -40,9 +40,10 @@ const TOTAL_STEPS = 4
  */
 export function OnboardingPage() {
   const navigate = useNavigate()
+  /* Prefilled: this is a freelancer who already has clients, not an empty account. */
   const [step, setStep] = useState(1)
-  const [intent, setIntent] = useState<Intent | null>(null)
-  const [project, setProject] = useState('')
+  const [intent, setIntent] = useState<Intent | null>('track')
+  const [project, setProject] = useState('Northstar — Website')
   const [color, setColor] = useState(PALETTE[8])
   const [week, setWeek] = useState<readonly WeekItem[]>(WEEK_SEED)
 
@@ -64,6 +65,17 @@ export function OnboardingPage() {
   return (
     <div className="flex h-full flex-col items-center justify-center bg-bg-secondary px-6 py-8">
       <div className="w-full max-w-[560px]">
+        <div className="mb-3 flex items-start gap-2.5 rounded-lg border border-line bg-bg px-3.5 py-2.5">
+          <span className="mt-px text-[13px]" aria-hidden="true">
+            👋
+          </span>
+          <p className="text-[12.5px] leading-4 font-medium text-fg-secondary">
+            <strong className="text-fg">You are a freelancer signing up on Monday</strong> with three
+            clients already on the go. Answers are prefilled so you can move quickly —{' '}
+            <strong className="text-fg">just press Continue</strong> through to the end, then the
+            week runs from there.
+          </p>
+        </div>
         <StepHeader step={step} />
 
         <div className="rounded-lg border border-line bg-bg px-8 py-7">

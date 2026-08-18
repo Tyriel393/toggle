@@ -19,26 +19,98 @@ import { Icon } from '@/components/toggl/Icon'
 import { RemainingPrompt } from '@/components/toggl/RemainingPrompt'
 import { MakeRoomDrawer } from '@/components/toggl/MakeRoomDrawer'
 import { WeekStrip } from '@/components/toggl/WeekStrip'
-import { Tour, type TourStep } from '@/components/toggl/Tour'
 import { WeekOnePanel } from '@/components/toggl/WeekOnePanel'
+import { FeatureCoach, type CoachContent, type CoachStep } from '@/components/toggl/FeatureCoach'
 
-const TOUR_STEPS: readonly TourStep[] = [
-  {
-    target: '[data-tour="timer"]',
-    title: "You're a freelancer, mid-week.",
-    body: 'Three clients on the go. You estimated Homepage revisions at 3h — the timer just passed it, and the job still is not done.',
-  },
-  {
-    target: '[data-tour="prompt"]',
-    title: "Toggl asks what's left.",
-    body: 'An overrun is history — it cannot tell Toggl how much work remains. Maybe you are done and forgot to stop. So Toggl asks, and the answer takes one tap or one keystroke.',
-  },
-  {
-    target: '[data-tour="week"]',
-    title: 'Your week is the thing at risk.',
-    body: 'Those extra hours have to come from somewhere. Say how much is left and Toggl works out whether the week still fits — and which client deadline it would cost you.',
-  },
-]
+const STEP_LABELS = ['Say what’s left', 'See the risk', 'Make room', 'Learn from it'] as const
+
+function steps(current: number): CoachStep[] {
+  return STEP_LABELS.map((label, i) => ({
+    label,
+    state: i < current ? 'done' : i === current ? 'current' : 'todo',
+  }))
+}
+
+/* Always answers "what do I do next?" — for a new user and a cold evaluator alike. */
+function coachFor(state: DemoState, previewing: boolean): CoachContent {
+  const base = { headline: 'Make room', tone: 'accent' as const }
+  switch (state.phase) {
+    case 'running':
+      return {
+        ...base,
+        why: 'Your timer is past the 3h you estimated for this job, and it is not finished.',
+        action: 'Stop the timer to see what happens next',
+        steps: steps(0),
+      }
+    case 'asking':
+    case 'custom':
+    case 'wrong-task':
+      return {
+        ...base,
+        why: 'You went over your estimate. Toggl cannot tell how much work is left — only you can.',
+        action: 'Pick how much time is left — try “2h left”',
+        steps: steps(0),
+      }
+    case 'fits':
+      return {
+        ...base,
+        tone: 'success',
+        headline: 'Your week absorbed it',
+        why: 'The extra time fits, so Toggl says nothing more. A tool that only ever warns is noise.',
+        action: 'Switch to the “Conflict” scenario to see the other outcome',
+        steps: steps(1),
+      }
+    case 'marked-done':
+    case 'reassigned':
+    case 'deferred':
+      return {
+        ...base,
+        headline: 'That answer ends the flow',
+        why: 'Going over does not always mean more work — so this path creates no future capacity and no warning.',
+        action: 'Press Restart, then answer “2h left” to see the main flow',
+        steps: steps(0),
+      }
+    case 'conflict':
+      if (previewing) {
+        return {
+          ...base,
+          why: 'This is the week as it would be. Nothing has moved yet.',
+          action: 'Approve the move — or press Enter',
+          steps: steps(2),
+        }
+      }
+      return {
+        ...base,
+        why: state.drawerOpen
+          ? 'Those 2 hours have to come from somewhere. Toggl found the one job it can move without risking a deadline.'
+          : 'Wednesday no longer fits, and a dated commitment is at risk.',
+        action: state.drawerOpen ? 'Preview the suggested move — or press P' : 'Press Review to reopen Make room',
+        steps: steps(2),
+      }
+    case 'approved':
+      return {
+        ...base,
+        tone: 'success',
+        headline: 'Wednesday fits again',
+        why: 'You chose what moved, and it can be undone. Toggl never moved a client commitment on its own.',
+        action:
+          state.weekDay >= 5
+            ? 'Look at “Your first week” — that last line is the week-one payoff'
+            : 'Jump to Day 5 in the demo bar to see what the week taught you',
+        steps: steps(state.weekDay >= 5 ? 4 : 3),
+      }
+    case 'kept':
+      return {
+        ...base,
+        headline: 'Conflict acknowledged',
+        why: 'Choosing to absorb it is a valid answer — Toggl records the risk rather than hiding it.',
+        action: 'Press Review to reopen your options',
+        steps: steps(2),
+      }
+    default:
+      return { ...base, why: '', action: '', steps: steps(0) }
+  }
+}
 
 const RUNNING_BASE_SECONDS = 3 * 3600 + 11 * 60 + 42
 
@@ -153,31 +225,7 @@ export function TimerPage() {
   const evaluation = useMemo(() => currentEvaluation(state), [state])
   const homepage = state.plan.tasks.find((t) => t.id === 'homepage')
   const remainingMins = homepage?.confirmedRemainingMins ?? 0
-  /* Auto-opens once per session; the demo pill replays it on demand. */
-  const [tourOpen, setTourOpen] = useState(() => {
-    try {
-      return sessionStorage.getItem('make-room-tour-seen') === null
-    } catch {
-      return true
-    }
-  })
   const [capacityNoteOpen, setCapacityNoteOpen] = useState(false)
-
-  /*
-   * The tour is orientation for a state the user has not acted on yet. The
-   * moment they answer the prompt it is stale — and its Escape/Enter handlers
-   * would fight the drawer's. Close it as soon as the demo moves on.
-   */
-  const orienting = state.phase === 'running' || state.phase === 'asking'
-  useEffect(() => {
-    if (orienting || !tourOpen) return
-    setTourOpen(false)
-    try {
-      sessionStorage.setItem('make-room-tour-seen', '1')
-    } catch {
-      /* private mode — tour simply reopens next load */
-    }
-  }, [orienting, tourOpen])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -218,6 +266,8 @@ export function TimerPage() {
       <PageContainer>
         <div className="mx-auto flex max-w-6xl gap-5 pt-1">
         <div className="min-w-0 flex-1 space-y-4">
+          <FeatureCoach content={coachFor(state, state.previewMove !== null)} />
+
           <div data-tour="timer">
             <TimerBar state={state} onStop={() => dispatch({ type: 'stop' })} onRestart={() => dispatch({ type: 'restart' })} />
           </div>
@@ -366,19 +416,6 @@ export function TimerPage() {
 
       <UndoToast state={state} onUndo={() => dispatch({ type: 'undo' })} />
 
-      <Tour
-        steps={TOUR_STEPS}
-        open={tourOpen}
-        onClose={() => {
-          setTourOpen(false)
-          try {
-            sessionStorage.setItem('make-room-tour-seen', '1')
-          } catch {
-            /* private mode — tour simply reopens next load */
-          }
-        }}
-      />
-
       <SmallScreenNotice />
 
       <DemoChrome
@@ -387,7 +424,6 @@ export function TimerPage() {
         onRestart={() => dispatch({ type: 'restart' })}
         onScenario={(scenario) => dispatch({ type: 'set-scenario', scenario })}
         onDay={(day) => dispatch({ type: 'set-day', day })}
-        onTour={() => setTourOpen(true)}
       />
     </>
   )
@@ -569,14 +605,12 @@ function DemoChrome({
   onRestart,
   onScenario,
   onDay,
-  onTour,
 }: {
   scenario: Scenario
   weekDay: 1 | 2 | 3 | 4 | 5
   onRestart: () => void
   onScenario: (scenario: Scenario) => void
   onDay: (day: 1 | 2 | 3 | 4 | 5) => void
-  onTour: () => void
 }) {
   const [theme, setTheme] = useState<ThemeChoice>('system')
   const [showEvents, setShowEvents] = useState(false)
@@ -602,13 +636,6 @@ function DemoChrome({
       <span className="px-1.5 text-[11px] font-semibold tracking-[0.275px] text-fg-tertiary uppercase">
         Demo
       </span>
-      <button
-        type="button"
-        onClick={onTour}
-        className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
-      >
-        Tour
-      </button>
       <Link
         to="/onboarding"
         className="cursor-pointer rounded-full px-2.5 py-1 text-[12px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"

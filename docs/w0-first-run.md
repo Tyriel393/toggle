@@ -300,3 +300,42 @@ The prompt slot at post-stop is **occupied**. Our client ask must therefore eith
 - **(b)** replace it in the first-run case, arguing that "who was this for?" must precede "will you repeat it?"
 
 **(b) is the stronger product argument and the sharper demo** — but it must be made explicitly as a prioritisation call, not silently.
+
+---
+
+## 11. CORRECTION — client-scoped goals DO work (2026-08-18)
+
+**§9 and §10.1 were wrong.** Both concluded the client-scoped goal was not counting client time. It counts; there is **aggregation latency**.
+
+Observed sequence on one goal (`at least 5h · every week · LOGGED TO: Acme Advisory`):
+
+| Client time tracked | Goal progress | State |
+| --- | --- | --- |
+| 7m 23s | 0/5 hours · 0% | NOT STARTED |
+| ~1h 30m | 0/5 hours · 0% | NOT STARTED |
+| **~2h+** | **2/5 hours · 40%** | **ON PACE** ✅ |
+
+Rail card and Goals page both now render a **progress ring, `2/5 hours · 40%`, and a green `ON PACE` state**. The Goals page tile reads `LOGGED · THIS WEEK 3.5h` (all tracked time, across clients).
+
+**This was the sixth over-claim of this research effort, and the third caused by treating a not-yet-updated UI as a defect.** Standing rule for the submission: *do not call anything broken without waiting out a refresh cycle and re-observing.*
+
+### What this changes — the direction gets tighter, not weaker
+
+The mechanism is **good**, and it is exactly the "client runway" card that was being considered as an invention. Building it would be rebuilding working functionality.
+
+What is genuinely wrong is the **path to it**, all verified:
+
+1. **No client data** — onboarding forces a project and never asks who it is for; the fastest capture path leaves entries unattributed
+2. **No discovery** — the Goals rail sits behind an unlabelled toggle (obs 19); the `/goals` page is **not in the sidebar**
+3. **Wrong exemplar** — the seeded example is *"Work 5 hours every day"*, a generic total, when the freelancer's question is per-client
+4. **Never introduced** — nothing in onboarding or the 4-item checklist mentions goals or clients
+
+### Revised build implication
+
+**Do not build the commitment card. Build the route to it.**
+
+- **Act 1 —** attribution at the post-stop moment (Toggl's own card pattern), so client data exists at all
+- **Act 2 —** surface the client commitment at the moment a client first exists, replacing the generic "work 5 hours every day" exemplar with a per-client one
+- **Act 3 —** Toggl's existing goal card does the rest, unchanged
+
+The submission line becomes: **"I didn't build a feature. I built the path to one you already have."** That is a stronger claim than either "I fixed a dash" or "I invented client runways", and every step of it is screenshot-provable.

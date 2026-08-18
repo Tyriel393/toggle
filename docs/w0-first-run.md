@@ -245,3 +245,58 @@ The Goals page's own `LOGGED · THIS WEEK` tile correctly reads **10m** — so t
 **This must be resolved before Act 2 is locked.** The cheapest decisive test: track **~20 minutes** against Acme Advisory (≈7% of 5h) and re-check. If progress is still `0%`, the mechanism is not live-updating and the prototype must demonstrate the loop with mock data rather than claiming Toggl already does it.
 
 **Either way the direction survives** — arguably it strengthens: if a client goal cannot visibly count client work in week one, the "capability exists but is starved" argument gets sharper. But the claim must match what was observed.
+
+---
+
+## 10. Two findings that reshape the direction (2026-08-18, late)
+
+### 10.1 CONFIRMED: client-scoped goal does not count client time
+
+Follow-up to §9, with a much larger sample. Josip tracked over an hour against the same client.
+
+| Surface | Value |
+| --- | --- |
+| Timer, week total | **1h 31m** |
+| Entry `Passion Project · Acme Advisory` | **1h 30m 28s** |
+| Goals page tile `LOGGED · THIS WEEK` | **1.5h** |
+| Goal `at least 5h · every week · LOGGED TO: Acme Advisory` | **0/5 hours · 0% · NOT STARTED** |
+
+**1.5 hours of client-attributed time against a 5h weekly client goal renders as 0%.** That is a 30% shortfall, far above any rounding floor — so the §9 rounding hypothesis is dead. Either goal aggregation does not run live, or "logged to a client" does not mean what the label implies.
+
+**Cause still UNVERIFIED.** Do not claim it is broken; claim what was observed.
+
+Incidental: the Goals page renders **`1.5h` decimal**, while Timer renders `1h 31m` classic — a tenth duration format in one product. Also, `END DATE` now shows `August 29 2026` where it previously read `No end date`.
+
+### 10.2 NEW: Toggl already has a post-stop prompt — and it asks about *tomorrow*
+
+Discovered by Josip, tracking for over an hour (a duration none of my second-scale tests ever reached).
+
+On stopping a long entry, a card appears:
+
+> ✅ **1H 44S LOGGED**
+> **Working on this tomorrow?**
+> ⌗ PLAN — *I am working on an MVP For toggle — researchin…*
+> Wed, Aug 19 | 2:38 PM → 3:53 PM | ⏱ 1h 15m
+> `+ Add to tomorrow` · `Not now` · `✕`
+
+**Why this matters more than anything else found today:**
+
+1. **The interaction pattern we designed already exists** — post-stop, non-blocking, primary + secondary + dismiss. Our client ask should mirror it exactly rather than invent a new shape. Large fidelity win.
+2. **It is Toggl's existing W0 return mechanism** — a fourth one, alongside the daily brief email, the 8h timer warning, and the calendar suggestion cards. Any claim that Toggl lacks a reason-to-return is now false.
+3. **It completes the 4th onboarding checklist item** ("Plan a time slot") — closing the loop to 4/4.
+4. **The sharp observation:**
+
+> **Toggl has a post-stop prompt asking whether you will do this work again tomorrow. It has no post-stop prompt asking who the work was for.**
+
+The product invests its forward-looking moment in *repetition* while the attribution that makes the record answerable is never asked for. It builds the habit loop on top of data it never structured.
+
+**Trigger threshold UNVERIFIED** — never appeared across many second-scale entries; appeared at ~1h. Duration-gated is likely but unproven.
+
+### Implication for the plan
+
+The prompt slot at post-stop is **occupied**. Our client ask must therefore either:
+
+- **(a)** live at start / during run, leaving post-stop to Toggl's existing plan prompt, or
+- **(b)** replace it in the first-run case, arguing that "who was this for?" must precede "will you repeat it?"
+
+**(b) is the stronger product argument and the sharper demo** — but it must be made explicitly as a prioritisation call, not silently.

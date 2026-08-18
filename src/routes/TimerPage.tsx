@@ -858,7 +858,7 @@ function DemoChrome({
             : 'text-fg-secondary hover:bg-bg-hover hover:text-fg',
         ].join(' ')}
       >
-        Funnel
+        Metrics
       </button>
       <button
         type="button"
@@ -889,65 +889,63 @@ const GUARDRAILS: readonly { event: string; label: string; note: string }[] = [
 ]
 
 /*
- * What a PM would actually open: the funnel, not the event stream. Every step
- * the user takes lands in it live — the same events a production build would
- * send to Mixpanel or equivalent.
+ * A one-person session is not a funnel, so this does not pretend to be one. It
+ * shows what this session emitted, then the measurement plan those events feed:
+ * north star, the load-bearing step, counter-metrics, and the kill criteria.
  */
 function EventsPanel() {
   const log = useSyncExternalStore(subscribeTrack, getTrackLog, getTrackLog)
   const count = (name: string) => log.filter((e) => e.name === name).length
-  const top = count(FUNNEL[0].event)
 
   return (
     <div
-      className="fixed bottom-14 left-4 max-h-[420px] w-[360px] overflow-y-auto rounded-lg border border-line bg-bg p-3"
+      className="fixed bottom-14 left-4 max-h-[520px] w-[380px] overflow-y-auto rounded-lg border border-line bg-bg p-3.5"
       role="region"
-      aria-label="Analytics funnel"
+      aria-label="Measurement plan"
     >
-      <p className="uppercase-label pb-0.5">Make room · activation funnel</p>
-      <p className="mb-2.5 text-[11px] leading-4 font-medium text-fg-secondary">
-        Emitted live as you use the prototype. In production this is Mixpanel or equivalent.
+      <p className="uppercase-label pb-0.5">North star</p>
+      <p className="text-[12px] leading-4 font-medium text-fg">
+        Among <strong>eligible</strong> new freelancers, the share who track or plan on{' '}
+        <strong>3+ distinct days in their first 7</strong> — against a matched control.
+      </p>
+      <p className="mt-1 text-[11px] leading-4 font-medium text-fg-secondary">
+        Not prompts shown or moves approved. Those are things the feature does to people; this is
+        something people do.
       </p>
 
-      <ol className="space-y-1.5">
-        {FUNNEL.map((step, i) => {
+      <p className="uppercase-label mt-3 pb-1">This session emitted</p>
+      <ul className="space-y-0.5">
+        {FUNNEL.map((step) => {
           const n = count(step.event)
-          const prev = i === 0 ? n : count(FUNNEL[i - 1].event)
-          const pct = top === 0 ? 0 : Math.round((n / top) * 100)
-          const dropped = i > 0 && prev > 0 && n < prev
           return (
-            <li key={step.event}>
-              <div className="flex items-baseline justify-between gap-2">
-                <span
-                  className={[
-                    'truncate text-[12px] font-medium',
-                    n > 0 ? 'text-fg' : 'text-fg-tertiary',
-                  ].join(' ')}
-                >
-                  {step.label}
-                </span>
-                <span
-                  className={[
-                    'shrink-0 font-mono text-[11px] tabular-nums',
-                    dropped ? 'text-fg-error' : n > 0 ? 'text-fg-secondary' : 'text-fg-tertiary',
-                  ].join(' ')}
-                >
-                  {n}
-                  {i > 0 && top > 0 ? ` · ${pct}%` : ''}
-                </span>
-              </div>
-              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-bg-tertiary">
-                <div
-                  className={['h-full rounded-full transition-all', n > 0 ? 'bg-bg-accent' : ''].join(' ')}
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
+            <li key={step.event} className="flex items-baseline justify-between gap-2 text-[11px]">
+              <span className={n > 0 ? 'font-medium text-fg' : 'text-fg-tertiary'}>{step.label}</span>
+              <span
+                className={[
+                  'shrink-0 font-mono tabular-nums',
+                  n > 0 ? 'text-fg-success' : 'text-fg-tertiary',
+                ].join(' ')}
+              >
+                {n > 0 ? '✓' : '—'}
+              </span>
             </li>
           )
         })}
-      </ol>
+      </ul>
+      <p className="mt-1.5 text-[11px] leading-4 font-medium text-fg-tertiary">
+        One session, so no conversion rates — a percentage here would be theatre. At scale this is
+        the mechanism funnel, per eligible user.
+      </p>
 
-      <p className="uppercase-label mt-3 pb-1">Guardrails</p>
+      <p className="uppercase-label mt-3 pb-1">The load-bearing step</p>
+      <p className="text-[11px] leading-4 font-medium text-fg-secondary">
+        <span className="font-mono text-fg">remaining_confirmed</span> — the only step that needs
+        belief. If people will not say what is left, nothing downstream can happen, and it cannot be
+        inferred. Watch the <em>mix</em>: a high “Done” rate on tasks later reopened means the prompt
+        is being dismissed, not answered.
+      </p>
+
+      <p className="uppercase-label mt-3 pb-1">Counter-metrics</p>
       <ul className="space-y-1">
         {GUARDRAILS.map((g) => {
           const n = count(g.event)
@@ -961,11 +959,31 @@ function EventsPanel() {
             </li>
           )
         })}
+        <li className="flex items-baseline justify-between gap-2 border-t border-line pt-1 text-[11px]">
+          <span className="font-medium text-fg-warning">
+            Tracked hours vs control
+            <span className="ml-1 font-normal text-fg-tertiary">— the existential one</span>
+          </span>
+          <span className="shrink-0 font-mono text-fg-tertiary">n/a here</span>
+        </li>
+      </ul>
+      <p className="mt-1.5 text-[11px] leading-4 font-medium text-fg-secondary">
+        We are adding a question at timer-stop. If that makes people track less, the feature is
+        net-negative however well its own funnel performs.
+      </p>
+
+      <p className="uppercase-label mt-3 pb-1">Kill it if</p>
+      <ul className="list-disc space-y-0.5 pl-3.5 text-[11px] leading-4 font-medium text-fg-secondary">
+        <li>Eligible cohort is under ~5% of week-one freelancers</li>
+        <li>Tracked hours drop in the exposed group</li>
+        <li>Conflicts are seen but nothing changes — the warning is noise</li>
+        <li>No return lift among eligible exposed users</li>
       </ul>
 
       <p className="mt-2.5 border-t border-line pt-2 text-[11px] leading-4 font-medium text-fg-secondary">
-        The measure that matters is not this funnel — it is whether eligible freelancers return on
-        three separate days in week one. This is the mechanism underneath it.
+        <strong className="text-fg">First step is a query, not a build:</strong> size how many W0
+        freelancers ever reach this moment. A day of SQL could end the project cheaply — see{' '}
+        <span className="font-mono">docs/measurement-plan.md</span>.
       </p>
     </div>
   )

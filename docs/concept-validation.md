@@ -15,7 +15,8 @@
 > 4. **At the moment you replied to the client — what did you actually check?** (Calendar? A tool? Nothing?)
 > 5. Did anything else you had planned slip because of it?
 > 6. If it did — did you realise **at the time**, or only later?
-> 6. Have you ever agreed to something and then found out you couldn't fit it?
+> 7. Have you ever agreed to something and then found you could not fit it?
+> 8. How often does the plan in your head turn out to be wrong?
 >
 > No right answers, just what actually happened.
 

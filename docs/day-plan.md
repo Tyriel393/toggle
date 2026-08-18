@@ -180,3 +180,54 @@ And tie it to the ladder from [`company-research.md`](company-research.md): Free
 ## What I'll say when you open the brief
 
 I'll read it, then ask you the four questions from Phase 0 before offering any opinion — so your read lands first.
+
+---
+
+## Writing for an AI-assisted evaluator
+
+The start screen states: **"Your responses are evaluated using AI and reviewed by the hiring team."** So there are two graders in sequence — a machine first pass, then humans. They reward different things, and you have to satisfy both.
+
+### The likely explanation for the 55%
+
+The earlier written assessment scored **93% closed / 55% open**. Closed questions are trivially machine-scored. Open ones were almost certainly scored by an LLM against a rubric.
+
+That reframes the weakness. It probably wasn't that the thinking was absent — it's that an LLM checking for *"did they state a baseline / target / attribution / trade-off / decision rule"* couldn't **find** those components, because they were buried in flowing prose instead of labelled.
+
+**The fix is structural, not literary.** Make every rubric component impossible to miss.
+
+### Write so a rubric-matcher cannot miss anything
+
+- **Markdown is supported — use it.** The brief says so explicitly. Headings, bold labels, tables, lists.
+- **Label the components literally.** `**Baseline:** … **Target:** … **How I'd attribute it:** … **Trade-off:** … **Kill criterion:** …` Do not make a grader infer them.
+- **If a question asks three things, produce three labelled answers.** LLM rubric-matching is literal. A beautiful paragraph that covers all three implicitly scores worse than three plain labelled chunks.
+- **Answer the literal question first, elaborate second.** Lead with the direct answer, then the reasoning.
+- **Concrete beats eloquent.** Numbers, named trade-offs, explicit decision rules. Hedged prose reads as low-confidence to both graders.
+
+### The paradox — and where the human reviewer decides it
+
+An AI grader rewards structure. But **if the content reads like generic AI output, it is indistinguishable from every other candidate's generic AI output** — and that's what the human reviewer is there to catch. Toggl said it outright: *"AI's first answer tends to be the same for everyone."*
+
+So the shape to aim for:
+
+> **Machine-legible structure. Unmistakably personal content.**
+
+Concretely, personal content means:
+- Specifics from *your* use of the product ("when I tracked my first entry, X happened") — not general claims about time trackers
+- Your real reasoning about the trade-off, including what you were unsure about
+- The one insight, stated in your own words
+- **Where you disagreed with the AI** — they said explicitly they grade this. `DECISIONS.md` has a concrete example: you overrode the AI on the typeface, and that override is what surfaced the fact that the app actually renders Inter, not GT Haptik.
+
+An LLM grader can verify that a specific claim exists. A human decides whether it sounds like a person. Give each what it's looking for.
+
+### Mechanics from the start screen
+
+- **The timer runs continuously once started, even with the tab closed.** No pausing. Don't open it and walk away.
+- **Auto-save as you type**, and you can close and return to the same link.
+- **You can attach files** — PDFs, images, documents — **to any question**. So the rationale can be a properly formatted attachment, and screenshots can support the prototype link.
+- **After submitting you cannot edit or add files.** Everything gets a final check before you hit submit.
+
+### One clause to be aware of
+
+The confirmation checkbox reads: *"I confirm this is my own work and that I will not share the questions or my answers with anyone outside the hiring team."*
+
+Toggl separately and explicitly encourages heavy AI use, so working with AI tools is clearly sanctioned — that clause is about not leaking the questions to other candidates or posting them publicly. Worth knowing, though: consumer ChatGPT trains on conversations by default, which sits closer to "public" than a private tool does. If you're pasting the brief there, turning off training in settings first is the sensible precaution. Your call — just don't make it unknowingly.

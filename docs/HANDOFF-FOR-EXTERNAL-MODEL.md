@@ -39,6 +39,25 @@ On the earlier written assessment he scored **93% on closed questions but 55% on
 
 So any metric you propose must carry all five of: **baseline · target · attribution · trade-off · decision rule (if X → scale, if Y → kill).**
 
+### How the submission is graded — AI first, humans second
+
+The assignment start screen states: **"Your responses are evaluated using AI and reviewed by the hiring team."** Two graders in sequence, rewarding different things.
+
+**This probably explains the 93%/55% split.** Closed questions are trivially machine-scored. Open ones were almost certainly LLM-scored against a rubric — so the likely failure wasn't absent thinking, it was that a rubric-matcher couldn't *locate* the components (baseline, target, attribution, trade-off, decision rule) inside flowing prose.
+
+**Implication for anything you help draft:**
+
+- **Markdown is supported and should be used.** Headings, bold labels, tables.
+- **Label rubric components literally** — `**Baseline:**`, `**Target:**`, `**Kill criterion:**`. Never make a grader infer them.
+- **If a question asks three things, give three labelled answers.** Rubric-matching is literal; an elegant paragraph covering all three implicitly scores worse.
+- **Concrete beats eloquent.** Numbers, named trade-offs, explicit decision rules.
+
+**But note the paradox:** an AI grader rewards structure, while the *human* reviewer is there to catch content that reads like generic AI output. Toggl said it outright — *"AI's first answer tends to be the same for everyone."*
+
+So the target shape is: **machine-legible structure, unmistakably personal content.** Specifics from Josip's own use of the product, his real uncertainty, and explicitly where he disagreed with the AI (which Toggl says it grades).
+
+**Other mechanics:** the timer runs continuously once started even with the tab closed; answers auto-save; files (PDF/image/doc) can be attached to any question; nothing can be edited after submission.
+
 ### What already exists (do not redo this work)
 
 A previous AI session (Claude) spent a full day on preparation. Already done and verified:

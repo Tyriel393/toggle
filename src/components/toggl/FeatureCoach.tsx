@@ -11,6 +11,7 @@ export type CoachContent = {
   why: string
   steps: readonly CoachStep[]
   tone: 'accent' | 'success'
+  metric?: { label: string; detail: string }
 }
 
 /*
@@ -87,6 +88,15 @@ export function FeatureCoach({ content }: { content: CoachContent }) {
               </li>
             ))}
           </ol>
+
+          {content.metric ? (
+            <p className="mt-3 border-t border-line-accent pt-2.5 text-[11px] leading-4 font-medium text-fg-secondary">
+              <span className="font-semibold tracking-[0.06em] text-fg-tertiary uppercase">
+                {content.metric.label}
+              </span>{' '}
+              — {content.metric.detail}
+            </p>
+          ) : null}
         </div>
       </div>
     </section>

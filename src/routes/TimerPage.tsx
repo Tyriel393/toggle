@@ -11,8 +11,9 @@ import {
 } from '@/data/demo'
 import { DAY_LABEL, expectedTotalMins, fmtClock, fmtMins, taskLabel, type PlanTask } from '@/lib/planEval'
 import { getTrackLog, subscribeTrack, track } from '@/lib/track'
-import { PageContainer, TopBar } from '@/components/toggl/Shell'
-import { Button, PlayButton } from '@/components/toggl/Button'
+import { PageContainer } from '@/components/toggl/Shell'
+import { CaptureBar, DayMeters, WeekToolbar, type MeterSegment } from '@/components/toggl/TimerChrome'
+import { Button } from '@/components/toggl/Button'
 import { Card } from '@/components/toggl/Surface'
 import { Badge } from '@/components/toggl/Data'
 import { Icon } from '@/components/toggl/Icon'
@@ -46,6 +47,18 @@ function coachFor(state: DemoState, previewing: boolean): CoachContent {
           : 'A second day tracked against the plan. Wednesday is full but still fits, so Toggl stays quiet.',
       action: 'Press Day 3 in the demo bar — that is when a job runs long',
       steps: steps(0),
+      metric:
+        state.weekDay === 1
+          ? {
+              label: 'Eligibility',
+              detail:
+                'Decided here, not later: does this user have two dated, estimated commitments? The share who do is the concept’s biggest unknown.',
+            }
+          : {
+              label: 'Leading indicator',
+              detail:
+                'Distinct days tracked. Two is where week-one retention starts to separate from a single-session signup.',
+            },
     }
   }
 
@@ -65,6 +78,11 @@ function coachFor(state: DemoState, previewing: boolean): CoachContent {
         why: 'You went over your estimate. Toggl cannot tell how much work is left — only you can.',
         action: 'Pick how much time is left — try “2h left”',
         steps: steps(0),
+        metric: {
+          label: 'Funnel · step 1',
+          detail:
+            'estimate_prompt_shown → remaining_confirmed. Guardrail: “Done” chosen only to dismiss, and any delay this adds at timer stop.',
+        },
       }
     case 'fits':
       return {
@@ -101,6 +119,11 @@ function coachFor(state: DemoState, previewing: boolean): CoachContent {
           : 'Wednesday no longer fits, and a dated commitment is at risk.',
         action: state.drawerOpen ? 'Preview the suggested move — or press P' : 'Press Review to reopen Make room',
         steps: steps(2),
+        metric: {
+          label: 'Funnel · steps 2–3',
+          detail:
+            'conflict_detected → make_room_opened. The share of confirmations that produce a real collision is what tells us this fires often enough to matter.',
+        },
       }
     case 'approved':
       return {
@@ -113,6 +136,18 @@ function coachFor(state: DemoState, previewing: boolean): CoachContent {
             ? 'Look at “Your first week” — that last line is the week-one payoff'
             : 'Jump to Day 5 in the demo bar to see what the week taught you',
         steps: steps(state.weekDay >= 5 ? 4 : 3),
+        metric:
+          state.weekDay >= 5
+            ? {
+                label: 'W0 outcome',
+                detail:
+                  'Do eligible freelancers track or plan on 3+ separate days in week one, against a matched control? That is the measure — everything above is the mechanism.',
+              }
+            : {
+                label: 'Value metric',
+                detail:
+                  '% of collisions returned to a workable plan before the deadline they threatened. Guardrail: moves undone within 24h — press Ctrl+Z to log one.',
+              },
       }
     case 'kept':
       return {
@@ -128,6 +163,20 @@ function coachFor(state: DemoState, previewing: boolean): CoachContent {
 }
 
 const RUNNING_BASE_SECONDS = 3 * 3600 + 11 * 60 + 42
+
+const NORTHSTAR = '#fa9200'
+const ATLAS = '#5252d6'
+const INTERNAL = '#6c6c7a'
+
+const DAY_METERS: readonly (readonly MeterSegment[])[] = [
+  [{ mins: 250, color: NORTHSTAR, label: 'Northstar' }, { mins: 140, color: INTERNAL, label: 'Internal' }],
+  [{ mins: 305, color: ATLAS, label: 'Atlas' }, { mins: 130, color: INTERNAL, label: 'Internal' }],
+  [{ mins: 192, color: NORTHSTAR, label: 'Homepage revisions' }, { mins: 168, color: NORTHSTAR, label: 'Calls & email' }],
+  [{ mins: 420, color: ATLAS, label: 'Atlas' }],
+  [{ mins: 120, color: INTERNAL, label: 'Portfolio polish' }],
+]
+
+const DAY_TOTALS = ['6h 30m', '7h 15m', '6h 0m', '7h 0m', '2h 0m'] as const
 
 function choiceLabel(mins: number): string {
   if (mins === 30) return '30m'
@@ -242,6 +291,17 @@ export function TimerPage() {
   const remainingMins = homepage?.confirmedRemainingMins ?? 0
   const [capacityNoteOpen, setCapacityNoteOpen] = useState(false)
 
+  const [runningSeconds, setRunningSeconds] = useState(RUNNING_BASE_SECONDS)
+  useEffect(() => {
+    if (state.phase !== 'running') {
+      setRunningSeconds(RUNNING_BASE_SECONDS)
+      return
+    }
+    const id = window.setInterval(() => setRunningSeconds((s) => Math.min(s + 1, 11524)), 1000)
+    return () => window.clearInterval(id)
+  }, [state.phase])
+  const runningClock = fmtClock(runningSeconds)
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const t = e.target
@@ -270,13 +330,22 @@ export function TimerPage() {
 
   return (
     <>
-      <TopBar
-        title="Timer"
-        actions={
-          <span className="text-[14px] font-medium text-fg-secondary">
-            {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'][state.weekDay - 1]} · week one
-          </span>
+      <CaptureBar
+        running={state.phase === 'running'}
+        clock={state.phase === 'running' ? runningClock : '0:00:00'}
+        description={state.weekDay >= 3 ? 'Homepage revisions' : null}
+        onToggle={() =>
+          dispatch({ type: state.phase === 'running' ? 'stop' : 'restart' })
         }
+      />
+      <WeekToolbar
+        label={`Week one · ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri'][state.weekDay - 1]} 1${state.weekDay + 6} Aug`}
+      />
+      <DayMeters
+        logged={DAY_METERS[state.weekDay - 1]}
+        loggedTotal={DAY_TOTALS[state.weekDay - 1]}
+        plannedMins={state.weekDay >= 3 ? 135 : 60}
+        capacityMins={state.plan.capacityMinsPerDay}
       />
       <PageContainer>
         <div className="mx-auto flex max-w-6xl gap-5 pt-1">
@@ -285,11 +354,6 @@ export function TimerPage() {
 
           <FeatureCoach content={coachFor(state, state.previewMove !== null)} />
 
-          {state.weekDay >= 3 ? (
-            <div data-tour="timer">
-              <TimerBar state={state} onStop={() => dispatch({ type: 'stop' })} onRestart={() => dispatch({ type: 'restart' })} />
-            </div>
-          ) : null}
 
           {homepage &&
           state.weekDay >= 3 &&
@@ -476,49 +540,6 @@ function PremiseNote() {
       >
         <Icon name="close" size={12} />
       </button>
-    </div>
-  )
-}
-
-function TimerBar({
-  state,
-  onStop,
-  onRestart,
-}: {
-  state: DemoState
-  onStop: () => void
-  onRestart: () => void
-}) {
-  const running = state.phase === 'running'
-  const [seconds, setSeconds] = useState(RUNNING_BASE_SECONDS)
-
-  useEffect(() => {
-    if (!running) {
-      setSeconds(RUNNING_BASE_SECONDS)
-      return
-    }
-    /* Ticks to the stop value and holds — the stopped display is always 3:12:04. */
-    const id = window.setInterval(() => setSeconds((s) => Math.min(s + 1, 11524)), 1000)
-    return () => window.clearInterval(id)
-  }, [running])
-
-  return (
-    <div className="flex items-center gap-3 rounded-lg border border-line bg-bg px-4 py-3">
-      <p className="min-w-0 flex-1 truncate text-[14px] font-medium text-fg">Homepage revisions</p>
-      <span className="inline-flex shrink-0 items-center gap-1.5 rounded-sm bg-bg-secondary px-2 py-1 text-[12px] font-medium text-fg-secondary">
-        <span className="size-2 rounded-full" style={{ backgroundColor: '#fa9200' }} />
-        Northstar
-      </span>
-      <span
-        className={[
-          'shrink-0 text-[16px] font-semibold tabular-nums',
-          running ? 'text-fg' : 'text-fg-secondary',
-        ].join(' ')}
-        aria-label={running ? 'Timer running' : 'Timer stopped'}
-      >
-        {running ? fmtClock(seconds) : '3:12:04'}
-      </span>
-      <PlayButton running={running} onClick={running ? onStop : onRestart} />
     </div>
   )
 }

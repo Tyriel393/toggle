@@ -29,6 +29,7 @@ export const CLIENT_COLOR = {
   northstar: '#fa9200',
   atlas: '#5252d6',
   internal: '#6c6c7a',
+  meridian: '#1da58c',
 } as const
 
 const CAPACITY = 8 * 60
@@ -74,6 +75,47 @@ function baseTasks(): PlanTask[] {
       status: 'todo',
     },
   ]
+}
+
+/*
+ * Monday morning: nothing tracked yet, five days of committed work. 42h of it
+ * against a 40h week — the over-commitment exists before a single timer runs,
+ * and Toggl already knows the weekly number but never says so.
+ */
+const mondayTask = (
+  id: string,
+  name: string,
+  client: string | null,
+  color: string,
+  mins: number,
+  day: Weekday,
+  due: Weekday | null,
+): PlanTask => ({
+  id,
+  name,
+  client,
+  color,
+  originalEstimateMins: mins,
+  confirmedRemainingMins: null,
+  loggedMins: 0,
+  dueDate: due,
+  scheduledDay: day,
+  status: 'todo',
+})
+
+export function mondayPlan(deferred: boolean): WeekPlan {
+  const tasks = [
+    mondayTask('m-migration', 'Content migration', 'Northstar', CLIENT_COLOR.northstar, 540, 'mon', 'tue'),
+    mondayTask('m-social', 'Social assets', 'Meridian', CLIENT_COLOR.meridian, 540, 'tue', 'wed'),
+    mondayTask('homepage', 'Homepage revisions', 'Northstar', CLIENT_COLOR.northstar, 180, 'wed', 'wed'),
+    mondayTask('m-wireframes', 'Wireframes', 'Atlas', CLIENT_COLOR.atlas, 180, 'wed', 'thu'),
+    mondayTask('portfolio', 'Portfolio polish', null, CLIENT_COLOR.internal, 120, 'wed', null),
+    mondayTask('atlas-handoff', 'Final handoff', 'Atlas', CLIENT_COLOR.atlas, 420, 'thu', 'thu'),
+    mondayTask('m-copy', 'Copy review', 'Meridian', CLIENT_COLOR.meridian, 60, 'thu', 'fri'),
+    mondayTask('m-brand', 'Brand refresh', 'Meridian', CLIENT_COLOR.meridian, 480, 'fri', 'fri'),
+  ].filter((t) => !(deferred && t.id === 'portfolio'))
+
+  return { tasks, history: [], capacityMinsPerDay: CAPACITY, today: 'mon' }
 }
 
 function baseHistory(callsMins: number): HistoryEntry[] {
@@ -139,6 +181,7 @@ export type DemoState = {
   reassignedTo: string | null
   drawerOpen: boolean
   weekDay: 1 | 2 | 3 | 4 | 5
+  weekFix: 'defer' | 'overtime' | 'renegotiate' | null
 }
 
 export type DemoAction =
@@ -160,6 +203,8 @@ export type DemoAction =
   | { type: 'restart' }
   | { type: 'set-scenario'; scenario: Scenario }
   | { type: 'set-day'; day: 1 | 2 | 3 | 4 | 5 }
+  | { type: 'week-fix'; fix: 'defer' | 'overtime' | 'renegotiate' }
+  | { type: 'week-fix-undo' }
 
 export function initialState(scenario: Scenario, phase: Phase = 'asking'): DemoState {
   return {
@@ -173,6 +218,7 @@ export function initialState(scenario: Scenario, phase: Phase = 'asking'): DemoS
     reassignedTo: null,
     drawerOpen: false,
     weekDay: 3,
+    weekFix: null,
   }
 }
 
@@ -259,6 +305,14 @@ export function demoReducer(state: DemoState, action: DemoAction): DemoState {
         : { ...state, drawerOpen: false, previewMove: null }
     case 'set-day':
       return { ...state, weekDay: action.day }
+    /*
+     * Monday's decision drives the Monday view only. It must not rewrite the
+     * mid-week plan, or Wednesday's overrun would stop conflicting.
+     */
+    case 'week-fix':
+      return { ...state, weekFix: action.fix }
+    case 'week-fix-undo':
+      return { ...state, weekFix: null }
     case 'restart':
       return initialState(state.scenario, 'running')
     case 'set-scenario':

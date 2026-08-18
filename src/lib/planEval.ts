@@ -46,6 +46,10 @@ export type Evaluation = {
   overloads: Overload[]
   atRisk: AtRisk | null
   fits: boolean
+  /* Weekly capacity — Toggl's own "Xh free" lane figure, acted on. */
+  weekPlannedMins: number
+  weekCapacityMins: number
+  weekOverMins: number
 }
 
 export type SafeMove = {
@@ -93,7 +97,17 @@ export function evaluate(plan: WeekPlan): Evaluation {
     const over = loads[day] - plan.capacityMinsPerDay
     if (over > 0) overloads.push({ day, overMins: over })
   }
-  return { loads, overloads, atRisk: findAtRisk(plan, loads, overloads), fits: overloads.length === 0 }
+  const weekPlannedMins = WEEK.reduce((s, d) => s + loads[d], 0)
+  const weekCapacityMins = plan.capacityMinsPerDay * WEEK.length
+  return {
+    loads,
+    overloads,
+    atRisk: findAtRisk(plan, loads, overloads),
+    fits: overloads.length === 0,
+    weekPlannedMins,
+    weekCapacityMins,
+    weekOverMins: Math.max(weekPlannedMins - weekCapacityMins, 0),
+  }
 }
 
 /*

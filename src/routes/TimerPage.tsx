@@ -11,7 +11,8 @@ import {
   type DemoState,
   type Scenario,
 } from '@/data/demo'
-import { DAY_LABEL, expectedTotalMins, fmtClock, fmtMins, taskLabel, type PlanTask } from '@/lib/planEval'
+import { DAY_LABEL, evaluate, expectedTotalMins, fmtClock, fmtMins, taskLabel, type PlanTask } from '@/lib/planEval'
+import { mondayPlan } from '@/data/demo'
 import { getTrackLog, subscribeTrack, track } from '@/lib/track'
 import { PageContainer } from '@/components/toggl/Shell'
 import { CaptureBar, DayMeters, WeekToolbar, type MeterSegment } from '@/components/toggl/TimerChrome'
@@ -24,6 +25,7 @@ import { MakeRoomDrawer } from '@/components/toggl/MakeRoomDrawer'
 import { WeekStrip } from '@/components/toggl/WeekStrip'
 import { WeekOnePanel } from '@/components/toggl/WeekOnePanel'
 import { FeatureCoach, type CoachContent, type CoachStep } from '@/components/toggl/FeatureCoach'
+import { WeekCapacityCard } from '@/components/toggl/WeekCapacityCard'
 
 const STEP_LABELS = ['Say what’s left', 'See the risk', 'Make room', 'Learn from it'] as const
 
@@ -38,16 +40,29 @@ function steps(current: number): CoachStep[] {
 function coachFor(state: DemoState, previewing: boolean): CoachContent {
   const base = { headline: 'Make room', tone: 'accent' as const }
 
-  /* Days 1–2 are before the moment: the week is planned and simply fits. */
+  /* Day 1 is the week-level decision; day 2 is the quiet middle. */
   if (state.weekDay < 3) {
+    const weekSettled = state.weekFix !== null
     return {
       ...base,
-      headline: state.weekDay === 1 ? 'Monday — your week is set' : 'Tuesday — still on plan',
+      headline:
+        state.weekDay === 1
+          ? weekSettled
+            ? 'Monday — week settled'
+            : 'Monday — your week does not fit'
+          : 'Tuesday — still on plan',
       why:
         state.weekDay === 1
-          ? 'Three client jobs, two with deadlines, each with an estimate. Every day fits inside your 8h. Nothing to do yet — Toggl is just tracking.'
+          ? weekSettled
+            ? 'You made the call on day one. Toggl now holds the plan you actually agreed to, not the one you hoped for.'
+            : 'You have committed more work than the week holds. Toggl already knows your weekly capacity — it has just never told you when you have exceeded it.'
           : 'A second day tracked against the plan. Wednesday is full but still fits, so Toggl stays quiet.',
-      action: 'Press Day 3 in the demo bar — that is when a job runs long',
+      action:
+        state.weekDay === 1
+          ? weekSettled
+            ? 'Press Day 3 — that is when a job runs long and the day-level version fires'
+            : 'Pick one of the three ways out below'
+          : 'Press Day 3 in the demo bar — that is when a job runs long',
       steps: steps(0),
       metric:
         state.weekDay === 1
@@ -261,6 +276,15 @@ function emitEvents(prev: DemoState, next: DemoState, action: DemoAction): void 
     case 'reopen-drawer':
       track('make_room_opened', { via: 'review' })
       break
+    case 'week-fix':
+      track('week_over_resolved', {
+        fix: action.fix,
+        over_mins: currentEvaluation(prev).weekOverMins,
+      })
+      break
+    case 'week-fix-undo':
+      track('week_fix_undone', {})
+      break
     case 'restart':
     case 'set-scenario':
       /* Demo chrome, not a product event — deliberately not instrumented. */
@@ -289,6 +313,12 @@ export function TimerPage() {
   }, [])
 
   const evaluation = useMemo(() => currentEvaluation(state), [state])
+  /* Monday has its own plan: nothing tracked yet, the whole week committed. */
+  const mondayView = useMemo(() => {
+    const plan = mondayPlan(state.weekFix === 'defer')
+    return { plan, evaluation: evaluate(plan) }
+  }, [state.weekFix])
+  const onMonday = state.weekDay === 1
   const homepage = state.plan.tasks.find((t) => t.id === 'homepage')
   const remainingMins = homepage?.confirmedRemainingMins ?? 0
   const [capacityNoteOpen, setCapacityNoteOpen] = useState(false)
@@ -381,6 +411,19 @@ export function TimerPage() {
 
           {guided ? <FeatureCoach content={coachFor(state, state.previewMove !== null)} /> : null}
 
+          {onMonday ? (
+            <WeekCapacityCard
+              plannedMins={mondayView.evaluation.weekPlannedMins + (state.weekFix === 'defer' ? 120 : 0)}
+              capacityMins={mondayView.evaluation.weekCapacityMins}
+              overMins={state.weekFix === 'defer' ? 120 : mondayView.evaluation.weekOverMins}
+              deferrableName="Portfolio polish"
+              deferrableMins={120}
+              resolved={state.weekFix}
+              onFix={(fix) => dispatch({ type: 'week-fix', fix })}
+              onUndo={() => dispatch({ type: 'week-fix-undo' })}
+            />
+          ) : null}
+
 
           {homepage &&
           state.weekDay >= 3 &&
@@ -464,10 +507,12 @@ export function TimerPage() {
             <Card title="This week">
               <div className="pb-2">
                 <WeekStrip
-                  plan={state.plan}
-                  evaluation={evaluation}
-                  previewMove={state.previewMove}
-                  atRiskTaskId={state.phase === 'conflict' ? (evaluation.atRisk?.task.id ?? null) : null}
+                  plan={onMonday ? mondayView.plan : state.plan}
+                  evaluation={onMonday ? mondayView.evaluation : evaluation}
+                  previewMove={onMonday ? null : state.previewMove}
+                  atRiskTaskId={
+                    !onMonday && state.phase === 'conflict' ? (evaluation.atRisk?.task.id ?? null) : null
+                  }
                   onEditCapacity={() => setCapacityNoteOpen((v) => !v)}
                 />
                 {capacityNoteOpen ? (

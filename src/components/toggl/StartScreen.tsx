@@ -97,7 +97,7 @@ export function StartScreen({
         </div>
 
         <div className="mt-5">
-          <Button size="lg" onClick={onStart} className="w-full">
+          <Button variant="primary" size="lg" onClick={onStart} className="w-full">
             Start exploring
           </Button>
           <p className="mt-2 text-center text-[12px] leading-4 font-medium text-fg-secondary">

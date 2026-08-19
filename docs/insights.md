@@ -40,7 +40,8 @@ W0 was the filter that killed most alternatives, so I want to be precise about h
 
 **W0 means new to Toggl, not new to freelancing.** The target user signs up on Monday already carrying clients and deadlines. The prototype shows the honest first week:
 
-- **Day 1 — value before any tracking.** The week is planned: 42h of committed work against a 40h week. Toggl already knows the weekly number; Make room finally says it — *"your week is 2h over before it starts"* — and offers three honest ways out: move the one job with no deadline, accept the overtime explicitly, or take the *fact* (not an auto-drafted message) to the client. Choosing one updates the week live. That is value on day one, at the cheapest moment the problem will ever be fixable.
+- **Setup — the number everything rests on.** Onboarding asks how long their week actually is, because Toggl's own working-hours field ships unset and the product still asserts 40h. A four-day freelancer would otherwise get wrong warnings all week.
+- **Day 1 — value before any tracking.** The week is planned: 42h of committed work against their stated week. Toggl already knows the weekly number; Make room finally says it — *"your week is 2h over before it starts"* — and offers three honest ways out: move the one job with no deadline, accept the overtime explicitly, or take the *fact* (not an auto-drafted message) to the client. Choosing one updates the week live. That is value on day one, at the cheapest moment the problem will ever be fixable.
 - **Day 3 — the moment.** A job runs past its estimate. Toggl asks what's left, computes that Wednesday no longer fits, names the deadline at risk (*Atlas — Final handoff, due Thursday*), and offers the one safe move. Preview → approve → undo.
 - **Day 5 — the payoff that requires a week.** *"You quoted Homepage revisions at 3h. It took 5h 12m — 73% over."* A fact about their own pricing that did not exist on Monday, and structurally *cannot* exist on day one.
 
@@ -58,7 +59,7 @@ The brief asks what I cut. In rough order of how tempting each was:
 - **New notifications, mobile layout, rebuilt reports.** Toggl ships two default nudges already; Toggl 2.0 web literally gates small screens ("works better on bigger screens" — verified in its DOM), so the prototype mirrors that and names the honest split: the *ask* belongs on a phone as an actionable notification, the *replan* is desktop work. And I never rebuilt variance, capacity, or Workload — they exist; the work is connecting them.
 - **A production backend.** Mock data, as invited. The real build needs exactly one new field (`confirmed_remaining_mins` — never overwriting the original estimate, because the gap between them *is* the evidence) and one new object (a `plan_repair` log, which is what makes regret measurable).
 
-**Assumptions, stated:** capacity defaults to 8h/day because Toggl's working-hours field is unset by default yet Workload still asserts 40h — so the prototype cites the source of every capacity number and offers to correct it. Both onboarding intents beyond the one I tested, and the Dashboard's documented completion-forecast, are labelled as documented-not-observed wherever they matter.
+**Assumptions, stated:** Toggl's working-hours field ships **unset** while Workload still asserts a 40h week — so every capacity warning it could give a four-day freelancer would be wrong by construction. Rather than assume the number, the prototype **asks for it during setup** (40h · 32h · part-time, recalculating live) and cites the source of every capacity figure afterwards. That step is small and easy to miss, but the entire feature rests on that number being true. Both onboarding intents beyond the one I tested, and the Dashboard's documented completion-forecast, are labelled as documented-not-observed wherever they matter.
 
 ---
 
@@ -66,7 +67,9 @@ The brief asks what I cut. In rough order of how tempting each was:
 
 **North star:** among *eligible* new freelancers, the share who track or plan on **3+ distinct days in their first 7**, against a matched control. Deliberately not prompts-shown or moves-approved — those are things the feature does to people; the north star is something people do.
 
-**The first step is a query, not a build.** The concept's biggest risk is eligibility: how many week-one freelancers ever have two dated, estimated commitments? Toggl's data answers that in a day of SQL. Over ~15%: build as scoped. 5–15%: the onboarding step that asks for dates and estimates becomes the primary work. **Under ~5%: don't build this** — fix why week-one users have no plan first.
+**The first step is a query, not a build.** The concept's biggest risk is eligibility: how many week-one freelancers ever have two dated, estimated commitments? Toggl's existing data answers that in a day of SQL, before any engineering.
+
+I would pre-register the decision thresholds: over ~15% build as scoped · ~5–15% the onboarding step asking for dates and estimates becomes the primary work · **under ~5% don't build this** — fix why week-one users have no plan first. **Those percentages are my judgment, not derived from Toggl's data** — I have no access to it, and a number that merely looks measured would be worse than saying so. Their value is that they're fixed *before* the query, so the answer can't be rationalised afterwards. Someone with the data should move them — before running it.
 
 **The load-bearing step** is `remaining_confirmed` — the only step requiring belief. Watch the *mix*: a high "Done" rate on tasks later reopened means people are dismissing, not answering.
 

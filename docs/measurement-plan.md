@@ -30,11 +30,20 @@ Of freelancer-shaped workspaces (1 member, ≥2 clients) created in the last 6 m
 
 | If eligibility is… | Then |
 | --- | --- |
-| **> 15%** | Build as scoped. The moment is common enough to matter. |
-| **5–15%** | Build, but the onboarding step that asks for dates and estimates becomes the primary work, not a supporting step. |
-| **< 5%** | **Do not build this.** Fix why week-one users have no plan first; Make room is a feature for a product state that does not exist. |
+| **> ~15%** | Build as scoped. The moment is common enough to stand on its own. |
+| **~5–15%** | Build, but the onboarding step that asks for dates and estimates becomes the primary work, not a supporting step. |
+| **< ~5%** | **Do not build this.** Fix why week-one users have no plan first; Make room is a feature for a product state that does not exist. |
 
-**Stating this first is the point.** A day of SQL is cheaper than a quarter of engineering, and the honest answer may be "not yet."
+### Where those thresholds come from — a caveat that matters
+
+**They are my judgment, not derived from Toggl's data.** I have no access to it, and inventing a number that looks measured would be worse than admitting this. What makes them useful is that they are **pre-registered** — stated before the query runs, so the result cannot be rationalised after the fact.
+
+The reasoning behind each:
+
+- **~5% floor** — below roughly 1 in 20, a dedicated surface cannot justify its own maintenance cost, and the finding itself would be the more valuable output: week-one users are not planning, which is a bigger problem than the one this feature solves.
+- **~15% ceiling** — above roughly 1 in 7, the moment recurs often enough that the feature earns its place without onboarding changes needed to manufacture eligibility.
+
+Whoever runs the query should feel free to move these — **before** seeing the answer. The discipline is having a threshold at all, not having the right one.
 
 ---
 

@@ -46,6 +46,7 @@ export function OnboardingPage() {
   const [project, setProject] = useState('Northstar — Website')
   const [color, setColor] = useState(PALETTE[8])
   const [week, setWeek] = useState<readonly WeekItem[]>(WEEK_SEED)
+  const [weeklyHours, setWeeklyHours] = useState(40)
 
   const chosen = week.filter((w) => w.on)
   const datedCount = chosen.filter((w) => w.due !== null).length
@@ -57,6 +58,7 @@ export function OnboardingPage() {
       project_named: project.trim().length > 0,
       week_items: chosen.length,
       dated_items: datedCount,
+      weekly_hours: weeklyHours,
       calendar_skipped: skippedCalendar,
     })
     navigate('/calendar')
@@ -253,9 +255,57 @@ export function OnboardingPage() {
                 ))}
               </ul>
 
+              <div className="mt-4 rounded-lg border border-line bg-bg-secondary px-3.5 py-3">
+                <p className="text-[13px] font-semibold text-fg">
+                  How much do you actually work in a week?
+                </p>
+                <p className="mt-0.5 text-[12px] leading-4 font-medium text-fg-secondary">
+                  Toggl assumes 40h and never asks. If you work four days, or around school pickup,
+                  every capacity warning it gives you is wrong — so it is worth thirty seconds now.
+                </p>
+                <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                  {[
+                    { h: 40, label: '40h', sub: '5 × 8h' },
+                    { h: 32, label: '32h', sub: '4-day week' },
+                    { h: 25, label: '25h', sub: 'part-time' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.h}
+                      type="button"
+                      aria-pressed={weeklyHours === opt.h}
+                      onClick={() => {
+                        setWeeklyHours(opt.h)
+                        track('capacity_set', { weekly_hours: opt.h, source: 'preset' })
+                      }}
+                      className={[
+                        'cursor-pointer rounded-lg border px-3 py-1.5 text-left transition-colors',
+                        weeklyHours === opt.h
+                          ? 'border-line-accent bg-bg-muted'
+                          : 'border-line bg-bg hover:bg-bg-hover',
+                      ].join(' ')}
+                    >
+                      <span
+                        className={[
+                          'block text-[13px] font-semibold',
+                          weeklyHours === opt.h ? 'text-fg-accent-on-muted' : 'text-fg',
+                        ].join(' ')}
+                      >
+                        {opt.label}
+                      </span>
+                      <span className="block text-[11px] font-medium text-fg-secondary">
+                        {opt.sub}
+                      </span>
+                    </button>
+                  ))}
+                  <span className="text-[12px] font-medium text-fg-tertiary">
+                    = {Math.round((weeklyHours / 5) * 10) / 10}h a day
+                  </span>
+                </div>
+              </div>
+
               <div
                 className={[
-                  'mt-4 rounded-lg border px-3.5 py-2.5 transition-colors',
+                  'mt-3 rounded-lg border px-3.5 py-2.5 transition-colors',
                   datedCount >= 2
                     ? 'border-line-success bg-bg-success'
                     : 'border-line-warning bg-bg-warning',
@@ -268,7 +318,7 @@ export function OnboardingPage() {
                   ].join(' ')}
                 >
                   {datedCount >= 2
-                    ? `Enough to work with — ${fmtMins(totalMins)} across ${chosen.length} jobs, ${datedCount} with deadlines.`
+                    ? `${fmtMins(totalMins)} committed into a ${weeklyHours}h week, ${datedCount} of it dated.`
                     : 'Make room needs at least two dated commitments to spot a collision.'}
                 </p>
                 <p className="mt-0.5 text-[12px] leading-4 font-medium text-fg-secondary">

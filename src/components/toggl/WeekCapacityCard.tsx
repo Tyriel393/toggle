@@ -125,7 +125,7 @@ export function WeekCapacityCard({
             <span className="text-fg-error">+{fmtMins(overMins)} over</span>
           </div>
 
-          <p className="uppercase-label mt-3.5 pb-1.5">Three honest ways out</p>
+          <p className="uppercase-label mt-3.5 pb-1.5">Two ways out</p>
           <div className="space-y-2">
             <Option
               id="defer"
@@ -167,26 +167,13 @@ export function WeekCapacityCard({
               />
             ) : null}
 
-            <Option
-              id="renegotiate"
-              title="Ask a client to move a date"
-              detail="Toggl drafts the fact, not the message — you have committed 42h against a 40h week."
-              tone="neutral"
-              open={open === 'renegotiate'}
-              onToggle={() => {
-                setOpen(open === 'renegotiate' ? null : 'renegotiate')
-                setPicked(null)
-              }}
-            />
-            {open === 'renegotiate' ? (
-              <Choices
-                data={details.renegotiate}
-                picked={picked}
-                onPick={setPicked}
-                onConfirm={() => onFix('renegotiate')}
-              />
-            ) : null}
           </div>
+
+          <p className="mt-3 text-[12px] leading-4 font-medium text-fg-tertiary">
+            Both of these are yours to make inside Toggl. If neither works, the conversation moves
+            outside the product — and Toggl&apos;s job is to give you the number, not to write the
+            message.
+          </p>
         </div>
       </div>
     </section>

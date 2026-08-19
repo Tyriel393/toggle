@@ -419,7 +419,10 @@ export function TimerPage() {
         <div className="min-w-0 flex-1 space-y-4">
           {!startOpen ? <PremiseNote day={state.weekDay} /> : null}
 
-          {guided ? <FeatureCoach content={coachFor(state, state.previewMove !== null)} /> : null}
+          {/* On Monday the red card is the message — a second explainer above it just competes. */}
+          {guided && !(onMonday && state.weekFix === null) ? (
+            <FeatureCoach content={coachFor(state, state.previewMove !== null)} />
+          ) : null}
 
           {onMonday ? (
             <WeekCapacityCard
@@ -586,7 +589,11 @@ export function TimerPage() {
       <ScopeToast message={scope.message} onDismiss={scope.dismiss} />
 
       {startOpen ? (
-        <StartScreen onGuided={() => closeStart(true)} onExplore={() => closeStart(false)} />
+        <StartScreen
+          mondayIntro={onMonday && state.weekFix === null}
+          onGuided={() => closeStart(true)}
+          onExplore={() => closeStart(false)}
+        />
       ) : null}
 
       <SmallScreenNotice />

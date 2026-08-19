@@ -9,9 +9,11 @@ import { Icon } from './Icon'
 export function StartScreen({
   onGuided,
   onExplore,
+  mondayIntro = false,
 }: {
   onGuided: () => void
   onExplore: () => void
+  mondayIntro?: boolean
 }) {
   return (
     <div className="fixed inset-0 z-[80] grid place-items-center bg-black/70 p-6">
@@ -31,6 +33,21 @@ export function StartScreen({
           Those hours come out of time already promised to another client — and today you only find
           out when you are already late.
         </p>
+
+        {mondayIntro ? (
+          <div className="mt-5 rounded-lg border border-line-error bg-bg-error px-4 py-3.5">
+            <p className="text-[14px] font-semibold text-fg-error">
+              You have just planned your week — and it does not fit.
+            </p>
+            <p className="mt-1 text-[13px] leading-5 font-medium text-fg-secondary">
+              You committed <strong className="text-fg">42h</strong> of client work into a{' '}
+              <strong className="text-fg">40h</strong> week. Toggl has always known that number — it
+              is on the Timeline and in the Workload report — but it has never told you when you
+              crossed it. That is the first thing you will see behind this box, on{' '}
+              <strong className="text-fg">Monday</strong>, before a single timer has run.
+            </p>
+          </div>
+        ) : null}
 
         <div className="mt-5 rounded-lg border border-line bg-bg-secondary px-4 py-3.5">
           <p className="text-[13px] font-semibold text-fg">Where you are</p>

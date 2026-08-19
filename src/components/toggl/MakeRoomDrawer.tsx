@@ -227,7 +227,15 @@ export function MakeRoomDrawer({
                     <div className="mt-1.5 flex gap-2 pl-4">
                       {active ? (
                         <>
-                          <Button variant="primary" size="sm" onClick={onApprove}>
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            onClick={() =>
+                              previewMove && move.breaksDeadline
+                                ? setConfirming(previewMove)
+                                : onApprove()
+                            }
+                          >
                             Approve move
                           </Button>
                           <Button variant="ghost" size="sm" onClick={onCancelPreview}>
@@ -238,18 +246,16 @@ export function MakeRoomDrawer({
                         <Button
                           variant="secondary"
                           size="sm"
-                          onClick={() => {
-                            const intent: MoveIntent = {
+                          onClick={() =>
+                            onPreview({
                               taskId: move.taskId,
                               fromDay: move.fromDay,
                               toDay: move.toDay,
                               mins: move.mins,
                               risky: true,
                               consequence: move.consequence,
-                            }
-                            if (move.breaksDeadline) setConfirming(intent)
-                            else onPreview(intent)
-                          }}
+                            })
+                          }
                         >
                           Preview
                         </Button>
@@ -298,7 +304,11 @@ export function MakeRoomDrawer({
             <Button variant="ghost" size="md" onClick={onCancelPreview}>
               Cancel
             </Button>
-            <Button variant="primary" size="md" onClick={onApprove}>
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => (previewMove?.risky ? setConfirming(previewMove) : onApprove())}
+            >
               Approve move
               <Kbd>↵</Kbd>
             </Button>
@@ -312,8 +322,8 @@ export function MakeRoomDrawer({
           consequence={confirming.consequence ?? ''}
           onCancel={() => setConfirming(null)}
           onConfirm={() => {
-            onPreview(confirming)
             setConfirming(null)
+            onApprove()
           }}
         />
       ) : null}
@@ -345,22 +355,22 @@ function ConfirmBreak({
         className="w-full rounded-lg border border-line-error bg-bg p-5"
       >
         <p className="text-[15px] leading-6 font-semibold text-fg">
-          This one misses a client deadline.
+          This move misses a client deadline.
         </p>
         <p className="mt-1.5 text-[13px] leading-5 font-medium text-fg-secondary">
           Moving <strong className="text-fg">{taskName}</strong> {consequence}. That is a promise to
-          someone, not a preference — so Toggl will not do it on a single click.
+          someone, not a preference — so Toggl will not commit it on a single click.
         </p>
         <p className="mt-2.5 rounded-lg border border-line bg-bg-secondary px-3 py-2 text-[12px] leading-4 font-medium text-fg-secondary">
-          You can still preview it first, and undo it afterwards. Nothing is sent to the client
-          either way.
+          You can undo this straight afterwards, and nothing is sent to the client either way — the
+          date only changes inside Toggl.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Button variant="secondary" size="md" autoFocus onClick={onCancel}>
             Pick something else
           </Button>
           <Button variant="destructive" size="md" onClick={onConfirm}>
-            Preview it anyway
+            Move it anyway
           </Button>
         </div>
       </div>

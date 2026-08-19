@@ -14,29 +14,29 @@
 
 ---
 
-## 1 · How I chose this area — by killing everything else
+## 1 · How I picked this problem
 
-I didn't start with this idea. I started by using the product — a fresh account, the full onboarding, then days of testing — and by trying to find something Toggl *lacks*. The search kept failing — and the failures turned out to be the insight. Ten of these I reproduced in the product myself; the eleventh (task rescheduling) is from Toggl's own docs, since the Scheduler beta was not enabled in my trial.
+I didn't start with this idea. I signed up for a new account, went through onboarding properly, then spent a few hours going through features looking for something Toggl was missing. I kept not finding one. That turned out to be the useful result. Ten of the checks below I ran in the product myself; the eleventh (task rescheduling) comes from Toggl's own docs, because the Scheduler beta wasn't enabled on my trial.
 
-Client goals, Focus mode, Pomodoro, inline capture, calendar sync, daily-brief emails, estimate capture, estimate-vs-actual variance, over-capacity flags, remaining-hours, task rescheduling — every "Toggl is missing X" hypothesis died on contact with the live product. Estimates are the third field in the New task drawer. Variance renders beautifully, unprompted, with no paywall. Timeline flags an over-booked day in the error colour. The Workload report computes weekly remaining hours and overtime.
+Client goals, Focus mode, Pomodoro, inline capture, calendar sync, daily-brief emails, estimate capture, estimate-vs-actual variance, over-capacity flags, remaining-hours, task rescheduling — every "Toggl is missing X" idea I had turned out to be wrong. Estimates are the third field in the New task drawer. Variance renders beautifully, unprompted, with no paywall. Timeline flags an over-booked day in the error colour. The Workload report computes weekly remaining hours and overtime.
 
 What survived every test is a different claim:
 
-> **Toggl is not missing capability. Its capabilities never meet.**
+> **Toggl has the capability. The pieces just don't talk to each other.**
 
 The overrun lives in the task drawer. The capacity math lives in Timeline — behind Premium, framed for managers ("invite your team to see who's at capacity"). The weekly number exists in four places (Timeline lane, capacity filter, Workload report, working-hours field) and is *acted on in none*. Blowing an estimate does not make your Wednesday go red. Nothing connects what happened to what it now puts at risk.
 
-For a freelancer — whose brief-stated pains are *avoiding overcommitment* and *planning realistically* — that seam is the product. So the improvement is not a new feature. It is a connection: **actual drift → confirmed remaining work → named cross-client consequence → user-approved repair.**
+For a freelancer — whose brief-stated pains are *avoiding overcommitment* and *planning realistically* — that seam is the product. So this isn't a new feature. It's a connection: **the overrun → what's actually left → which client commitment that breaks → a fix the freelancer approves.**
 
-### The design insight that makes it safe
+### Why it has to ask
 
-An overrun is history. A task at 4h logged against a 3h estimate might be finished (timer left running), mislogged, or genuinely unfinished — and there is nowhere to record what remains: the task drawer exposes only Logged, Planned and Estimate (reproduced live), and Toggl's published API docs list no remaining-effort field. So the system cannot infer risk; it must **ask**: *"Done, or how much is left?"* That one question is what separates Make room from a simple `logged > estimate` alarm — and the answer becomes data Toggl has never had.
+An overrun is history. A task at 4h logged against a 3h estimate might be finished (timer left running), mislogged, or genuinely unfinished — and there is nowhere to record what remains: the task drawer exposes only Logged, Planned and Estimate (reproduced live), and Toggl's published API docs list no remaining-effort field. So the system cannot infer risk; it must **ask**: *"Done, or how much is left?"* So it has to ask. That question is the difference between this and a simple `logged > estimate` alarm, and the answer is data Toggl has never collected.
 
 ---
 
-## 2 · Why a first-week user comes back
+## 2 · Why they come back
 
-W0 was the filter that killed most alternatives, so I want to be precise about how this passes it.
+Week-zero retention is what killed most of my other ideas, so I want to be specific about how this one survives it.
 
 **W0 means new to Toggl, not new to freelancing.** The target user signs up on Monday already carrying clients and deadlines. The prototype shows the honest first week:
 
@@ -49,9 +49,9 @@ The return logic is not a notification (Toggl already ships two, on by default).
 
 ---
 
-## 3 · What I deliberately left out
+## 3 · What I left out
 
-The brief asks what I cut. In rough order of how tempting each was:
+Roughly in order of how much I wanted to build them:
 
 - **Automatic rescheduling.** Motion and Reclaim auto-move work; Toggl's own Scheduler beta reshuffles tasks. I rejected the whole category on principle: **a dated task is a client promise, not a preference.** Toggl may reason about time; it may not decide which client matters. The rule I shipped instead: only work *with no deadline* is ever suggested, alternatives are shown with their cost, and "keep it, I'll work over" is a legitimate answer. Notably, Toggl documents its Scheduler as unable to use tracked time — Make room is precisely the bridge that limitation leaves open.
 - **The Individual Contributor persona.** Their strongest W0 pain ("Toggl isn't where I work") honestly resolves to *surface the browser extension earlier* — placement, not product.
@@ -59,51 +59,51 @@ The brief asks what I cut. In rough order of how tempting each was:
 - **New notifications, mobile layout, rebuilt reports.** Toggl ships two default nudges already; Toggl 2.0 web literally gates small screens ("works better on bigger screens" — verified in its DOM), so the prototype mirrors that and names the honest split: the *ask* belongs on a phone as an actionable notification, the *replan* is desktop work. And I never rebuilt variance, capacity, or Workload — they exist; the work is connecting them.
 - **A production backend.** Mock data, as invited. The real build needs exactly one new field (`confirmed_remaining_mins` — never overwriting the original estimate, because the gap between them *is* the evidence) and one new object (a `plan_repair` log, which is what makes regret measurable).
 
-**Assumptions, stated:** Toggl's working-hours field ships **unset** while Workload still asserts a 40h week — so every capacity warning it could give a four-day freelancer would be wrong by construction. Rather than assume the number, the prototype **asks for it during setup** (40h · 32h · part-time, recalculating live) and cites the source of every capacity figure afterwards. That step is small and easy to miss, but the entire feature rests on that number being true. Both onboarding intents beyond the one I tested, and the Dashboard's documented completion-forecast, are labelled as documented-not-observed wherever they matter.
+**Assumptions:** Toggl's working-hours field ships **unset** while Workload still asserts a 40h week — so every capacity warning it could give a four-day freelancer would be wrong by construction. Rather than assume the number, the prototype **asks for it during setup** (40h · 32h · part-time, recalculating live) and cites the source of every capacity figure afterwards. That step is small and easy to miss, but the entire feature rests on that number being true. Both onboarding intents beyond the one I tested, and the Dashboard's documented completion-forecast, are labelled as documented-not-observed wherever they matter.
 
 ---
 
-## 4 · How I'd measure it
+## 4 · How I would measure it
 
-**North star:** among *eligible* new freelancers, the share who track or plan on **3+ distinct days in their first 7**, against a matched control. Deliberately not prompts-shown or moves-approved — those are things the feature does to people; the north star is something people do.
+**North star:** among *eligible* new freelancers, the share who track or plan on **3+ distinct days in their first 7**, against a matched control. Not prompts shown or moves approved. Those are things the feature does to people. This is something people do.
 
-**The first step is a query, not a build.** The concept's biggest risk is eligibility: how many week-one freelancers ever have two dated, estimated commitments? Toggl's existing data answers that in a day of SQL, before any engineering.
+**The first step is a query, not a build.** The biggest risk here is eligibility: how many week-one freelancers ever have two dated, estimated commitments at the same time? Toggl's existing data can answer that in a day of SQL, before anyone writes feature code.
 
-I would run it first and agree the go/no-go line **before** seeing the result, so the answer cannot be argued with afterwards. If the eligible share turns out to be small, that finding is more valuable than the feature: week-one freelancers are not planning at all, which is a bigger problem than the one this solves.
+I would run it first and agree the go/no-go line before seeing the result, so nobody can argue with the number afterwards. If the eligible share is small, that finding is worth more than the feature: it would mean week-one freelancers aren't planning at all, which is a bigger problem than this one.
 
-**The load-bearing step** is `remaining_confirmed` — the only step requiring belief. Watch the *mix*: a high "Done" rate on tasks later reopened means people are dismissing, not answering.
+The step everything rests on is `remaining_confirmed`, because it's the only one that asks the user to believe something. Watch the mix of answers: a high "Done" rate on tasks that get reopened later means people are dismissing the question, not answering it.
 
-**Three metrics worth watching beyond the funnel.** Two Toggl can compute from data it already holds — I would baseline both *before* building. The third needs the plan-repair log this feature would create:
+**Three metrics beyond the funnel.** Two of them Toggl can compute from data it already holds, and I would baseline both before building anything. The third needs the plan-repair log this feature creates:
 
-- **Replan lead time** *(needs the new plan-repair log)* — days between detecting a collision and the deadline it threatened. This is the best single proxy for the whole pitch: the value isn't that we warned, it's that we warned *early*. A median under a day means we built a late-warning system and failed on our own terms.
-- **Weekly over-commitment rate** *(computable today)* — % of freelancer weeks planned above capacity. Toggl already has dated tasks, estimates and working hours. Worth baselining now: it sizes the Day-1 problem before a line of code is written.
-- **Estimate calibration trend** *(computable today)* — does per-client variance shrink week over week? Toggl holds estimates and logged time already; what changes is that the feature gives a user a reason to care. The compounding value, and why the original estimate is never overwritten.
+- **Replan lead time** *(needs the new plan-repair log)* — days between detecting a collision and the deadline it threatened. It's the best single proxy for the whole idea, because the value isn't the warning, it's the warning arriving early enough to act on. A median under a day would mean we built a late-warning system and failed on our own terms.
+- **Weekly over-commitment rate** *(computable today)* — % of freelancer weeks planned above capacity. Toggl already has dated tasks, estimates and working hours. Worth baselining now, because it sizes the Day-1 problem before a line of code is written.
+- **Estimate calibration trend** *(computable today)* — does per-client variance shrink week over week? Toggl already holds estimates and logged time. What changes is that the feature gives someone a reason to care. This is the part that compounds, and the reason the original estimate is never overwritten.
 
-**The existential counter-metric:** we are adding a question at timer-stop, the most-used interaction in the product. If tracked hours drop in the exposed group, the feature is net-negative no matter how well its own funnel performs. Other guardrails: moves undone within 24h (regret), overtime trending up (we taught absorption instead of replanning), capacity figures corrected (our arithmetic isn't trusted).
+**The counter-metric that could sink it:** we're adding a question to timer-stop, the most-used interaction in the product. If tracked hours drop in the exposed group, the feature is net-negative however well its own funnel performs. Other guardrails: moves undone within 24h (regret), overtime trending up (we taught absorption instead of replanning), capacity figures corrected (our arithmetic isn't trusted).
 
 **Kill criteria:** eligible cohort too small to justify the surface · tracked hours drop · collisions seen but nothing changes · no W0 return lift. **Ship order:** the query → the ask alone (zero-risk, starts collecting remaining-effort data) → consequence and repair.
 
-**Business case:** capacity intelligence is already Toggl's Premium fence (Timeline ★, Workload ★). The ask stays free; the consequence-and-repair is the paid moment, arriving when the pain is felt rather than on a pricing page. And every confirmed remainder improves estimates, capacity, forecasting and the Scheduler — the data asset outlasts the feature. It is also, literally, Toggl's stated 2.0 thesis — *"do we have the capacity to take this on?"* — delivered to one person.
+**On the business side:** Timeline and Workload are already Premium, so capacity is where Toggl draws the paid line. Asking what's left stays free. Seeing the consequence and fixing it is the paid moment, and it arrives when someone actually feels the problem rather than on a pricing page. Every answer collected also improves estimates, capacity and forecasting, which outlasts the feature itself.
 
 ---
 
 ## 5 · How I used AI — and where I overrode it
 
-AI fluency is part of the brief, so honestly:
+The brief asks about AI use, so plainly:
 
-- **Claude (agentic) built and verified everything** — but the working rule that mattered was *no claim ships without being reproduced in the live product*. That rule killed most of the hypotheses above, including several I was attached to.
-- **A second model (ChatGPT) was used adversarially**, not as a co-writer. Its best contribution was four "killers" against an earlier idea — three were testable in-product within minutes, two landed, and the idea died. It also caught that my original causal claim ("overrun ⇒ deadline at risk") was unsafe, which produced the confirm-what-remains step — the heart of the design.
-- **I overrode AI in both directions.** Early on, AI read Toggl's CSS `@font-face` and reported the brand typeface; I pushed on it, we measured the computed styles, and the app actually renders Inter — the extracted design system was rebuilt on measurements, not source-reading. Later, an AI verdict declared the concept "a month-two feature"; I rejected the framing — W0 is product tenure, not career tenure — and the eligibility risk moved into the measurement plan where it belongs, instead of killing the idea.
-- **AI reviewed AI:** a 20-agent adversarial pass over my own build produced 16 findings; 10 survived verification and were fixed — including a focus-restore mechanism that was provably dead code and a success state that hid a still-broken week.
+- **Claude did the building and the checking.** The rule I worked to was that nothing goes in this document as fact unless I'd reproduced it in the live product. That rule killed most of the hypotheses above, including a few I liked.
+- **I used ChatGPT to argue against me, not with me.** Its most useful contribution was four attacks on an earlier version of this idea. Three were testable in Toggl within minutes, two landed, and the idea died. It also caught that my original claim — overrun means the deadline is at risk — doesn't actually hold, which is where the confirm-what's-left step came from. That step is the whole design.
+- **I overrode it in both directions.** It read Toggl's CSS and told me the brand typeface. I pushed back, we measured what actually renders, and it was Inter, so the design system was rebuilt from measurements. Later it decided the concept was a "month two" feature. I disagreed — week zero means new to Toggl, not new to freelancing — and moved that risk into the measurement plan instead of letting it kill the idea.
+- **I had AI review AI.** A 20-agent adversarial pass over my own build produced 16 findings; 10 held up and were fixed, including a focus-restore that was dead code and a success state that hid a week still over capacity.
 
-Where AI guided: breadth, speed, and relentless verification. Where I decided: the persona, the seam, the no-auto-move principle, what got cut, and every claim that was allowed into this document.
-
----
-
-## 6 · With more time
-
-Test whether Timeline warns *before* a drag commits (post-hoc is verified; pre-commit isn't) · a second account per onboarding intent, to test the "we'll tailor your experience" promise · run my prepared friend-validation script (behaviour-first, concept hidden until after) · the mobile ask as a real actionable notification · revisit once the Scheduler beta is enabled, since Make room is the trigger it lacks.
+Where AI helped: coverage, speed, and checking things faster than I could alone. What I decided: the persona, the moment to intervene, the rule that Toggl never moves work on its own, what got cut, and every claim allowed into this document.
 
 ---
 
-*Every capability claim above was either reproduced live on a trial account or is explicitly labelled as documented-only. The full verification logs are in the repo: `pre-plan-verification.md`, `plan-reality-check-deep-research.md`, `integration-map.md`, `measurement-plan.md`, `user-flow-map.md`.*
+## 6 · What I ran out of time for
+
+Check whether Timeline warns *before* you drop a task on a full day — I only confirmed it warns afterwards. Sign up a second account picking a different onboarding intent, to see whether "we'll tailor your experience" means anything. Run the validation script I wrote for a handful of freelancer friends, asking about their behaviour before showing them the concept. Build the phone version of the question as a real notification. And revisit this once the Scheduler beta is switched on, since it's missing exactly the trigger this provides.
+
+---
+
+*Everything I claim about Toggl above I either reproduced on a trial account myself, or have marked as documentation-only.*

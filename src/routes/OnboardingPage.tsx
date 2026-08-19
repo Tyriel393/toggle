@@ -61,6 +61,13 @@ export function OnboardingPage() {
       weekly_hours: weeklyHours,
       calendar_skipped: skippedCalendar,
     })
+    /* Finishing setup starts the journey fresh — the intro must show again. */
+    try {
+      sessionStorage.removeItem('make-room-started')
+      sessionStorage.removeItem('make-room-tour-seen')
+    } catch {
+      /* private mode — the intro shows anyway */
+    }
     navigate('/calendar?day=1')
   }
 

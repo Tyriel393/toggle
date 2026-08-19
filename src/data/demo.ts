@@ -104,11 +104,16 @@ const mondayTask = (
 })
 
 export function mondayPlan(deferred: boolean): WeekPlan {
+  /*
+   * 42h across a 40h week, with the whole 2h overage sitting on one day. Moving
+   * the single undated job resolves the week *and* that day — so "your week
+   * fits" is never contradicted by a red column still on screen.
+   */
   const tasks = [
-    mondayTask('m-migration', 'Content migration', 'Northstar', CLIENT_COLOR.northstar, 540, 'mon', 'tue'),
-    mondayTask('m-social', 'Social assets', 'Meridian', CLIENT_COLOR.meridian, 540, 'tue', 'wed'),
+    mondayTask('m-migration', 'Content migration', 'Northstar', CLIENT_COLOR.northstar, 480, 'mon', 'tue'),
+    mondayTask('m-social', 'Social assets', 'Meridian', CLIENT_COLOR.meridian, 480, 'tue', 'wed'),
     mondayTask('homepage', 'Homepage revisions', 'Northstar', CLIENT_COLOR.northstar, 180, 'wed', 'wed'),
-    mondayTask('m-wireframes', 'Wireframes', 'Atlas', CLIENT_COLOR.atlas, 180, 'wed', 'thu'),
+    mondayTask('m-wireframes', 'Wireframes', 'Atlas', CLIENT_COLOR.atlas, 300, 'wed', 'thu'),
     mondayTask('portfolio', 'Portfolio polish', null, CLIENT_COLOR.internal, 120, 'wed', null),
     mondayTask('atlas-handoff', 'Final handoff', 'Atlas', CLIENT_COLOR.atlas, 420, 'thu', 'thu'),
     mondayTask('m-copy', 'Copy review', 'Meridian', CLIENT_COLOR.meridian, 60, 'thu', 'fri'),

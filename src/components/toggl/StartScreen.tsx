@@ -23,8 +23,20 @@ export function StartScreen({
         aria-label="About this prototype"
         className="w-full max-w-[560px] rounded-lg border border-line bg-bg p-7"
       >
-        <p className="uppercase-label mb-2">Toggl 2.0 · prototype</p>
-        <h1 className="text-[24px] leading-8 font-semibold text-fg">Make room</h1>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="uppercase-label mb-2">Toggl 2.0 · prototype</p>
+            <h1 className="text-[24px] leading-8 font-semibold text-fg">Make room</h1>
+          </div>
+          <button
+            type="button"
+            onClick={onExplore}
+            aria-label="Skip this and explore"
+            className="-mt-1 -mr-1 shrink-0 cursor-pointer rounded-lg px-2 py-1 text-[12px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
+          >
+            Skip ✕
+          </button>
+        </div>
         <p className="mt-2 text-[14px] leading-6 font-medium text-fg-secondary">
           Toggl already tells a freelancer when a job ran past its estimate.{' '}
           <strong className="text-fg">

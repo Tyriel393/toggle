@@ -1,6 +1,6 @@
 # W0 first-run — captured on a virgin account
 
-**Account:** `gajsak.business@gmail.com`, org `21611304`, workspace `21610533`, user id `7670578`. Created 2026-08-18, dark theme, desktop.
+**Account:** a dedicated trial account, org `21611304`, workspace `21610533`, user id `7670578`. Created 2026-08-18, dark theme, desktop.
 **Why this exists:** the earlier research used an already-onboarded account. The brief's hard constraint is **W0 retention — value within week one** — so the true signup→first-value path had to be captured cold. It is single-use; this document is the record so nobody has to burn another account.
 
 ---

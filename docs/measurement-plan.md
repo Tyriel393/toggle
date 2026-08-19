@@ -28,22 +28,21 @@ Of freelancer-shaped workspaces (1 member, ≥2 clients) created in the last 6 m
     … and while still not marked done                          → the question is real
 ```
 
-| If eligibility is… | Then |
-| --- | --- |
-| **> ~15%** | Build as scoped. The moment is common enough to stand on its own. |
-| **~5–15%** | Build, but the onboarding step that asks for dates and estimates becomes the primary work, not a supporting step. |
-| **< ~5%** | **Do not build this.** Fix why week-one users have no plan first; Make room is a feature for a product state that does not exist. |
+**Set the go/no-go line before running it.** The discipline is agreeing a threshold in advance, so the
+result cannot be rationalised afterwards — not the specific number, which should come from whoever
+knows Toggl's own baselines for feature adoption.
 
-### Where those thresholds come from — a caveat that matters
+Three outcomes worth planning for:
 
-**They are my judgment, not derived from Toggl's data.** I have no access to it, and inventing a number that looks measured would be worse than admitting this. What makes them useful is that they are **pre-registered** — stated before the query runs, so the result cannot be rationalised after the fact.
+- **Common enough** — build as scoped; the moment recurs often enough to earn a surface.
+- **Marginal** — build, but the onboarding step that asks for dates and estimates becomes the
+  primary work rather than a supporting one, because eligibility is the thing to move.
+- **Rare** — **do not build this.** The finding is worth more than the feature: week-one
+  freelancers are not planning at all, which is a bigger and more useful problem than the one Make
+  room solves.
 
-The reasoning behind each:
-
-- **~5% floor** — below roughly 1 in 20, a dedicated surface cannot justify its own maintenance cost, and the finding itself would be the more valuable output: week-one users are not planning, which is a bigger problem than the one this feature solves.
-- **~15% ceiling** — above roughly 1 in 7, the moment recurs often enough that the feature earns its place without onboarding changes needed to manufacture eligibility.
-
-Whoever runs the query should feel free to move these — **before** seeing the answer. The discipline is having a threshold at all, not having the right one.
+I have not put percentages on those bands, because I have no access to Toggl's data and a number
+that merely looked measured would be worse than admitting that.
 
 ---
 
@@ -92,15 +91,15 @@ Break it down by choice, because the mix is diagnostic:
 
 Resolution rate is the one to lead with: it measures *help*, not engagement. A user who opens Make room, looks, and closes it has engaged and not been helped.
 
-### Layer 3b — Metrics this flow makes possible that Toggl cannot measure today
+### Layer 3b — Three metrics worth watching beyond the funnel
 
-These are the genuinely new ones. Each exists only *because* the flow captures remaining effort and records plan repairs — and each is worth more than the funnel.
+Two of these Toggl can compute from data it already holds — worth baselining **before** building anything. The third needs the plan-repair log this feature would create.
 
 | Metric | Definition | Why it matters |
 | --- | --- | --- |
-| **Replan lead time** | Days between a conflict being detected and the deadline it threatened | **The single best proxy for the whole pitch.** The value is not that we warned — it is that we warned *early*. Monday-detection and Thursday-detection are different products. If the median is under a day, we are a late-warning system and the concept has failed on its own terms. |
-| **Weekly over-commitment rate** | % of freelancer weeks planned above capacity | Measurable **today, before building anything** — it sizes the Day-1 problem the same way the eligibility query sizes the Day-3 one. It is also the baseline the feature would move. |
-| **Estimate calibration trend** | Per-client variance (`expected ÷ original estimate`) over successive weeks | Does the user get *better at quoting*? This is the compounding value and the reason the original estimate is never overwritten. A flat trend means we are surfacing pain without teaching anything. |
+| **Replan lead time** *(needs new log)* | Days between a conflict being detected and the deadline it threatened | **The single best proxy for the whole pitch.** The value is not that we warned — it is that we warned *early*. Monday-detection and Thursday-detection are different products. If the median is under a day, we are a late-warning system and the concept has failed on its own terms. |
+| **Weekly over-commitment rate** *(computable today)* | % of freelancer weeks planned above capacity | Measurable **today, before building anything** — it sizes the Day-1 problem the same way the eligibility query sizes the Day-3 one. It is also the baseline the feature would move. |
+| **Estimate calibration trend** *(computable today)* | Per-client variance (`expected ÷ original estimate`) over successive weeks | Does the user get *better at quoting*? This is the compounding value and the reason the original estimate is never overwritten. A flat trend means we are surfacing pain without teaching anything. |
 
 Three more that fall out for free, useful as diagnostics rather than headlines:
 
@@ -135,7 +134,7 @@ Stated as directions, not invented numbers — there is no baseline yet, and inv
 
 | Kill if | Because |
 | --- | --- |
-| Eligible cohort < 5% of W0 freelancers | The moment is too rare to justify the surface |
+| The eligible cohort is too small to justify a dedicated surface | The moment is too rare to justify the surface |
 | `remaining_confirmed` is dominated by `Done` on tasks later reopened | People are dismissing, not answering |
 | Tracked hours drop materially in the exposed group | We damaged the core product to serve a feature |
 | Conflict resolution rate is flat vs. control | People see the collision and do nothing — the warning is noise |

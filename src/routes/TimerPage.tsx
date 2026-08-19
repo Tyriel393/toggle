@@ -990,19 +990,19 @@ function EventsPanel() {
         the mechanism funnel, per eligible user.
       </p>
 
-      <p className="uppercase-label mt-3 pb-1">New — only measurable because of this flow</p>
+      <p className="uppercase-label mt-3 pb-1">Beyond the funnel</p>
       <ul className="space-y-1.5 text-[11px] leading-4 font-medium text-fg-secondary">
         <li>
-          <strong className="text-fg">Replan lead time</strong> — days between detecting a collision
+          <strong className="text-fg">Replan lead time</strong> <em>(needs the new plan-repair log)</em> — days between detecting a collision
           and the deadline it threatened. The value is not that we warned; it is that we warned
           early. Under a day and we are a late-warning system.
         </li>
         <li>
-          <strong className="text-fg">Weekly over-commitment rate</strong> — % of freelancer weeks
+          <strong className="text-fg">Weekly over-commitment rate</strong> <em>(computable today)</em> — % of freelancer weeks
           planned above capacity. Measurable <em>today</em>, before building.
         </li>
         <li>
-          <strong className="text-fg">Estimate calibration trend</strong> — does per-client variance
+          <strong className="text-fg">Estimate calibration trend</strong> <em>(computable today)</em> — does per-client variance
           shrink week over week? The compounding value, and why the original estimate is never
           overwritten.
         </li>
@@ -1045,7 +1045,7 @@ function EventsPanel() {
 
       <p className="uppercase-label mt-3 pb-1">Kill it if</p>
       <ul className="list-disc space-y-0.5 pl-3.5 text-[11px] leading-4 font-medium text-fg-secondary">
-        <li>Eligible cohort is under ~5% of week-one freelancers</li>
+        <li>The eligible cohort is too small to justify a dedicated surface</li>
         <li>Tracked hours drop in the exposed group</li>
         <li>Conflicts are seen but nothing changes — the warning is noise</li>
         <li>No return lift among eligible exposed users</li>
@@ -1053,7 +1053,7 @@ function EventsPanel() {
 
       <p className="mt-2.5 border-t border-line pt-2 text-[11px] leading-4 font-medium text-fg-secondary">
         <strong className="text-fg">First step is a query, not a build:</strong> size how many W0
-        freelancers ever reach this moment. A day of SQL could end the project cheaply — see{' '}
+        freelancers ever reach this moment. It could end the project cheaply, before any engineering — see{' '}
         <span className="font-mono">docs/measurement-plan.md</span>.
       </p>
     </div>

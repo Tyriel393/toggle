@@ -30,7 +30,7 @@ For a freelancer — whose brief-stated pains are *avoiding overcommitment* and 
 
 ### The design insight that makes it safe
 
-An overrun is history. A task at 4h logged against a 3h estimate might be finished (timer left running), mislogged, or genuinely unfinished — and there is nowhere to record what remains: the task drawer exposes only Logged, Planned and Estimate (reproduced live), and Toggl's published API docs list no remaining-effort field. So the system cannot infer risk; it must **ask**: *"Done, or how much is left?"* That one question is what separates Make room from a dumb `logged > estimate` alarm — and the answer becomes data Toggl has never had.
+An overrun is history. A task at 4h logged against a 3h estimate might be finished (timer left running), mislogged, or genuinely unfinished — and there is nowhere to record what remains: the task drawer exposes only Logged, Planned and Estimate (reproduced live), and Toggl's published API docs list no remaining-effort field. So the system cannot infer risk; it must **ask**: *"Done, or how much is left?"* That one question is what separates Make room from a simple `logged > estimate` alarm — and the answer becomes data Toggl has never had.
 
 ---
 
@@ -69,19 +69,19 @@ The brief asks what I cut. In rough order of how tempting each was:
 
 **The first step is a query, not a build.** The concept's biggest risk is eligibility: how many week-one freelancers ever have two dated, estimated commitments? Toggl's existing data answers that in a day of SQL, before any engineering.
 
-I would pre-register the decision thresholds: over ~15% build as scoped · ~5–15% the onboarding step asking for dates and estimates becomes the primary work · **under ~5% don't build this** — fix why week-one users have no plan first. **Those percentages are my judgment, not derived from Toggl's data** — I have no access to it, and a number that merely looks measured would be worse than saying so. Their value is that they're fixed *before* the query, so the answer can't be rationalised afterwards. Someone with the data should move them — before running it.
+I would run it first and agree the go/no-go line **before** seeing the result, so the answer cannot be argued with afterwards. If the eligible share turns out to be small, that finding is more valuable than the feature: week-one freelancers are not planning at all, which is a bigger problem than the one this solves.
 
 **The load-bearing step** is `remaining_confirmed` — the only step requiring belief. Watch the *mix*: a high "Done" rate on tasks later reopened means people are dismissing, not answering.
 
-**Three metrics this flow makes possible that Toggl cannot measure today** — each worth more than the funnel, because each only exists once remaining effort is captured and plan repairs are logged:
+**Three metrics worth watching beyond the funnel.** Two Toggl can compute from data it already holds — I would baseline both *before* building. The third needs the plan-repair log this feature would create:
 
-- **Replan lead time** — days between detecting a collision and the deadline it threatened. This is the best single proxy for the whole pitch: the value isn't that we warned, it's that we warned *early*. A median under a day means we built a late-warning system and failed on our own terms.
-- **Weekly over-commitment rate** — % of freelancer weeks planned above capacity. Measurable *today*, before building — it sizes the Day-1 problem the way the eligibility query sizes the Day-3 one.
-- **Estimate calibration trend** — does per-client variance shrink week over week? The compounding value, and precisely why the original estimate is never overwritten.
+- **Replan lead time** *(needs the new plan-repair log)* — days between detecting a collision and the deadline it threatened. This is the best single proxy for the whole pitch: the value isn't that we warned, it's that we warned *early*. A median under a day means we built a late-warning system and failed on our own terms.
+- **Weekly over-commitment rate** *(computable today)* — % of freelancer weeks planned above capacity. Toggl already has dated tasks, estimates and working hours. Worth baselining now: it sizes the Day-1 problem before a line of code is written.
+- **Estimate calibration trend** *(computable today)* — does per-client variance shrink week over week? Toggl holds estimates and logged time already; what changes is that the feature gives a user a reason to care. The compounding value, and why the original estimate is never overwritten.
 
 **The existential counter-metric:** we are adding a question at timer-stop, the most-used interaction in the product. If tracked hours drop in the exposed group, the feature is net-negative no matter how well its own funnel performs. Other guardrails: moves undone within 24h (regret), overtime trending up (we taught absorption instead of replanning), capacity figures corrected (our arithmetic isn't trusted).
 
-**Kill criteria:** eligible cohort under ~5% · tracked hours drop · collisions seen but nothing changes · no W0 return lift. **Ship order:** the query → the ask alone (zero-risk, starts collecting remaining-effort data) → consequence and repair.
+**Kill criteria:** eligible cohort too small to justify the surface · tracked hours drop · collisions seen but nothing changes · no W0 return lift. **Ship order:** the query → the ask alone (zero-risk, starts collecting remaining-effort data) → consequence and repair.
 
 **Business case:** capacity intelligence is already Toggl's Premium fence (Timeline ★, Workload ★). The ask stays free; the consequence-and-repair is the paid moment, arriving when the pain is felt rather than on a pricing page. And every confirmed remainder improves estimates, capacity, forecasting and the Scheduler — the data asset outlasts the feature. It is also, literally, Toggl's stated 2.0 thesis — *"do we have the capacity to take this on?"* — delivered to one person.
 

@@ -7,6 +7,8 @@ quietly becomes impossible.**
 Vite + React + TypeScript + Tailwind v4. Deployed on Vercel.
 
 - **Live demo:** https://toggl-kit.vercel.app (opens on onboarding, then lands on Monday of week one)
+- **Insights doc:** [docs/insights.md](docs/insights.md) — how I picked the problem, why a first-week
+  user comes back, what I cut, how I would measure it, and how I used AI
 - **Component kit:** https://toggl-kit.vercel.app/kit
 - **Repo:** https://github.com/Tyriel393/toggle
 

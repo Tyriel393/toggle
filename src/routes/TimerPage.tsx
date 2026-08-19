@@ -407,7 +407,7 @@ export function TimerPage() {
       <PageContainer>
         <div className="mx-auto flex max-w-6xl gap-5 pt-1">
         <div className="min-w-0 flex-1 space-y-4">
-          <PremiseNote />
+          {!startOpen ? <PremiseNote day={state.weekDay} /> : null}
 
           {guided ? <FeatureCoach content={coachFor(state, state.previewMove !== null)} /> : null}
 
@@ -599,19 +599,16 @@ export function TimerPage() {
  * States the demo's premise, so nobody wonders why the account already has
  * data: signup and setup are done, and week one starts here.
  */
-function PremiseNote() {
+/* Compact reminder once the arrival modal has been dismissed. */
+function PremiseNote({ day }: { day: 1 | 2 | 3 | 4 | 5 }) {
   const [open, setOpen] = useState(true)
   if (!open) return null
+  const dayName = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'][day - 1]
   return (
-    <div className="flex items-start gap-2.5 rounded-lg border border-line bg-bg-secondary px-3.5 py-2.5">
-      <span className="mt-px shrink-0 text-[12px]" aria-hidden="true">
-        📋
-      </span>
-      <p className="min-w-0 flex-1 text-[12.5px] leading-4 font-medium text-fg-secondary">
-        <strong className="text-fg">Where we are:</strong> you signed up on Monday, created your
-        clients and projects, and planned the week — all of it Toggl as it works today. This is your
-        first week using it. Use <strong className="text-fg">Day 1–5</strong> in the demo bar to walk
-        through it.
+    <div className="flex items-center gap-2.5 rounded-lg border border-line bg-bg-secondary px-3.5 py-2">
+      <p className="min-w-0 flex-1 text-[12px] leading-4 font-medium text-fg-secondary">
+        <strong className="text-fg">{dayName}</strong> of your first week with Toggl · signup and
+        planning already done
       </p>
       <button
         type="button"
@@ -982,6 +979,24 @@ function EventsPanel() {
         One session, so no conversion rates — a percentage here would be theatre. At scale this is
         the mechanism funnel, per eligible user.
       </p>
+
+      <p className="uppercase-label mt-3 pb-1">New — only measurable because of this flow</p>
+      <ul className="space-y-1.5 text-[11px] leading-4 font-medium text-fg-secondary">
+        <li>
+          <strong className="text-fg">Replan lead time</strong> — days between detecting a collision
+          and the deadline it threatened. The value is not that we warned; it is that we warned
+          early. Under a day and we are a late-warning system.
+        </li>
+        <li>
+          <strong className="text-fg">Weekly over-commitment rate</strong> — % of freelancer weeks
+          planned above capacity. Measurable <em>today</em>, before building.
+        </li>
+        <li>
+          <strong className="text-fg">Estimate calibration trend</strong> — does per-client variance
+          shrink week over week? The compounding value, and why the original estimate is never
+          overwritten.
+        </li>
+      </ul>
 
       <p className="uppercase-label mt-3 pb-1">The load-bearing step</p>
       <p className="text-[11px] leading-4 font-medium text-fg-secondary">

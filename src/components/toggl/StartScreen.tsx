@@ -33,12 +33,14 @@ export function StartScreen({
         </p>
 
         <div className="mt-5 rounded-lg border border-line bg-bg-secondary px-4 py-3.5">
-          <p className="text-[13px] font-semibold text-fg">What you are looking at</p>
+          <p className="text-[13px] font-semibold text-fg">Where you are</p>
           <p className="mt-1 text-[13px] leading-5 font-medium text-fg-secondary">
-            A freelancer&apos;s first week with Toggl. Three clients, deadlines, estimates. On
-            Wednesday a job runs long — and Toggl asks what is left, works out which commitment
-            stops fitting, and helps replan it.
+            You signed up on <strong className="text-fg">Monday</strong>, added your clients and
+            projects, and planned the week — all of that is Toggl as it works today. This is your
+            first week using it. The <strong className="text-fg">Day 1–5</strong> buttons at the
+            bottom walk through it; the rest of the bar is demo scaffolding, not the product.
           </p>
+          <p className="mt-2.5 text-[13px] font-semibold text-fg">What to judge</p>
           <ul className="mt-2.5 space-y-1 text-[13px] font-medium text-fg-secondary">
             <li className="flex gap-2">
               <span className="text-fg-accent" aria-hidden="true">
@@ -94,8 +96,8 @@ export function StartScreen({
         </div>
 
         <p className="mt-4 text-[12px] leading-4 font-medium text-fg-tertiary">
-          Data is mock, as the brief allows. The bar at the bottom is demo scaffolding — it is not
-          part of the proposed product.
+          Data is mock, as the brief allows. Press <strong className="text-fg-secondary">?</strong>{' '}
+          in the demo bar to reopen this at any point.
         </p>
       </div>
     </div>

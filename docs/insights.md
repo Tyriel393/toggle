@@ -70,6 +70,12 @@ The brief asks what I cut. In rough order of how tempting each was:
 
 **The load-bearing step** is `remaining_confirmed` — the only step requiring belief. Watch the *mix*: a high "Done" rate on tasks later reopened means people are dismissing, not answering.
 
+**Three metrics this flow makes possible that Toggl cannot measure today** — each worth more than the funnel, because each only exists once remaining effort is captured and plan repairs are logged:
+
+- **Replan lead time** — days between detecting a collision and the deadline it threatened. This is the best single proxy for the whole pitch: the value isn't that we warned, it's that we warned *early*. A median under a day means we built a late-warning system and failed on our own terms.
+- **Weekly over-commitment rate** — % of freelancer weeks planned above capacity. Measurable *today*, before building — it sizes the Day-1 problem the way the eligibility query sizes the Day-3 one.
+- **Estimate calibration trend** — does per-client variance shrink week over week? The compounding value, and precisely why the original estimate is never overwritten.
+
 **The existential counter-metric:** we are adding a question at timer-stop, the most-used interaction in the product. If tracked hours drop in the exposed group, the feature is net-negative no matter how well its own funnel performs. Other guardrails: moves undone within 24h (regret), overtime trending up (we taught absorption instead of replanning), capacity figures corrected (our arithmetic isn't trusted).
 
 **Kill criteria:** eligible cohort under ~5% · tracked hours drop · collisions seen but nothing changes · no W0 return lift. **Ship order:** the query → the ask alone (zero-risk, starts collecting remaining-effort data) → consequence and repair.

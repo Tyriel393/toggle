@@ -83,6 +83,22 @@ Break it down by choice, because the mix is diagnostic:
 
 Resolution rate is the one to lead with: it measures *help*, not engagement. A user who opens Make room, looks, and closes it has engaged and not been helped.
 
+### Layer 3b — Metrics this flow makes possible that Toggl cannot measure today
+
+These are the genuinely new ones. Each exists only *because* the flow captures remaining effort and records plan repairs — and each is worth more than the funnel.
+
+| Metric | Definition | Why it matters |
+| --- | --- | --- |
+| **Replan lead time** | Days between a conflict being detected and the deadline it threatened | **The single best proxy for the whole pitch.** The value is not that we warned — it is that we warned *early*. Monday-detection and Thursday-detection are different products. If the median is under a day, we are a late-warning system and the concept has failed on its own terms. |
+| **Weekly over-commitment rate** | % of freelancer weeks planned above capacity | Measurable **today, before building anything** — it sizes the Day-1 problem the same way the eligibility query sizes the Day-3 one. It is also the baseline the feature would move. |
+| **Estimate calibration trend** | Per-client variance (`expected ÷ original estimate`) over successive weeks | Does the user get *better at quoting*? This is the compounding value and the reason the original estimate is never overwritten. A flat trend means we are surfacing pain without teaching anything. |
+
+Three more that fall out for free, useful as diagnostics rather than headlines:
+
+- **Remaining-effort accuracy** — when someone says "2h left", how long does it actually take? Second-order estimate learning, and a check on whether the answers we collect are worth trusting.
+- **Resolution mix** — move vs. overtime vs. renegotiate. If overtime dominates, we built a guilt machine; if renegotiate is ever chosen, we have touched the client relationship, which is a different and larger product claim.
+- **Plan volatility after Monday** — how much the week changes once set. High volatility means the Monday decision is not sticking, and the Day-1 surface is theatre.
+
 ### Layer 4 — Outcome (the north star)
 
 **Primary:** % of eligible W0 freelancers tracking or planning on ≥3 distinct days in days 1–7.

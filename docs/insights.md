@@ -16,7 +16,7 @@
 
 ## 1 · How I chose this area — by killing everything else
 
-I didn't start with this idea. I started by using the product — a fresh account, the full onboarding, then days of testing — and by trying to find something Toggl *lacks*. That search failed eleven consecutive times, and the failures turned out to be the insight.
+I didn't start with this idea. I started by using the product — a fresh account, the full onboarding, then days of testing — and by trying to find something Toggl *lacks*. The search kept failing — and the failures turned out to be the insight. Ten of these I reproduced in the product myself; the eleventh (task rescheduling) is from Toggl's own docs, since the Scheduler beta was not enabled in my trial.
 
 Client goals, Focus mode, Pomodoro, inline capture, calendar sync, daily-brief emails, estimate capture, estimate-vs-actual variance, over-capacity flags, remaining-hours, task rescheduling — every "Toggl is missing X" hypothesis died on contact with the live product. Estimates are the third field in the New task drawer. Variance renders beautifully, unprompted, with no paywall. Timeline flags an over-booked day in the error colour. The Workload report computes weekly remaining hours and overtime.
 
@@ -30,7 +30,7 @@ For a freelancer — whose brief-stated pains are *avoiding overcommitment* and 
 
 ### The design insight that makes it safe
 
-An overrun is history. A task at 4h logged against a 3h estimate might be finished (timer left running), mislogged, or genuinely unfinished — and Toggl's task model has **no remaining-effort field** (verified against the API). So the system cannot infer risk; it must **ask**: *"Done, or how much is left?"* That one question is what separates Make room from a dumb `logged > estimate` alarm — and the answer becomes data Toggl has never had.
+An overrun is history. A task at 4h logged against a 3h estimate might be finished (timer left running), mislogged, or genuinely unfinished — and there is nowhere to record what remains: the task drawer exposes only Logged, Planned and Estimate (reproduced live), and Toggl's published API docs list no remaining-effort field. So the system cannot infer risk; it must **ask**: *"Done, or how much is left?"* That one question is what separates Make room from a dumb `logged > estimate` alarm — and the answer becomes data Toggl has never had.
 
 ---
 
@@ -45,7 +45,7 @@ W0 was the filter that killed most alternatives, so I want to be precise about h
 - **Day 3 — the moment.** A job runs past its estimate. Toggl asks what's left, computes that Wednesday no longer fits, names the deadline at risk (*Atlas — Final handoff, due Thursday*), and offers the one safe move. Preview → approve → undo.
 - **Day 5 — the payoff that requires a week.** *"You quoted Homepage revisions at 3h. It took 5h 12m — 73% over."* A fact about their own pricing that did not exist on Monday, and structurally *cannot* exist on day one.
 
-The return logic is not a notification (Toggl already ships two, on by default). It is that **continued tracking is what keeps the plan honest** — every session either confirms the week still fits or catches a collision early. The contrast is built into the UI: Toggl's real activation checklist (all four items completable in ~90 seconds — "View your reports" ticks on page load, verified) sits beside a week-shaped arc that cannot be finished in one sitting.
+The return logic is not a notification (Toggl already ships two, on by default). It is that **continued tracking is what keeps the plan honest** — every session either confirms the week still fits or catches a collision early. The contrast is built into the UI: Toggl's real activation checklist (every item completes on a single interaction; "View your reports" ticks on page load — verified) sits beside a week-shaped arc that cannot be finished in one sitting.
 
 ---
 
@@ -91,7 +91,7 @@ I would pre-register the decision thresholds: over ~15% build as scoped · ~5–
 
 AI fluency is part of the brief, so honestly:
 
-- **Claude (agentic) built and verified everything** — but the working rule that mattered was *no claim ships without being reproduced in the live product*. That rule executed ~30 live checks and killed eleven AI-generated hypotheses, including several I was attached to.
+- **Claude (agentic) built and verified everything** — but the working rule that mattered was *no claim ships without being reproduced in the live product*. That rule killed most of the hypotheses above, including several I was attached to.
 - **A second model (ChatGPT) was used adversarially**, not as a co-writer. Its best contribution was four "killers" against an earlier idea — three were testable in-product within minutes, two landed, and the idea died. It also caught that my original causal claim ("overrun ⇒ deadline at risk") was unsafe, which produced the confirm-what-remains step — the heart of the design.
 - **I overrode AI in both directions.** Early on, AI read Toggl's CSS `@font-face` and reported the brand typeface; I pushed on it, we measured the computed styles, and the app actually renders Inter — the extracted design system was rebuilt on measurements, not source-reading. Later, an AI verdict declared the concept "a month-two feature"; I rejected the framing — W0 is product tenure, not career tenure — and the eligibility risk moved into the measurement plan where it belongs, instead of killing the idea.
 - **AI reviewed AI:** a 20-agent adversarial pass over my own build produced 16 findings; 10 survived verification and were fixed — including a focus-restore mechanism that was provably dead code and a success state that hid a still-broken week.

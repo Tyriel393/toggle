@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { StartScreen } from '@/components/toggl/StartScreen'
-import { ScopeToast, useScopeToast } from '@/components/toggl/ScopeToast'
+import { useScope } from '@/components/toggl/ScopeToast'
 import {
   currentEvaluation,
   demoReducer,
@@ -333,7 +333,7 @@ export function TimerPage() {
   const remainingMins = homepage?.confirmedRemainingMins ?? 0
   const [capacityNoteOpen, setCapacityNoteOpen] = useState(false)
   const navigate = useNavigate()
-  const scope = useScopeToast()
+  const notInScope = useScope()
 
   /* Shown once per session; reopenable from the “?” in the demo bar. */
   const [startOpen, setStartOpen] = useState(() => {
@@ -400,11 +400,11 @@ export function TimerPage() {
         onToggle={() =>
           dispatch({ type: state.phase === 'running' ? 'stop' : 'restart' })
         }
-        onScope={scope.notInScope}
+        onScope={notInScope}
       />
       <WeekToolbar
-        label={`Week one · ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri'][state.weekDay - 1]} 1${state.weekDay + 6} Aug`}
-        onScope={scope.notInScope}
+        label={`Week one · ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri'][state.weekDay - 1]} ${state.weekDay + 16} Aug`}
+        onScope={notInScope}
       />
       <DayMeters
         logged={DAY_METERS[state.weekDay - 1]}
@@ -584,8 +584,6 @@ export function TimerPage() {
       />
 
       <UndoToast state={state} onUndo={() => dispatch({ type: 'undo' })} />
-
-      <ScopeToast message={scope.message} onDismiss={scope.dismiss} />
 
       {startOpen ? (
         <StartScreen
@@ -1058,8 +1056,7 @@ function EventsPanel() {
 
       <p className="mt-2.5 border-t border-line pt-2 text-[11px] leading-4 font-medium text-fg-secondary">
         <strong className="text-fg">First step is a query, not a build:</strong> size how many W0
-        freelancers ever reach this moment. It could end the project cheaply, before any engineering — see{' '}
-        <span className="font-mono">docs/measurement-plan.md</span>.
+        freelancers ever reach this moment. It could end the project cheaply, before any engineering.
       </p>
     </div>
   )

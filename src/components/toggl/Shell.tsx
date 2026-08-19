@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Icon, type IconName } from './Icon'
 import { Avatar } from './Data'
+import { ScopeProvider, useScope } from './ScopeToast'
 
 /* Sidebar 248px + 1px border, header 64px — measured. */
 
@@ -58,10 +59,12 @@ function TogglMark() {
 }
 
 export function Sidebar() {
+  const notInScope = useScope()
   return (
     <aside className="flex w-[201px] shrink-0 flex-col bg-bg-tertiary">
       <button
         type="button"
+        onClick={() => notInScope('Switching workspace')}
         className="flex h-16 w-full cursor-pointer items-center gap-2.5 py-2.5 pr-2 pl-4 hover:bg-bg-hover"
       >
         <span className="truncate text-[14px] font-semibold text-fg">
@@ -101,6 +104,7 @@ export function Sidebar() {
       <div className="px-3 pb-4">
         <button
           type="button"
+          onClick={() => notInScope('The upgrade flow')}
           className="flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 text-[14px] font-medium text-fg-accent hover:bg-bg-hover"
         >
           <span className="grid size-4 place-items-center rounded-full bg-bg-accent text-fg-inverted">
@@ -113,6 +117,7 @@ export function Sidebar() {
         </button>
         <button
           type="button"
+          onClick={() => notInScope('Downloading the apps')}
           className="flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 text-[14px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
         >
           <Icon name="download" />
@@ -120,6 +125,7 @@ export function Sidebar() {
         </button>
         <button
           type="button"
+          onClick={() => notInScope('Admin settings')}
           className="flex h-8 w-full cursor-pointer items-center gap-2.5 rounded-lg px-2 text-[14px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
         >
           <Icon name="settings" />
@@ -131,22 +137,44 @@ export function Sidebar() {
 }
 
 /* Rail order matches the live app: mark top, collapse mid, actions bottom. */
-export function Rail() {
+function Rail({ sidebarOpen, onToggleSidebar }: { sidebarOpen: boolean; onToggleSidebar: () => void }) {
+  const notInScope = useScope()
   return (
     <div className="flex w-12 shrink-0 flex-col items-center justify-between bg-bg-tertiary py-4">
       <TogglMark />
-      <button type="button" aria-label="Toggle Sidebar" className="cursor-pointer text-fg-tertiary hover:text-fg">
+      <button
+        type="button"
+        aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+        aria-expanded={sidebarOpen}
+        onClick={onToggleSidebar}
+        className="cursor-pointer text-fg-tertiary hover:text-fg"
+      >
         <Icon name="sidebarToggle" />
       </button>
       <div className="flex flex-col items-center gap-4">
         <Avatar name="Josip Gajsak393" size={24} />
-        <button type="button" aria-label="Notifications" className="cursor-pointer text-fg-tertiary hover:text-fg">
+        <button
+          type="button"
+          aria-label="Notifications"
+          onClick={() => notInScope('The notification centre')}
+          className="cursor-pointer text-fg-tertiary hover:text-fg"
+        >
           <Icon name="bell" />
         </button>
-        <button type="button" aria-label="Share feedback" className="cursor-pointer text-fg-tertiary hover:text-fg">
+        <button
+          type="button"
+          aria-label="Share feedback"
+          onClick={() => notInScope('Sending feedback')}
+          className="cursor-pointer text-fg-tertiary hover:text-fg"
+        >
           <Icon name="send" />
         </button>
-        <button type="button" aria-label="Help" className="cursor-pointer text-fg-tertiary hover:text-fg">
+        <button
+          type="button"
+          aria-label="Help"
+          onClick={() => notInScope('The help centre')}
+          className="cursor-pointer text-fg-tertiary hover:text-fg"
+        >
           <Icon name="help" />
         </button>
       </div>
@@ -163,18 +191,9 @@ export function TopBar({ title, actions }: { title: string; actions?: ReactNode 
   )
 }
 
-export function Toolbar({ left, right }: { left?: ReactNode; right?: ReactNode }) {
-  return (
-    <div className="flex items-center justify-between gap-3 px-6 pb-3">
-      <div className="flex items-center gap-2">{left}</div>
-      <div className="flex items-center gap-2">{right}</div>
-    </div>
-  )
-}
-
 /*
  * Skip link. Toggl 2.0 has none, which costs keyboard users 26 tab stops
- * before reaching content on every page — see docs/accessibility-audit.md §2.
+ * before reaching content on every page.
  */
 export function SkipLink() {
   return (
@@ -188,15 +207,18 @@ export function SkipLink() {
 }
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   return (
-    <div className="flex h-full bg-bg-tertiary">
-      <SkipLink />
-      <Rail />
-      <Sidebar />
-      <main id="main-content" tabIndex={-1} className="flex min-w-0 flex-1 flex-col overflow-hidden bg-bg">
-        {children}
-      </main>
-    </div>
+    <ScopeProvider>
+      <div className="flex h-full bg-bg-tertiary">
+        <SkipLink />
+        <Rail sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((o) => !o)} />
+        {sidebarOpen ? <Sidebar /> : null}
+        <main id="main-content" tabIndex={-1} className="flex min-w-0 flex-1 flex-col overflow-hidden bg-bg">
+          {children}
+        </main>
+      </div>
+    </ScopeProvider>
   )
 }
 

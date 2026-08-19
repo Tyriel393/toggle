@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
 /*
- * Toggl uses two distinct empty states — see docs/design-system.md §7.
+ * Toggl uses two distinct empty states, measured from the live app.
  *   inline  — a section has no data: no illustration, no button, underlined inline links
  *   view    — a whole view has no data: illustration, headline, body, primary button
  * Using the wrong one is a tell.

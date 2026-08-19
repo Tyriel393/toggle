@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { PageContainer, Toolbar, TopBar } from '@/components/toggl/Shell'
+import { PageContainer, TopBar } from '@/components/toggl/Shell'
 import { Button } from '@/components/toggl/Button'
 import { EmptyStateView } from '@/components/toggl/EmptyState'
 
@@ -11,7 +11,6 @@ export function StubPage({ title }: { title: string }) {
   return (
     <>
       <TopBar title={title} />
-      <Toolbar left={<Button variant="ghost" icon="filter">Filters</Button>} />
       <PageContainer>
         <div className="rounded-lg border border-line bg-bg">
           <EmptyStateView

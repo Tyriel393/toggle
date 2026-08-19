@@ -1,6 +1,6 @@
 /*
  * Mock dataset shaped like a real digital agency using Toggl 2.0.
- * Field names follow the object model verified in docs/product-map.md.
+ * Field names follow the object model verified in the live app.
  * Deterministic: generated from a seeded PRNG so the demo is stable across reloads.
  */
 

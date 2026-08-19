@@ -35,7 +35,7 @@ const TOTAL_STEPS = 4
 
 /*
  * Toggl's real onboarding — intent, project, calendar — reproduced from the
- * captured first-run (docs/w0-first-run.md §1), with one step added where the
+ * captured first-run on a trial account, with one step added where the
  * product currently has a gap: the week that makes Make room possible.
  */
 export function OnboardingPage() {
@@ -47,6 +47,7 @@ export function OnboardingPage() {
   const [color, setColor] = useState(PALETTE[8])
   const [week, setWeek] = useState<readonly WeekItem[]>(WEEK_SEED)
   const [weeklyHours, setWeeklyHours] = useState(40)
+  const [calendar, setCalendar] = useState<'google' | 'outlook' | null>(null)
 
   const chosen = week.filter((w) => w.on)
   const datedCount = chosen.filter((w) => w.due !== null).length
@@ -353,13 +354,29 @@ export function OnboardingPage() {
                 Connect your calendar and your meetings and events are ready to track
               </p>
               <div className="mt-5 space-y-2">
-                <Button variant="secondary" size="lg" className="w-full justify-center">
-                  Connect Google Calendar
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="w-full justify-center"
+                  onClick={() => setCalendar('google')}
+                >
+                  {calendar === 'google' ? '✓ Google Calendar connected' : 'Connect Google Calendar'}
                 </Button>
-                <Button variant="secondary" size="lg" className="w-full justify-center">
-                  Connect Outlook Calendar
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="w-full justify-center"
+                  onClick={() => setCalendar('outlook')}
+                >
+                  {calendar === 'outlook' ? '✓ Outlook Calendar connected' : 'Connect Outlook Calendar'}
                 </Button>
               </div>
+              {calendar ? (
+                <p aria-live="polite" className="mt-2.5 rounded-lg border border-line-accent bg-bg-muted px-3.5 py-2.5 text-[12px] leading-4 font-medium text-fg-accent-on-muted">
+                  Connected. In the real product your meetings would now be pulled in; here the week
+                  is mock data, so nothing changes on screen.
+                </p>
+              ) : null}
               <p className="mt-3 rounded-lg border border-line bg-bg-secondary px-3.5 py-2.5 text-[12px] leading-4 font-medium text-fg-secondary">
                 Meetings consume the same hours your client work does. Connected, they come out of
                 your daily capacity automatically — so &ldquo;Wednesday is 2h over&rdquo; counts the
@@ -378,8 +395,8 @@ export function OnboardingPage() {
         </div>
 
         <p className="mt-4 text-center text-[12px] font-medium text-fg-tertiary">
-          Steps 1, 2 and 4 reproduce Toggl 2.0&apos;s real onboarding verbatim
-          (<code className="font-mono">docs/w0-first-run.md</code>). Step 3 is the proposal.
+          Steps 1, 2 and 4 reproduce Toggl 2.0&apos;s real onboarding, captured from a trial
+          account. Step 3 is the proposal.
         </p>
       </div>
     </div>

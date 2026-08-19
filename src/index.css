@@ -2,7 +2,7 @@
 
 /*
  * Toggl 2.0 design tokens.
- * Extracted from the live app 2026-08-17 — see docs/design-system.md.
+ * Extracted from the live app 2026-08-17.
  * Values are space-separated RGB triples, matching Toggl's own convention.
  * Token names mirror theirs exactly: --{property}-{role}[-{state}].
  */
@@ -111,7 +111,7 @@
    * AA by 0.34 — and it lands on the active nav item, on every page, in light
    * theme. 5% darker clears it at 4.52:1 and is visually imperceptible.
    * Scoped to this pairing only; --foreground-accent stays pixel-exact.
-   * See docs/accessibility-audit.md §1.
+   * Measured against WCAG AA on both themes.
    */
   --foreground-accent-on-muted: 160 72 149;
   --stroke-accent: 236 204 230;
@@ -403,7 +403,7 @@
 /*
  * Toggl gates its ambient/decorative animations behind motion-safe but leaves
  * looping utilities (onboarding-pulse, ping-dot) unguarded. This applies the
- * guard globally instead. See docs/accessibility-audit.md §3.
+ * guard globally instead.
  */
 @media (prefers-reduced-motion: reduce) {
   *,

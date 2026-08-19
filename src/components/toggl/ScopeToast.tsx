@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 
 /*
  * Toggl's other surfaces are out of scope for this prototype. Silence reads as
  * broken, so every decorative control says so plainly instead of doing nothing.
  */
-export function useScopeToast() {
+function useScopeToast() {
   const [message, setMessage] = useState<string | null>(null)
 
   useEffect(() => {
@@ -20,7 +20,26 @@ export function useScopeToast() {
   return { message, notInScope, dismiss: () => setMessage(null) }
 }
 
-export function ScopeToast({
+const ScopeContext = createContext<((what: string) => void) | null>(null)
+
+/* One toast for the whole shell, so chrome and Timer controls cannot stack two. */
+export function ScopeProvider({ children }: { children: ReactNode }) {
+  const { message, notInScope, dismiss } = useScopeToast()
+  return (
+    <ScopeContext.Provider value={notInScope}>
+      {children}
+      <ScopeToast message={message} onDismiss={dismiss} />
+    </ScopeContext.Provider>
+  )
+}
+
+export function useScope(): (what: string) => void {
+  const notInScope = useContext(ScopeContext)
+  if (!notInScope) throw new Error('useScope must be used inside ScopeProvider')
+  return notInScope
+}
+
+function ScopeToast({
   message,
   onDismiss,
 }: {

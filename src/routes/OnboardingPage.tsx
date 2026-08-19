@@ -61,7 +61,7 @@ export function OnboardingPage() {
       weekly_hours: weeklyHours,
       calendar_skipped: skippedCalendar,
     })
-    navigate('/calendar')
+    navigate('/calendar?day=1')
   }
 
   return (

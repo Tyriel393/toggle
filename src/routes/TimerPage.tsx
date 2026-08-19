@@ -295,7 +295,17 @@ function emitEvents(prev: DemoState, next: DemoState, action: DemoAction): void 
 }
 
 export function TimerPage() {
-  const [state, setState] = useState((): DemoState => initialState('conflict', 'asking'))
+  /* Arriving from onboarding lands on Monday — the week decision comes first. */
+  const [state, setState] = useState((): DemoState => {
+    const base = initialState('conflict', 'asking')
+    try {
+      const d = Number(new URLSearchParams(window.location.search).get('day'))
+      if (d >= 1 && d <= 5) return { ...base, weekDay: d as 1 | 2 | 3 | 4 | 5 }
+    } catch {
+      /* no search params available */
+    }
+    return base
+  })
   const stateRef = useRef(state)
   const dispatch = useCallback((action: DemoAction) => {
     const prev = stateRef.current

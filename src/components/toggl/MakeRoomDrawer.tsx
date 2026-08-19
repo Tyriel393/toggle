@@ -44,7 +44,9 @@ export function MakeRoomDrawer({
   onClose: () => void
 }) {
   const panelRef = useRef<HTMLElement>(null)
-  const [showOther, setShowOther] = useState(false)
+  /* Open by default: hiding the riskier choices makes the safe one look like the only one. */
+  const [showOther, setShowOther] = useState(true)
+  const [confirming, setConfirming] = useState<MoveIntent | null>(null)
 
   const safeMoves = useMemo(() => findSafeMoves(plan, evaluation), [plan, evaluation])
   const riskyMoves = useMemo(() => findRiskyMoves(plan, evaluation), [plan, evaluation])
@@ -236,16 +238,18 @@ export function MakeRoomDrawer({
                         <Button
                           variant="secondary"
                           size="sm"
-                          onClick={() =>
-                            onPreview({
+                          onClick={() => {
+                            const intent: MoveIntent = {
                               taskId: move.taskId,
                               fromDay: move.fromDay,
                               toDay: move.toDay,
                               mins: move.mins,
                               risky: true,
                               consequence: move.consequence,
-                            })
-                          }
+                            }
+                            if (move.breaksDeadline) setConfirming(intent)
+                            else onPreview(intent)
+                          }}
                         >
                           Preview
                         </Button>
@@ -301,7 +305,66 @@ export function MakeRoomDrawer({
           </div>
         ) : null}
       </footer>
+
+      {confirming ? (
+        <ConfirmBreak
+          taskName={taskById(confirming.taskId)?.name ?? 'this work'}
+          consequence={confirming.consequence ?? ''}
+          onCancel={() => setConfirming(null)}
+          onConfirm={() => {
+            onPreview(confirming)
+            setConfirming(null)
+          }}
+        />
+      ) : null}
     </aside>
+  )
+}
+
+/*
+ * Breaking a dated commitment is the one action the user should have to say out
+ * loud. Toggl will do it — but not quietly, and not without naming the cost.
+ */
+function ConfirmBreak({
+  taskName,
+  consequence,
+  onCancel,
+  onConfirm,
+}: {
+  taskName: string
+  consequence: string
+  onCancel: () => void
+  onConfirm: () => void
+}) {
+  return (
+    <div className="absolute inset-0 z-10 grid place-items-center bg-black/60 p-5">
+      <div
+        role="alertdialog"
+        aria-modal="true"
+        aria-label="Confirm missed deadline"
+        className="w-full rounded-lg border border-line-error bg-bg p-5"
+      >
+        <p className="text-[15px] leading-6 font-semibold text-fg">
+          This one misses a client deadline.
+        </p>
+        <p className="mt-1.5 text-[13px] leading-5 font-medium text-fg-secondary">
+          Moving <strong className="text-fg">{taskName}</strong> {consequence}. That is a promise to
+          someone, not a preference — so Toggl will not do it on a single click.
+        </p>
+        <p className="mt-2.5 rounded-lg border border-line bg-bg-secondary px-3 py-2 text-[12px] leading-4 font-medium text-fg-secondary">
+          You can still preview it first, and undo it afterwards. Nothing is sent to the client
+          either way.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Button variant="secondary" size="md" autoFocus onClick={onCancel}>
+            Pick something else
+          </Button>
+          <Button variant="destructive" size="md" onClick={onConfirm}>
+            Preview it anyway
+          </Button>
+        </div>
+      </div>
+    </div>
   )
 }
 

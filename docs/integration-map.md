@@ -15,6 +15,20 @@ Make room's whole argument rests on "your Wednesday is 2h over." That number has
 | **Calendar events** | Onboarding step 3, skippable; documented as a Timeline capacity input | Never connected on this account | Meetings consume capacity invisibly if unconnected |
 | **Dated task estimates** | Task drawer `Estimate` + `Dates` | Present, optional, default `0h` | The demand side of the equation |
 
+### Build vs. already-there — the precise split
+
+| | Exists today | Verified how |
+| --- | --- | --- |
+| A weekly capacity **number** | ✅ Yes | Timeline lane reads `40h free`; `Capacity: This week` filter; Workload reports `Work hours 40h` |
+| A place to **store** working hours | ✅ Yes | `Members` table has a `WORKING HOURS` column — but it ships **unset** |
+| **Asking** the user for it | ❌ No | Onboarding is three steps: intent, project, calendar. Capacity is never requested. |
+| A **warning** when commitments exceed it | ❌ No | Nothing fires. The number is displayed, never enforced. |
+| A way to **act** on it | ❌ No | No resolution path of any kind |
+
+**So we are not building the capacity engine — it exists.** We build the ask, the warning, and the resolution.
+
+**One distinction worth being precise about:** Workload's `Remaining hours` is `40h − logged so far` — *how much of your week is still unfilled*. That is a **backward-looking** figure. Make room compares `40h` against **what you have committed** — a forward-looking one. Same units, opposite direction, and only the second can tell you a week is over before it starts.
+
 ### The finding that matters
 
 > **A freelancer's capacity is a default nobody set.** Working hours reads `-` on the only member of the workspace, and the product still asserts a 40h week.

@@ -25,3 +25,11 @@ dist-ssr
 
 .vercel
 .env*
+
+# Personal prep — not part of the submission
+docs/loom-script.md
+docs/loom-outline.md
+docs/HANDOFF-FOR-EXTERNAL-MODEL.md
+docs/make-room-defense-qa.md
+docs/day-plan.md
+docs/claude-perspective.md

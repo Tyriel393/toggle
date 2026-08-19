@@ -36,3 +36,7 @@ docs/claude-perspective.md
 AGENTS.md
 DECISIONS.md
 CLAUDE.md
+plan.md
+.claude/
+docs/*
+!docs/insights.md

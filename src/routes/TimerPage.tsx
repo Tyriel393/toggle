@@ -344,10 +344,9 @@ export function TimerPage() {
     }
   })
   const [guided, setGuided] = useState(true)
-  const closeStart = (wantGuided: boolean) => {
-    setGuided(wantGuided)
+  const closeStart = () => {
     setStartOpen(false)
-    track('prototype_started', { mode: wantGuided ? 'guided' : 'explore' })
+    track('prototype_started', { mode: guided ? 'guided' : 'explore' })
     try {
       sessionStorage.setItem('make-room-started', '1')
     } catch {
@@ -591,8 +590,7 @@ export function TimerPage() {
       {startOpen ? (
         <StartScreen
           mondayIntro={onMonday && state.weekFix === null}
-          onGuided={() => closeStart(true)}
-          onExplore={() => closeStart(false)}
+          onStart={closeStart}
         />
       ) : null}
 

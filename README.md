@@ -6,15 +6,18 @@ quietly becomes impossible.**
 
 Vite + React + TypeScript + Tailwind v4. Deployed on Vercel.
 
-- **Live demo:** https://toggl-kit.vercel.app (root lands on the moment — no setup needed)
+- **Live demo:** https://toggl-kit.vercel.app (opens on onboarding, then lands on Monday of week one)
 - **Component kit:** https://toggl-kit.vercel.app/kit
-- **Repo:** https://github.com/Tyriel393/toggle (private)
+- **Repo:** https://github.com/Tyriel393/toggle
 
 ## The demo
 
-The deployed root opens at `/calendar` with a **3-step guided tour** explaining the scenario, and
-the estimate-reached prompt already visible behind it. The pill bottom-left has `Tour` (replay),
-`Setup` (the week-one setup step), `Restart`, scenario switching, `Events`, and a theme toggle.
+The root opens on onboarding. Finishing it lands on **Monday of week one**, where an intro modal
+explains what the prototype is and what to judge; one button dismisses it. After that nothing is on
+rails — short hints appear beside each step, and the `Guide` toggle turns them off.
+
+The bar at the bottom is demo scaffolding, not the product: `Day 1–5` walks through the week,
+plus `Restart`, scenario switching, `Events`, `?` to reopen the intro, and a theme toggle.
 
 **Keyboard:** `D` done · `1`/`2`/`3` = 30m/1h/2h left · `C` custom · `W` wrong task · `N` not sure ·
 `P` preview · `Enter` approve · `K` keep plan · `Esc` acknowledge · `S` stop timer · `Ctrl+Z` undo.

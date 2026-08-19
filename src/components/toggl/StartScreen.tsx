@@ -1,18 +1,16 @@
 import { Button } from './Button'
-import { Icon } from './Icon'
 
 /*
  * A tester opened this cold and could not tell what they were looking at.
  * This states the feature, the problem, and what they are being asked to
- * judge — then lets them choose guided or free exploration.
+ * judge, then gets out of the way. Hints are on by default and can be
+ * turned off from the demo bar.
  */
 export function StartScreen({
-  onGuided,
-  onExplore,
+  onStart,
   mondayIntro = false,
 }: {
-  onGuided: () => void
-  onExplore: () => void
+  onStart: () => void
   mondayIntro?: boolean
 }) {
   return (
@@ -30,11 +28,11 @@ export function StartScreen({
           </div>
           <button
             type="button"
-            onClick={onExplore}
-            aria-label="Skip this and explore"
+            onClick={onStart}
+            aria-label="Close and start"
             className="-mt-1 -mr-1 shrink-0 cursor-pointer rounded-lg px-2 py-1 text-[12px] font-medium text-fg-secondary hover:bg-bg-hover hover:text-fg"
           >
-            Skip ✕
+            ✕
           </button>
         </div>
         <p className="mt-2 text-[14px] leading-6 font-medium text-fg-secondary">
@@ -98,35 +96,19 @@ export function StartScreen({
           </ul>
         </div>
 
-        <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={onGuided}
-            className="cursor-pointer rounded-lg border border-line-accent bg-bg-muted px-4 py-3 text-left transition-colors hover:bg-bg-muted-hover"
-          >
-            <span className="flex items-center gap-1.5 text-[14px] font-semibold text-fg-accent-on-muted">
-              <Icon name="arrowUpRight" size={13} />
-              Walk me through it
-            </span>
-            <span className="mt-0.5 block text-[12px] leading-4 font-medium text-fg-secondary">
-              Every step tells you what to do next. Takes about a minute.
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={onExplore}
-            className="cursor-pointer rounded-lg border border-line bg-bg px-4 py-3 text-left transition-colors hover:bg-bg-hover"
-          >
-            <span className="text-[14px] font-semibold text-fg">Let me explore</span>
-            <span className="mt-0.5 block text-[12px] leading-4 font-medium text-fg-secondary">
-              Nothing is on rails. Click anything — you can always reopen this.
-            </span>
-          </button>
+        <div className="mt-5">
+          <Button size="lg" onClick={onStart} className="w-full">
+            Start exploring
+          </Button>
+          <p className="mt-2 text-center text-[12px] leading-4 font-medium text-fg-secondary">
+            Nothing is on rails. Click anything, and short hints appear as you go.
+          </p>
         </div>
 
         <p className="mt-4 text-[12px] leading-4 font-medium text-fg-tertiary">
           Data is mock, as the brief allows. Press <strong className="text-fg-secondary">?</strong>{' '}
-          in the demo bar to reopen this at any point.
+          in the demo bar to reopen this, or <strong className="text-fg-secondary">Guide</strong> to turn
+          the hints off.
         </p>
       </div>
     </div>
